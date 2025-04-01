@@ -12,13 +12,13 @@ import {
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { UserContext } from '../context/UserContext';
-import * as InAppPurchases from 'expo-in-app-purchases';
-import {
+// import * as InAppPurchases from 'expo-in-app-purchases';
+/*import {
   connectIAP,
   buyPremiumSubscription,
   getAvailableProducts,
   restorePurchase,
-} from '../utils/iap';
+} from '../utils/iap';*/
 
 const PremiumScreen = () => {
   const { isPremium, setIsPremium } = useContext(UserContext);

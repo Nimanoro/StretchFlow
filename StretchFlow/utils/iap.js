@@ -1,4 +1,5 @@
-import * as InAppPurchases from 'expo-in-app-purchases';
+
+/* import * as InAppPurchases from 'expo-in-app-purchases';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const SUBSCRIPTION_ID = 'premium_monthly'; // Must match App Store Connect exactly
@@ -68,3 +69,4 @@ export const isPremiumLocally = async () => {
   const flag = await AsyncStorage.getItem('hasPremium');
   return flag === 'true';
 };
+*/

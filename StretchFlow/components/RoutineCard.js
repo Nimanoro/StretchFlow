@@ -1,14 +1,20 @@
-// RoutineCard.js
 import React, { useRef } from 'react';
-import { View, Text, TouchableWithoutFeedback, Animated, StyleSheet } from 'react-native';
+import {
+  View,
+  Text,
+  TouchableWithoutFeedback,
+  Animated,
+  StyleSheet,
+} from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 
-const RoutineCard = ({ item }) => {
+const RoutineCard = ({ item, large = false, enablePressAnimation = false }) => {
   const navigation = useNavigation();
   const scale = useRef(new Animated.Value(1)).current;
 
   const onPressIn = () => {
+    if (!enablePressAnimation) return;
     Animated.spring(scale, {
       toValue: 0.95,
       useNativeDriver: true,
@@ -17,6 +23,7 @@ const RoutineCard = ({ item }) => {
   };
 
   const onPressOut = () => {
+    if (!enablePressAnimation) return;
     Animated.spring(scale, {
       toValue: 1,
       useNativeDriver: true,
@@ -24,18 +31,34 @@ const RoutineCard = ({ item }) => {
     }).start();
   };
 
+  const cardStyles = [
+    styles.card,
+    large && styles.cardLarge,
+    enablePressAnimation && { transform: [{ scale }] },
+  ];
+
+  const cardTitleStyle = [
+    styles.cardTitle,
+    large && styles.cardTitleLarge,
+  ];
+
+  const cardInfoStyle = [
+    styles.cardInfo,
+    large && styles.cardInfoLarge,
+  ];
+
   return (
     <TouchableWithoutFeedback
       onPressIn={onPressIn}
       onPressOut={onPressOut}
       onPress={() => navigation.navigate('Routine', { routine: item })}
     >
-      <Animated.View style={[styles.card, { transform: [{ scale }] }]}>
+      <Animated.View style={cardStyles}>
         <View style={styles.cardContent}>
-          <Text style={styles.cardTitle}>{item.title}</Text>
+          <Text style={cardTitleStyle}>{item.title}</Text>
           <View style={styles.infoContainer}>
-            <Text style={styles.cardInfo}>Duration: {item.duration}</Text>
-            <Text style={styles.cardInfo}>Difficulty: {item.difficulty}</Text>
+            <Text style={cardInfoStyle}>Duration: {item.duration}</Text>
+            <Text style={cardInfoStyle}>Difficulty: {item.difficulty}</Text>
           </View>
         </View>
         <Ionicons name="chevron-forward" size={20} color="#6EE7B7" />
@@ -60,6 +83,11 @@ const styles = StyleSheet.create({
     shadowRadius: 10,
     elevation: 5,
   },
+  cardLarge: {
+    width: '100%',
+    padding: 24,
+    marginRight: 0,
+  },
   cardContent: {
     flex: 1,
     marginRight: 10,
@@ -70,16 +98,22 @@ const styles = StyleSheet.create({
     color: '#2A2E43',
     marginBottom: 12,
   },
-  infoContainer: {
-    borderRadius: 8,
-    paddingVertical: 8,
-    paddingHorizontal: 2,
+  cardTitleLarge: {
+    fontSize: 24,
   },
   cardInfo: {
     fontSize: 14,
     color: '#6B7280',
     fontWeight: '500',
     marginBottom: 4,
+  },
+  cardInfoLarge: {
+    fontSize: 16,
+  },
+  infoContainer: {
+    borderRadius: 8,
+    paddingVertical: 8,
+    paddingHorizontal: 2,
   },
 });
 

@@ -1,0 +1,110 @@
+[
+  {
+    "id": "neck-rolls",
+    "name": "Neck Rolls",
+    "muscleGroups": ["neck"],
+    "difficulty": "easy",
+    "position": "seated",
+    "duration": 30,
+    "instruction": "Sit upright with shoulders relaxed. Slowly drop your chin toward your chest, then gently roll your head in a clockwise motion, making a full circle. After 15 seconds, reverse the motion, rolling counterclockwise. Keep movements smooth and avoid jerking motions.",
+    "tags": ["warm-up", "mobility", "relaxation"],
+    "benefits": ["Relieves neck tension", "Improves cervical spine mobility"],
+    "image": "https://www.verywellhealth.com/thmb/Neck-Rolls.jpg"
+  },
+  {
+    "id": "shoulder-rolls",
+    "name": "Shoulder Rolls",
+    "muscleGroups": ["shoulders", "upper back"],
+    "difficulty": "easy",
+    "position": "standing",
+    "duration": 30,
+    "instruction": "Stand upright with arms relaxed at sides. Slowly lift shoulders toward ears, then roll them back and down in a circular motion. Perform this movement for 15 seconds, then reverse direction, rolling them forward for another 15 seconds. Maintain steady breathing throughout.",
+    "tags": ["warm-up", "mobility", "relaxation"],
+    "benefits": ["Relieves shoulder tension", "Enhances shoulder joint mobility"],
+    "image": "https://www.verywellhealth.com/thmb/Shoulder-Rolls.jpg"
+  },
+  {
+    "id": "standing-hamstring-stretch",
+    "name": "Standing Hamstring Stretch",
+    "muscleGroups": ["hamstrings", "lower back"],
+    "difficulty": "easy",
+    "position": "standing",
+    "duration": 45,
+    "instruction": "Stand upright with feet hip-width apart. Step right foot forward about 12 inches and flex right foot so only the heel is on the ground. Keeping back straight, hinge at hips and lean forward over right leg. Place hands on right thigh for support. Hold the stretch for 20-30 seconds, then switch legs.",
+    "tags": ["flexibility", "recovery"],
+    "benefits": ["Improves hamstring flexibility", "Reduces lower back tension"],
+    "image": "https://www.verywellhealth.com/thmb/Standing-Hamstring-Stretch.jpg"
+  },
+  {
+    "id": "quadriceps-stretch",
+    "name": "Standing Quadriceps Stretch",
+    "muscleGroups": ["quadriceps"],
+    "difficulty": "easy",
+    "position": "standing",
+    "duration": 30,
+    "instruction": "Stand upright and grasp right ankle with right hand, pulling heel toward buttocks. Keep knees close together and left leg straight. Hold onto a chair or wall for balance if needed. Maintain the stretch for 15-30 seconds, feeling a gentle pull along the front of your thigh. Repeat with the left leg.",
+    "tags": ["flexibility", "recovery"],
+    "benefits": ["Enhances quadriceps flexibility", "Improves knee joint mobility"],
+    "image": "https://www.verywellhealth.com/thmb/Standing-Quadriceps-Stretch.jpg"
+  },
+  {
+    "id": "calf-stretch",
+    "name": "Wall Calf Stretch",
+    "muscleGroups": ["calves"],
+    "difficulty": "easy",
+    "position": "standing",
+    "duration": 30,
+    "instruction": "Stand facing a wall with hands pressed against it at shoulder height. Step right foot back, keeping it straight with the heel on the ground. Bend left knee slightly and press hips toward the wall until you feel a stretch in your right calf. Hold for 20-30 seconds, then switch legs.",
+    "tags": ["flexibility", "recovery"],
+    "benefits": ["Increases calf muscle flexibility", "Prevents Achilles tendon stiffness"],
+    "image": "https://www.verywellhealth.com/thmb/Wall-Calf-Stretch.jpg"
+  },
+  {
+    "id": "hip-flexor-stretch",
+    "name": "Lunge Hip Flexor Stretch",
+    "muscleGroups": ["hip flexors", "quadriceps"],
+    "difficulty": "easy",
+    "position": "kneeling",
+    "duration": 30,
+    "instruction": "Kneel on right knee with left foot in front, forming a 90-degree angle at both knees. Place hands on left thigh for support. Keeping back straight, gently push hips forward until you feel a stretch in the front of your right hip. Hold for 20-30 seconds, then switch sides.",
+    "tags": ["flexibility", "mobility"],
+    "benefits": ["Improves hip flexor flexibility", "Alleviates lower back discomfort"],
+    "image": "https://www.verywellhealth.com/thmb/Lunge-Hip-Flexor-Stretch.jpg"
+  },
+  {
+    "id": "seated-spinal-twist",
+    "name": "Seated Spinal Twist",
+    "muscleGroups": ["spine", "obliques"],
+    "difficulty": "intermediate",
+    "position": "seated",
+    "duration": 30,
+    "instruction": "Sit on the floor with legs extended. Bend right knee and cross it over left leg, placing right foot flat on the floor beside left thigh. Place right hand on the floor behind you for support and left elbow on the outside of right knee. Gently twist torso to the right, looking over right shoulder. Hold for 20-30 seconds, then repeat on the other side.",
+    "tags": ["flexibility", "mobility"],
+    "benefits": ["Enhances spinal flexibility", "Stretches oblique muscles"],
+    "image": "https://www.verywellhealth.com/thmb/Seated-Spinal-Twist.jpg"
+  },
+  {
+    "id": "butterfly-stretch",
+    "name": "Butterfly Stretch",
+    "muscleGroups": ["inner thighs", "hips"],
+    "difficulty": "easy",
+    "position": "seated",
+    "duration": 30,
+    "instruction": "Sit on the floor with back straight and bring the soles of your feet together, allowing knees to drop outward. Hold feet with hands and gently press knees toward the floor using elbows for assistance. You should feel a stretch in your inner thighs. Hold for 20-30 seconds.",
+    "tags": ["flexibility", "mobility"],
+    "benefits": ["Increases inner thigh flexibility", "Opens up the hips"],
+    "image": "https://www.verywellhealth.com/thmb/Butterfly-Stretch.jpg"
+  },
+  {
+    "id": "cat-cow-stretch",
+    "name": "Cat-Cow Stretch",
+    "muscleGroups": ["spine", "abdominals"],
+    "difficulty": "easy",
+    "position": "quadruped",
+    "duration": 30,
+    "instruction": "Start on hands and knees with wrists under shoulders and knees under hips. Inhale, arching your back and lifting your head and tailbone toward the ceiling (cow pose). Exhale, rounding your spine and tucking your chin to chest (cat pose). Repeat this sequence for 30 seconds, moving with your breath.",
+    "tags": ["flexibility", "mobility"],
+    "benefits": ["Promotes spinal flexibility", "Strengthens core muscles"],
+    "image": "https://www.verywellhealth.com/thmb/Cat-Cow-Stretch.jpg"
+  }
+]

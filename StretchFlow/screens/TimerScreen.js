@@ -1,9 +1,22 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { View, Text, Button, StyleSheet, Modal, Pressable, Switch } from 'react-native';
+import {
+  View,
+  Text,
+  StyleSheet,
+  Modal,
+  Pressable,
+  Switch,
+  Animated,
+} from 'react-native';
 import { useRoute, useNavigation } from '@react-navigation/native';
 import * as Speech from 'expo-speech';
 import { checkVoiceAccess, incrementVoiceUsage } from '../utils/voiceUsage';
 import { isSilentMode, setSilentMode as persistSilentMode } from '../utils/voiceSetting';
+import { AnimatedCircularProgress } from 'react-native-circular-progress';
+import ConfettiCannon from 'react-native-confetti-cannon';
+import { updateUserData, getUserData } from '../utils/userStorage';
+import moment from 'moment'; // or native Date strings
+import { Ionicons } from '@expo/vector-icons';
 
 const TimerScreen = () => {
   const navigation = useNavigation();
@@ -13,135 +26,300 @@ const TimerScreen = () => {
   const [currentStep, setCurrentStep] = useState(0);
   const [secondsLeft, setSecondsLeft] = useState(stretches?.[0]?.duration || 30);
   const [isRunning, setIsRunning] = useState(true);
+  const [paused, setPaused] = useState(false);
+  const [isResting, setIsResting] = useState(false);
   const [showVoiceLimitModal, setShowVoiceLimitModal] = useState(false);
   const [silentMode, setSilentMode] = useState(false);
-  const spokenRef = useRef(false);
+  const [voiceCreditsUsed, setVoiceCreditsUsed] = useState(false);
+  const [showConfetti, setShowConfetti] = useState(false);
+  const [voiceChecked, setVoiceChecked] = useState(false);
+  const totalTime = stretches.reduce((sum, s) => sum + s.duration, 0) + 10 * (stretches.length - 1);
+  const handleRoutineComplete = async (routine) => {
+    const today = moment().format('YYYY-MM-DD');
+    const user = await getUserData();
+  
+    let newStreak = 1;
+    if (user?.lastCompleted) {
+      const last = moment(user.lastCompleted);
+      if (moment().diff(last, 'days') === 1) newStreak = (user.streak || 0) + 1;
+      else if (moment().diff(last, 'days') === 0) newStreak = user.streak || 1;
+    }
+  
+    const updated = await updateUserData({
+      streak: newStreak,
+      lastCompleted: today,
+      lastRoutine: routine.title,
+      history: {
+        ...(user?.history || {}),
+        [today]: routine.title,
+      },
+    });
+  };
+
+  const fadeAnim = useRef(new Animated.Value(0)).current;
+  const pulseAnim = useRef(new Animated.Value(1)).current;
+  const progressAnim = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
     isSilentMode().then(setSilentMode);
   }, []);
 
   const toggleSilentMode = async () => {
-    const newValue = !silentMode;
-    setSilentMode(newValue);
-    await persistSilentMode(newValue);
+    if (voiceCreditsUsed) return;
+    const newVal = !silentMode;
+    setSilentMode(newVal);
+    await persistSilentMode(newVal);
   };
 
   const safeSpeak = async (text) => {
     const silent = await isSilentMode();
     const allowed = await checkVoiceAccess();
-
     if (!silent && allowed) {
       Speech.stop();
-      Speech.speak(text, {
-        language: 'en-US',
-        pitch: 1.0,
-        rate: 0.9,
-      });
-    } else if (!silent && !allowed) {
-      setShowVoiceLimitModal(true);
+      Speech.speak(text, { language: 'en-US', pitch: 1.0, rate: 0.9 });
     }
   };
 
+  const animateFade = () => {
+    fadeAnim.setValue(0);
+    Animated.timing(fadeAnim, {
+      toValue: 1,
+      duration: 400,
+      useNativeDriver: true,
+    }).start();
+  };
+
   useEffect(() => {
-    if (!isRunning) return;
+    Animated.loop(
+      Animated.sequence([
+        Animated.timing(pulseAnim, {
+          toValue: 1.1,
+          duration: 1000,
+          useNativeDriver: true,
+        }),
+        Animated.timing(pulseAnim, {
+          toValue: 1,
+          duration: 1000,
+          useNativeDriver: true,
+        }),
+      ])
+    ).start();
+  }, []);
+
+  useEffect(() => {
+    if (!isRunning || paused) return;
+  
     const interval = setInterval(() => {
-      setSecondsLeft((prev) => (prev <= 1 ? 0 : prev - 1));
+      setSecondsLeft((prev) => (prev > 0 ? prev - 1 : 0));
     }, 1000);
+  
     return () => clearInterval(interval);
-  }, [isRunning]);
-
+  }, [isRunning, paused]);
+  
   useEffect(() => {
-    if (!isRunning) return;
-
-    if (secondsLeft === 3) safeSpeak('3');
-    if (secondsLeft === 2) safeSpeak('2');
-    if (secondsLeft === 1) safeSpeak('1');
-
-    if (secondsLeft === 0) {
-      const nextStep = currentStep + 1;
-      if (nextStep < stretches.length) {
-        const next = stretches[nextStep];
-        safeSpeak(`Next up: ${next.name}. ${next.instruction}`);
-        const timeout = setTimeout(() => {
-          setCurrentStep(nextStep);
-          setSecondsLeft(next.duration);
-          spokenRef.current = false;
-        }, 2000);
-        return () => clearTimeout(timeout);
+    if (!isRunning || !voiceChecked || paused) return;
+  
+    if (!isResting && secondsLeft === 0) {
+      const next = currentStep + 1;
+      if (next < stretches.length) {
+        setIsResting(true);
+        setSecondsLeft(10); // enter rest
+        safeSpeak('Rest for 10 seconds');
       } else {
         setIsRunning(false);
         safeSpeak('Routine complete. Great job!');
+        handleRoutineComplete(routine);
+        setShowConfetti(true);
       }
     }
-  }, [secondsLeft, isRunning]);
+  
+    if (isResting && secondsLeft === 0) {
+      const next = currentStep + 1;
+      setIsResting(false);
+      setCurrentStep(next);
+      setSecondsLeft(stretches[next].duration);
+      animateFade();
+    }
+  }, [secondsLeft, isRunning, voiceChecked, paused, isResting]);
+  
 
   useEffect(() => {
-    const startVoice = async () => {
+    const initVoice = async () => {
+      const allowed = await checkVoiceAccess();
       const s = stretches[currentStep];
-      if (isRunning && !spokenRef.current) {
-        const allowed = await checkVoiceAccess();
-        if (!allowed) {
-            setSilentMode(true);
-        }
-        if (!silentMode && allowed && currentStep === 0) {
-          await incrementVoiceUsage(); // Count only once per session
-        }
-        safeSpeak(`${s.name}. ${s.instruction}`);
-        spokenRef.current = true;
+      if (!allowed && !voiceCreditsUsed) {
+        setShowVoiceLimitModal(true);
+        setSilentMode(true);
+        setVoiceCreditsUsed(true); // prevent re-showing
       }
+       else {
+        if (!silentMode) await incrementVoiceUsage();
+        safeSpeak(`${s.name}. ${s.instruction}`);
+      }
+      setVoiceChecked(true);
     };
-    startVoice();
-  }, [currentStep, isRunning]);
+    initVoice();
+    animateFade();
+
+    Animated.timing(progressAnim, {
+      toValue: (currentStep + 1) / stretches.length,
+      duration: 500,
+      useNativeDriver: false,
+    }).start();
+  }, [currentStep]);
+
+  const currentStretch = stretches?.[currentStep];
+  const nextStretch = stretches?.[currentStep + 1];
+
+  const backgroundStyle = isResting ? styles.restBackground : styles.container;
 
   return (
-    <View style={styles.container}>
+    <View style={backgroundStyle}>
+      <View style={styles.topBar}>
+        <Animated.View
+          style={[
+            styles.progressBar,
+            {
+              width: progressAnim.interpolate({
+                inputRange: [0, 1],
+                outputRange: ['0%', '100%'],
+              }),
+            },
+          ]}
+        />
+      </View>
+
       <Text style={styles.routineTitle}>{routine.title}</Text>
 
       {isRunning ? (
         <>
-          <Text style={styles.label}>Now Stretching</Text>
-          <Text style={styles.stretchName}>{stretches[currentStep].name}</Text>
-          <Text style={styles.timer}>{secondsLeft}s</Text>
+          <Text style={styles.stepProgress}>
+            {`Step ${currentStep + 1} of ${stretches.length}`}
+          </Text>
+
+          {isResting ? (
+  <View style={{ alignItems: 'center' }}>
+    <Text style={styles.restText}>🧘‍♂️ Resting... {secondsLeft}s</Text>
+
+    <Pressable
+      onPress={() => {
+        const next = currentStep + 1;
+        setIsResting(false);
+        setCurrentStep(next);
+        setSecondsLeft(stretches[next].duration);
+        animateFade();
+      }}
+      style={{ marginTop: 16 }}
+    >
+      <Pressable
+  onPress={() => {
+    const next = currentStep + 1;
+    setIsResting(false);
+    setCurrentStep(next);
+    setSecondsLeft(stretches[next].duration);
+    animateFade();
+  }}
+  style={styles.skipRestBtn}
+>
+  <Text style={styles.skipRestBtnText}>Skip Rest</Text>
+</Pressable>
+
+    </Pressable>
+  </View>
+) : (
+            <>
+              <Animated.Text style={[styles.stretchName, { opacity: fadeAnim }]}>
+                {currentStretch.name}
+              </Animated.Text>
+
+              <Animated.View style={{ transform: [{ scale: pulseAnim }], marginBottom: 20 }}>
+                <AnimatedCircularProgress
+                  size={180}
+                  width={12}
+                  fill={(secondsLeft / currentStretch.duration) * 100}
+                  tintColor="#10B981"
+                  backgroundColor="#E5E7EB"
+                  rotation={0}
+                  lineCap="round"
+                >
+                  {() => <Text style={styles.timer}>{secondsLeft}s</Text>}
+                </AnimatedCircularProgress>
+              </Animated.View>
+
+            </>
+          )}
+
+          {nextStretch && !isResting && (
+            <View style={styles.nextContainer}>
+              <Text style={styles.nextSoon}>SOON</Text>
+              <Text style={styles.nextUp}>Up Next: {nextStretch.name}</Text>
+            </View>
+          )}
+
+          <Pressable
+            style={styles.pauseBtn}
+            onPress={() => setPaused((prev) => !prev)}
+          >
+            <Text style={styles.pauseBtnText}>{paused ? 'Resume' : 'Pause'}</Text>
+          </Pressable>
         </>
       ) : (
         <>
-          <Text style={styles.complete}>✅ Routine Complete!</Text>
+          <Text style={styles.complete}>🎉 Routine Complete!</Text>
 
-          <View style={styles.premiumCard}>
-            <Text style={styles.premiumTitle}>Unlock the Full Experience</Text>
-            <Text style={styles.premiumDescription}>
-              Go Premium to remove ads, save custom routines, and access guided voice flows.
-            </Text>
-            <Pressable style={styles.premiumButton} onPress={() => navigation.navigate('Premium')}>
-              <Text style={styles.premiumButtonText}>💎 Go Premium</Text>
-            </Pressable>
-          </View>
+<Text style={styles.completeStats}>
+  You completed {stretches.length} stretches in {totalTime} seconds.
+</Text>
 
-          <Pressable style={styles.backButton} onPress={() => navigation.popToTop()}>
-            <Text style={styles.backButtonText}>← Back to Home</Text>
-          </Pressable>
+<Pressable
+  style={styles.pauseBtn}
+  onPress={() => {
+    setCurrentStep(0);
+    setSecondsLeft(stretches[0].duration);
+    setIsRunning(true);
+    setPaused(false);
+    setShowConfetti(false);
+    setVoiceChecked(false);
+    animateFade();
+  }}
+>
+  <Text style={styles.pauseBtnText}>Repeat Routine</Text>
+</Pressable>
+
+<Pressable style={styles.backButton} onPress={() => navigation.popToTop()}>
+  <Text style={styles.backButtonText}>← Back to Home</Text>
+</Pressable>
         </>
       )}
 
-      {/* 👇 Silent Mode Toggle at the Bottom */}
+      {showConfetti && <ConfettiCannon count={120} origin={{ x: 200, y: 0 }} fadeOut />}
+
       <View style={styles.bottomToggleContainer}>
-        <Text style={styles.toggleLabel}>Silent Mode</Text>
-        <Switch
-          value={silentMode}
-          onValueChange={toggleSilentMode}
-          trackColor={{ false: '#d1d5db', true: '#34D399' }}
-          thumbColor={silentMode ? '#047857' : '#f4f3f4'}
-        />
-      </View>
+    
+    <Text style={styles.toggleLabel}>Voice Guidance </Text>
+  
+
+  <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+  <Ionicons name="headset-outline" size={16} color="#34D399" style={{ marginRight: 6 }} />
+  <Switch
+    value={silentMode}
+    onValueChange={toggleSilentMode}
+    trackColor={{ false: '#d1d5db', true: '#34D399' }}
+    thumbColor={silentMode ? '#047857' : '#f4f3f4'}
+    disabled={voiceCreditsUsed}
+  />
+  </View>
+</View>
+
 
       <Modal visible={showVoiceLimitModal} transparent animationType="fade">
         <View style={styles.modalBackdrop}>
           <View style={styles.modalContent}>
-            <Text style={styles.modalTitle}>Voice Limit Reached</Text>
+          <Text style={styles.modalTitle}>Voice Guidance Locked</Text>
             <Text style={styles.modalText}>
-              You've used your 3 free voice sessions this week. Go Premium to unlock unlimited voice guidance.
+            You've used your 3 free guided sessions this week. Go Premium for unlimited coaching.
             </Text>
+
             <Pressable
               style={styles.modalButton}
               onPress={() => {
@@ -166,33 +344,87 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#F0F4F3',
     alignItems: 'center',
+    paddingTop: 60,
     paddingHorizontal: 20,
-    paddingTop: 80,
     justifyContent: 'space-between',
+  },
+  restBackground: {
+    flex: 1,
+    backgroundColor: '#D0F4EA',
+    alignItems: 'center',
+    paddingTop: 60,
+    paddingHorizontal: 20,
+    justifyContent: 'space-between',
+  },
+  topBar: {
+    position: 'absolute',
+    top: 0,
+    height: 6,
+    backgroundColor: '#E5E7EB',
+    width: '100%',
+  },
+  progressBar: {
+    height: 6,
+    backgroundColor: '#10B981',
   },
   routineTitle: {
     fontSize: 22,
     fontWeight: '700',
-    marginBottom: 16,
+    marginTop: 10,
     color: '#1F2937',
   },
-  label: {
-    fontSize: 16,
+  stepProgress: {
+    fontSize: 14,
     color: '#6B7280',
-    marginBottom: 6,
+    marginBottom: 4,
   },
   stretchName: {
     fontSize: 26,
     fontWeight: '600',
     color: '#047857',
-    marginBottom: 8,
+    marginBottom: 12,
+    textAlign: 'center',
+  },
+  restText: {
+    fontSize: 26,
+    fontWeight: '600',
+    color: '#065F46',
+    marginTop: 60,
     textAlign: 'center',
   },
   timer: {
-    fontSize: 48,
+    fontSize: 42,
     fontWeight: 'bold',
     color: '#1F2937',
-    marginBottom: 30,
+    marginTop: 10,
+  },
+  nextContainer: {
+    marginTop: 30,
+    alignItems: 'center',
+  },
+  nextSoon: {
+    fontSize: 10,
+    color: '#9CA3AF',
+    fontWeight: '600',
+    letterSpacing: 1,
+    marginBottom: 4,
+  },
+  nextUp: {
+    fontSize: 14,
+    color: '#6B7280',
+    fontStyle: 'italic',
+  },
+  pauseBtn: {
+    marginTop: 20,
+    paddingVertical: 10,
+    paddingHorizontal: 24,
+    backgroundColor: '#34D399',
+    borderRadius: 8,
+  },
+  pauseBtnText: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#fff',
   },
   complete: {
     fontSize: 28,
@@ -200,40 +432,7 @@ const styles = StyleSheet.create({
     color: '#10B981',
     marginBottom: 30,
   },
-  premiumCard: {
-    backgroundColor: '#D1FAE5',
-    padding: 20,
-    borderRadius: 16,
-    marginBottom: 24,
-    alignItems: 'center',
-    width: '100%',
-  },
-  premiumTitle: {
-    fontSize: 18,
-    fontWeight: '700',
-    color: '#065F46',
-    marginBottom: 6,
-  },
-  premiumDescription: {
-    fontSize: 14,
-    color: '#065F46',
-    textAlign: 'center',
-    marginBottom: 12,
-    lineHeight: 20,
-  },
-  premiumButton: {
-    backgroundColor: '#047857',
-    paddingVertical: 10,
-    paddingHorizontal: 24,
-    borderRadius: 10,
-  },
-  premiumButtonText: {
-    color: '#FFFFFF',
-    fontWeight: '600',
-    fontSize: 15,
-  },
   backButton: {
-    marginTop: 10,
     paddingVertical: 10,
     paddingHorizontal: 20,
   },
@@ -252,7 +451,9 @@ const styles = StyleSheet.create({
     borderColor: '#E5E7EB',
     backgroundColor: '#ffffff',
     width: '100%',
+    gap: 12,
   },
+  
   toggleLabel: {
     fontSize: 15,
     color: '#374151',
@@ -303,6 +504,30 @@ const styles = StyleSheet.create({
     color: '#6B7280',
     fontSize: 13,
   },
+  completeStats: {
+    fontSize: 16,
+    color: '#374151',
+    marginBottom: 20,
+    textAlign: 'center',
+  },
+
+  skipRestBtn: {
+    marginTop: 16,
+    backgroundColor: '#E0F2F1',
+    paddingHorizontal: 20,
+    paddingVertical: 10,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: '#34D399',
+  },
+  skipRestBtnText: {
+    fontSize: 14,
+    color: '#047857',
+    fontWeight: '600',
+    textAlign: 'center',
+  },
+  
+  
 });
 
 export default TimerScreen;
