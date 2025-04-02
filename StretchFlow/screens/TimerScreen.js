@@ -9,6 +9,7 @@ import {
   Animated,
 } from 'react-native';
 import { useRoute, useNavigation } from '@react-navigation/native';
+import { LinearGradient } from 'expo-linear-gradient';
 import * as Speech from 'expo-speech';
 import { checkVoiceAccess, incrementVoiceUsage } from '../utils/voiceUsage';
 import { isSilentMode, setSilentMode as persistSilentMode } from '../utils/voiceSetting';
@@ -22,7 +23,7 @@ const TimerScreen = () => {
   const navigation = useNavigation();
   const route = useRoute();
   const { routine, stretches } = route.params;
-
+  const [isPressed, setIsPressed] = useState(false);
   const [currentStep, setCurrentStep] = useState(0);
   const [secondsLeft, setSecondsLeft] = useState(stretches?.[0]?.duration || 30);
   const [isRunning, setIsRunning] = useState(true);
@@ -32,6 +33,7 @@ const TimerScreen = () => {
   const [silentMode, setSilentMode] = useState(false);
   const [voiceCreditsUsed, setVoiceCreditsUsed] = useState(false);
   const [showConfetti, setShowConfetti] = useState(false);
+  const [handleSkip, setHandleSkip] = useState(false);
   const [voiceChecked, setVoiceChecked] = useState(false);
   const totalTime = stretches.reduce((sum, s) => sum + s.duration, 0) + 10 * (stretches.length - 1);
   const handleRoutineComplete = async (routine) => {
@@ -198,34 +200,60 @@ const TimerScreen = () => {
           </Text>
 
           {isResting ? (
-  <View style={{ alignItems: 'center' }}>
-    <Text style={styles.restText}>🧘‍♂️ Resting... {secondsLeft}s</Text>
+  <>
+  <LinearGradient
+  colors={['#D1FAE5', '#ECFDF5']}
+  style={[StyleSheet.absoluteFill, { zIndex: -1 }]}
+/>
+    
+<Animated.Text style={[styles.stretchName, { opacity: fadeAnim }]}>
+                resting...
+              </Animated.Text>
 
-    <Pressable
-      onPress={() => {
-        const next = currentStep + 1;
-        setIsResting(false);
-        setCurrentStep(next);
-        setSecondsLeft(stretches[next].duration);
-        animateFade();
-      }}
-      style={{ marginTop: 16 }}
-    >
+              <Animated.View style={{ transform: [{ scale: pulseAnim }], marginBottom: 20 }}>
+                <AnimatedCircularProgress
+                  size={180}
+                  width={12}
+                  fill={(secondsLeft / 10) * 100}
+                  tintColor="#10B981"
+                  backgroundColor="#E5E7EB"
+                  rotation={0}
+                  lineCap="round"
+                >
+                  {() => <Text style={styles.timer}>{secondsLeft}s</Text>}
+                </AnimatedCircularProgress>
+              </Animated.View>
+    {nextStretch && (
+      <Text style={styles.nextUp}>Up Next: {nextStretch.name}</Text>
+    )}
+
+    <View style={styles.controlWrapper}>
+      {/* Back icon - always disabled during rest */}
+      <View style={[styles.skipCircle, styles.skipCircleDisabled]}>
+        <Ionicons name="play-skip-back" size={22} color="#D1D5DB" />
+      </View>
+
+      {/* Center icon - peaceful resting symbol */}
+      <View style={styles.playPauseCircle}>
+        <Ionicons name="leaf-outline" size={26} color="#fff" />
+      </View>
+
+      {/* Skip Rest button */}
       <Pressable
-  onPress={() => {
-    const next = currentStep + 1;
-    setIsResting(false);
-    setCurrentStep(next);
-    setSecondsLeft(stretches[next].duration);
-    animateFade();
-  }}
-  style={styles.skipRestBtn}
->
-  <Text style={styles.skipRestBtnText}>Skip Rest</Text>
-</Pressable>
+        onPress={() => {
+          const next = currentStep + 1;
+          setIsResting(false);
+          setCurrentStep(next);
+          setSecondsLeft(stretches[next].duration);
+          animateFade();
+        }}
+        style={styles.skipCircle}
+      >
+        <Ionicons name="play-skip-forward" size={22} color="#6B7280" />
+      </Pressable>
+    </View>
+  </>
 
-    </Pressable>
-  </View>
 ) : (
             <>
               <Animated.Text style={[styles.stretchName, { opacity: fadeAnim }]}>
@@ -245,23 +273,85 @@ const TimerScreen = () => {
                   {() => <Text style={styles.timer}>{secondsLeft}s</Text>}
                 </AnimatedCircularProgress>
               </Animated.View>
+              {currentStretch.instruction && (
+                <Text style={styles.instructionText}>
+                  {currentStretch.instruction}
+                </Text>
+              )}
+
+          {nextStretch && !isResting && (
+            <View style={styles.nextContainer}>
+              <Text style={styles.nextUp}>Up Next: {nextStretch.name}</Text>
+            </View>
+
+          
+          )}
+          <View style={styles.controlWrapper}>
+  <Pressable
+    onPress={() => {
+      if (currentStep > 0) {
+        const prev = currentStep - 1;
+        setCurrentStep(prev);
+        setSecondsLeft(stretches[prev].duration);
+        animateFade();
+      }
+    }}
+    style={[
+      styles.skipCircle,
+      currentStep === 0 && styles.skipCircleDisabled,
+    ]}
+    disabled={currentStep === 0}
+  >
+    <Ionicons
+      name="play-skip-back"
+      size={22}
+      color={currentStep === 0 ? '#D1D5DB' : '#6B7280'}
+    />
+  </Pressable>
+
+  <Pressable
+    onPress={() => setPaused((prev) => !prev)}
+    style={({ pressed }) => [
+      styles.playPauseCircle,
+      pressed && styles.playPauseCirclePressed,
+    ]}
+  >
+    <Ionicons name={paused ? 'play' : 'pause'} size={28} color="#fff" />
+  </Pressable>
+
+  <Pressable
+    onPress={() => {
+      if (currentStep < stretches.length - 1) {
+        const next = currentStep + 1;
+        setCurrentStep(next);
+        setSecondsLeft(stretches[next].duration);
+        animateFade();
+      }
+    }}
+    style={[
+      styles.skipCircle,
+      currentStep === stretches.length - 1 && styles.skipCircleDisabled,
+    ]}
+    disabled={currentStep === stretches.length - 1}
+  >
+    <Ionicons
+      name="play-skip-forward"
+      size={22}
+      color={currentStep === stretches.length - 1 ? '#D1D5DB' : '#6B7280'}
+    />
+  </Pressable>
+</View>
+
 
             </>
           )}
 
-          {nextStretch && !isResting && (
-            <View style={styles.nextContainer}>
-              <Text style={styles.nextSoon}>SOON</Text>
-              <Text style={styles.nextUp}>Up Next: {nextStretch.name}</Text>
-            </View>
-          )}
 
-          <Pressable
-            style={styles.pauseBtn}
-            onPress={() => setPaused((prev) => !prev)}
-          >
-            <Text style={styles.pauseBtnText}>{paused ? 'Resume' : 'Pause'}</Text>
-          </Pressable>
+
+
+
+
+
         </>
       ) : (
         <>
@@ -409,6 +499,42 @@ const styles = StyleSheet.create({
     letterSpacing: 1,
     marginBottom: 4,
   },
+  controlWrapper: {
+  flexDirection: 'row',
+  justifyContent: 'center',
+  alignItems: 'center',
+  gap: 28,
+  marginTop: 24,
+},
+
+playPauseCircle: {
+  width: 64,
+  height: 64,
+  borderRadius: 32,
+  backgroundColor: '#10B981',
+  justifyContent: 'center',
+  alignItems: 'center',
+  shadowColor: '#000',
+  shadowOffset: { width: 0, height: 3 },
+  shadowOpacity: 0.15,
+  shadowRadius: 6,
+  elevation: 6,
+},
+
+playPauseCirclePressed: {
+  transform: [{ scale: 0.96 }],
+},
+
+skipCircle: {
+  width: 48,
+  height: 48,
+  borderRadius: 24,
+  backgroundColor: '#E5E7EB',
+  justifyContent: 'center',
+  alignItems: 'center',
+},
+
+  
   nextUp: {
     fontSize: 14,
     color: '#6B7280',
@@ -436,11 +562,21 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     paddingHorizontal: 20,
   },
+  instructionText: {
+    marginTop: 12,
+    fontSize: 14,
+    color: '#6B7280',
+    textAlign: 'center',
+    lineHeight: 20,
+    fontStyle: 'italic',
+  },
+  
   backButtonText: {
     fontSize: 14,
     color: '#374151',
     fontWeight: '500',
   },
+  
   bottomToggleContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -504,29 +640,29 @@ const styles = StyleSheet.create({
     color: '#6B7280',
     fontSize: 13,
   },
+  pauseBtn: {
+    marginTop: 20,
+    paddingVertical: 10,
+    paddingHorizontal: 24,
+    backgroundColor: '#34D399',
+    borderRadius: 10,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.1,
+    shadowRadius: 6,
+    elevation: 4,
+    transform: [{ scale: 1 }],
+  },
+  pauseBtnPressed: {
+    transform: [{ scale: 0.97 }],
+  },
+  
   completeStats: {
     fontSize: 16,
     color: '#374151',
     marginBottom: 20,
     textAlign: 'center',
   },
-
-  skipRestBtn: {
-    marginTop: 16,
-    backgroundColor: '#E0F2F1',
-    paddingHorizontal: 20,
-    paddingVertical: 10,
-    borderRadius: 8,
-    borderWidth: 1,
-    borderColor: '#34D399',
-  },
-  skipRestBtnText: {
-    fontSize: 14,
-    color: '#047857',
-    fontWeight: '600',
-    textAlign: 'center',
-  },
-  
   
 });
 

@@ -59,123 +59,159 @@ const ProfileScreen = () => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Profile</Text>
-
-      <View style={styles.section}>
+      <View style={styles.card}>
         <Text style={styles.label}>Your Name</Text>
         <TextInput
           style={styles.input}
           value={name}
           onChangeText={setName}
           placeholder="Enter your name"
+          placeholderTextColor="#9CA3AF"
         />
         <Pressable style={styles.saveButton} onPress={handleSave}>
           <Ionicons name="checkmark-circle" size={18} color="white" />
           <Text style={styles.saveText}>Save</Text>
         </Pressable>
       </View>
-
-      <View style={styles.section}>
-        <Text style={styles.label}>🔥 Current Streak</Text>
+  
+      <View style={styles.card}>
+        <View style={styles.row}>
+          <Ionicons name="flame" size={20} color="#F97316" />
+          <Text style={styles.infoText}>Current Streak</Text>
+        </View>
         <Text style={styles.streakText}>{streak}-day streak</Text>
       </View>
-
-      <View style={styles.section}>
-        <Text style={styles.label}>🔕 Silent Mode</Text>
+  
+      <View style={styles.card}>
+        <View style={styles.row}>
+          <Ionicons name="volume-mute" size={20} color="#6B7280" />
+          <Text style={styles.infoText}>Silent Mode</Text>
+        </View>
         <View style={styles.toggleRow}>
           <Text style={styles.toggleText}>Disable Voice Guidance</Text>
           <Switch value={silentMode} onValueChange={toggleSilentMode} />
         </View>
       </View>
+  
+      <View style={styles.card}>
+        <View style={styles.row}>
+          <Ionicons name="refresh-circle" size={20} color="#991B1B" />
+          <Text style={styles.infoText}>Reset Data</Text>
+        </View>
 
-      <View style={styles.section}>
-        <Text style={styles.label}>🧼 Reset Data</Text>
         <Pressable onPress={handleReset} style={styles.resetButton}>
           <Text style={styles.resetText}>Reset App</Text>
         </Pressable>
-      </View>
+        <Text style={{ fontSize: 13, color: '#6B7280', marginTop: 12 }}>
+  Caution: This will delete your name, streak, and saved routines.
+</Text>
 
-      <View style={styles.section}>
-        <Text style={styles.label}>💬 Feedback</Text>
+      </View>
+  
+      <View style={styles.card}>
+        <View style={styles.row}>
+          <Ionicons name="chatbubble-ellipses" size={20} color="#3B82F6" />
+          <Text style={styles.infoText}>Feedback</Text>
+        </View>
         <Text style={styles.linkText}>support@stretchflow.app</Text>
       </View>
     </View>
   );
-};
+}  
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#F0F4F3',
-    padding: 20,
-  },
-  title: {
-    fontSize: 28,
-    fontWeight: '700',
-    marginBottom: 24,
-    color: '#111827',
-  },
-  section: {
-    marginBottom: 28,
-  },
-  label: {
-    fontSize: 16,
-    fontWeight: '600',
-    marginBottom: 6,
-    color: '#374151',
-  },
-  input: {
-    backgroundColor: '#FFFFFF',
-    padding: 12,
-    borderRadius: 12,
-    fontSize: 15,
-    marginBottom: 10,
-  },
-  saveButton: {
-    flexDirection: 'row',
-    backgroundColor: '#10B981',
-    paddingVertical: 10,
-    paddingHorizontal: 20,
-    borderRadius: 25,
-    alignSelf: 'flex-start',
-    alignItems: 'center',
-    gap: 8,
-  },
-  saveText: {
-    color: '#FFFFFF',
-    fontWeight: '600',
-  },
-  streakText: {
-    fontSize: 18,
-    fontWeight: '600',
-    color: '#F97316',
-  },
-  toggleRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-  },
-  toggleText: {
-    fontSize: 15,
-    color: '#374151',
-  },
-  resetButton: {
-    marginTop: 6,
-    backgroundColor: '#FECACA',
-    paddingVertical: 10,
-    paddingHorizontal: 20,
-    borderRadius: 25,
-    alignSelf: 'flex-start',
-  },
-  resetText: {
-    color: '#991B1B',
-    fontWeight: '600',
-  },
-  linkText: {
-    color: '#2563EB',
-    fontSize: 14,
-    marginTop: 6,
-  },
+    container: {
+      flex: 1,
+      backgroundColor: '#F0F4F3',
+      padding: 20,
+    },
+    title: {
+      fontSize: 26,
+      fontWeight: '700',
+      color: '#1F2937',
+      marginBottom: 24,
+    },
+    card: {
+      backgroundColor: '#FFFFFF',
+      borderRadius: 16,
+      padding: 20,
+      marginBottom: 18,
+      shadowColor: '#00000020',
+      shadowOffset: { width: 0, height: 2 },
+      shadowOpacity: 0.08,
+      shadowRadius: 6,
+      elevation: 3,
+    },
+    label: {
+      fontSize: 15,
+      fontWeight: '600',
+      color: '#374151',
+      marginBottom: 8,
+    },
+    input: {
+      backgroundColor: '#F9FAFB',
+      borderRadius: 12,
+      padding: 12,
+      fontSize: 15,
+      color: '#111827',
+      marginBottom: 10,
+    },
+    saveButton: {
+      flexDirection: 'row',
+      backgroundColor: '#10B981',
+      paddingVertical: 10,
+      paddingHorizontal: 18,
+      borderRadius: 25,
+      alignSelf: 'flex-start',
+      alignItems: 'center',
+      gap: 6,
+    },
+    saveText: {
+      color: '#FFFFFF',
+      fontWeight: '600',
+    },
+    row: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      marginBottom: 8,
+      gap: 8,
+    },
+    infoText: {
+      fontSize: 15,
+      fontWeight: '600',
+      color: '#374151',
+    },
+    streakText: {
+      fontSize: 18,
+      fontWeight: '600',
+      color: '#F97316',
+    },
+    toggleRow: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+      marginTop: 8,
+    },
+    toggleText: {
+      fontSize: 15,
+      color: '#374151',
+    },
+    resetButton: {
+      marginTop: 8,
+      backgroundColor: '#FECACA',
+      paddingVertical: 10,
+      paddingHorizontal: 20,
+      borderRadius: 25,
+      alignSelf: 'flex-start',
+    },
+    resetText: {
+      color: '#991B1B',
+      fontWeight: '600',
+    },
+    linkText: {
+      color: '#2563EB',
+      fontSize: 14,
+      marginTop: 4,
+    },
 });
-
 export default ProfileScreen;

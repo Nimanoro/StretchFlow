@@ -1,51 +1,106 @@
+
+// BottomTabNavigator.js
 import React from 'react';
+import { View, Text, Pressable, StyleSheet, Platform } from 'react-native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { Ionicons, Feather, MaterialCommunityIcons } from '@expo/vector-icons';
 import HomeScreen from './HomeScreen';
-import ProfileScreen from './ProfileScreen'; // new screen
-import { Ionicons } from '@expo/vector-icons';
+import ProfileScreen from './ProfileScreen';
 import AllRoutinesScreen from './AllRoutine';
 import BuildRoutineScreen from './BuildRoutine';
 
 const Tab = createBottomTabNavigator();
 
+const CustomBuildButton = ({ children, onPress }) => (
+  <Pressable
+    onPress={onPress}
+    style={({ pressed }) => [
+      styles.buildButton,
+      pressed && { opacity: 0.9 },
+    ]}
+  >
+    {children}
+  </Pressable>
+);
+
 export default function BottomTabNavigator() {
   return (
     <Tab.Navigator
-      screenOptions={({ route }) => ({
+      screenOptions={{
         headerShown: false,
-        tabBarStyle: { height: 60, paddingBottom: 8 },
-        tabBarIcon: ({ color, size }) => {
-          let iconName;
-          if (route.name === 'Home') iconName = 'home';
-          else if (route.name === 'Profile') iconName = 'person-circle';
-          return <Ionicons name={iconName} size={24} color={color} />;
+        tabBarShowLabel: false,
+        tabBarStyle: {
+          height: 80,
+          paddingBottom: 8 ,
+          backgroundColor: '#fff',
+          borderTopLeftRadius: 20,
+          borderTopRightRadius: 20,
+          shadowColor: '#000',
+          shadowOffset: { width: 0, height: -2 },
+          shadowOpacity: 0.06,
+          shadowRadius: 10,
+          elevation: 10,
         },
-        tabBarActiveTintColor: '#10B981',
-        tabBarInactiveTintColor: '#9CA3AF',
-        tabBarLabelStyle: { fontSize: 12 },
-      })}
+      }}i
     >
-      <Tab.Screen name="Home" component={HomeScreen} />
       <Tab.Screen
-  name="Build"
-  component={BuildRoutineScreen}
-  options={{
-    tabBarIcon: ({ color, size }) => (
-      <Ionicons name="construct" size={size} color={color} />
-    ),
-  }}
-/>
-      <Tab.Screen
-  name="Explore"
-  component={AllRoutinesScreen}
-  options={{
-    tabBarIcon: ({ color, size }) => (
-      <Ionicons name="list" size={size} color={color} />
-    ),
-  }}
-/>
+        name="Home"
+        component={HomeScreen}
+        options={{
+          tabBarIcon: ({ color, focused }) => (
+            <View style={styles.iconWrapper}>
+              <Ionicons name="home-outline" size={24} color={focused ? '#10B981' : '#9CA3AF'} />
 
-<Tab.Screen name="Profile" component={ProfileScreen} />
+            </View>
+          ),
+        }}
+      />
+
+      <Tab.Screen
+        name="Explore"
+        component={AllRoutinesScreen}
+        options={{
+          tabBarIcon: ({ color, focused }) => (
+            <View style={styles.iconWrapper}>
+              <Feather name="compass" size={24} color={focused ? '#10B981' : '#9CA3AF'} />
+            </View>
+          ),
+        }}
+      />
+
+      <Tab.Screen
+        name="Build"
+        component={BuildRoutineScreen}
+        options={{
+          tabBarIcon: ({ focused }) => (
+            <MaterialCommunityIcons
+              name="plus-circle"
+              size={28}
+              color={focused ? '#10B981' : '#9CA3AF'}
+              style={styles.iconWrapper}
+            />
+          ),
+        }}
+      />
+
+      <Tab.Screen
+        name="Profile"
+        component={ProfileScreen}
+        options={{
+          tabBarIcon: ({ color, focused }) => (
+            <View style={styles.iconWrapper}>
+              <Ionicons name="person-circle-outline" size={24} color={focused ? '#10B981' : '#9CA3AF'} />
+            </View>
+          ),
+        }}
+      />
     </Tab.Navigator>
   );
 }
+
+const styles = StyleSheet.create({
+  iconWrapper: {
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+});

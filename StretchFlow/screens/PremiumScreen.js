@@ -12,60 +12,92 @@ import {
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { UserContext } from '../context/UserContext';
-// import * as InAppPurchases from 'expo-in-app-purchases';
-/*import {
+import * as InAppPurchases from 'expo-in-app-purchases';
+import {
   connectIAP,
   buyPremiumSubscription,
   getAvailableProducts,
   restorePurchase,
-} from '../utils/iap';*/
+} from '../utils/iap';
 
 const PremiumScreen = () => {
   const { isPremium, setIsPremium } = useContext(UserContext);
   const [loading, setLoading] = useState(true);
   const [price, setPrice] = useState(null);
+  const [productID, setProductID] = useState(null);
+  const [productsLoaded, setProductsLoaded] = useState(false);
 
   useEffect(() => {
+    let purchaseListener;
+
     const setup = async () => {
-      await connectIAP();
-      const products = await getAvailableProducts();
-      if (products.length > 0) {
-        setPrice(products[0].price);
-      }
+      try {
+        await connectIAP();
+        const products = await getAvailableProducts();
 
-      const subscription = InAppPurchases.setPurchaseListener(({ responseCode, results }) => {
-        if (responseCode === InAppPurchases.IAPResponseCode.OK) {
-          results.forEach(async (purchase) => {
-            if (!purchase.acknowledged) {
-              await InAppPurchases.finishTransactionAsync(purchase, true);
-              setIsPremium(true);
-              Alert.alert('✅ Premium Unlocked!');
-            }
-          });
+        if (products.length > 0) {
+          setProductID(products[0].productId);
+          setPrice(products[0].price);
+          setProductsLoaded(true);
         }
-      });
 
-      setLoading(false);
-
-      return () => {
-        InAppPurchases.disconnectAsync();
-      };
+        purchaseListener = InAppPurchases.setPurchaseListener(
+          async ({ responseCode, results }) => {
+            if (responseCode === InAppPurchases.IAPResponseCode.OK) {
+              for (const purchase of results) {
+                if (!purchase.acknowledged) {
+                  await InAppPurchases.finishTransactionAsync(purchase, true);
+                  setIsPremium(true);
+                  Alert.alert('✅ Premium Unlocked!');
+                }
+              }
+            } else {
+              console.warn('Purchase failed or cancelled');
+            }
+          }
+        );
+      } catch (err) {
+        console.error('IAP Setup Error:', err);
+        Alert.alert('IAP Error', 'Something went wrong with setting up In-App Purchases.');
+      } finally {
+        setLoading(false);
+      }
     };
 
     setup();
+
+    return () => {
+      InAppPurchases.disconnectAsync();
+      if (purchaseListener?.remove) purchaseListener.remove();
+    };
   }, []);
 
-  const handlePurchase = () => {
-    buyPremiumSubscription();
+  const handlePurchase = async () => {
+    if (!productID || !productsLoaded) {
+      Alert.alert('Please wait', 'Products are still loading.');
+      return;
+    }
+
+    try {
+      await buyPremiumSubscription(productID);
+    } catch (error) {
+      console.error('Purchase failed:', error);
+      Alert.alert('Error', 'Purchase could not be completed.');
+    }
   };
 
   const handleRestore = async () => {
-    const restored = await restorePurchase();
-    if (restored) {
-      setIsPremium(true);
-      Alert.alert('🔄 Purchase Restored!');
-    } else {
-      Alert.alert('No subscription found.');
+    try {
+      const restored = await restorePurchase();
+      if (restored) {
+        setIsPremium(true);
+        Alert.alert('🔄 Purchase Restored!');
+      } else {
+        Alert.alert('No active subscription found.');
+      }
+    } catch (err) {
+      console.error('Restore error:', err);
+      Alert.alert('Restore Failed', 'Could not restore purchases.');
     }
   };
 
@@ -81,7 +113,6 @@ const PremiumScreen = () => {
         </View>
       ) : (
         <>
-          {/* Hero Header */}
           <ImageBackground
             source={require('../assets/logo.png')}
             style={styles.header}
@@ -94,9 +125,9 @@ const PremiumScreen = () => {
             <Text style={styles.headerTitle}>Unlock Premium</Text>
           </ImageBackground>
 
-          {/* Sales Copy & Benefits */}
           <View style={styles.content}>
             <Text style={styles.copyTitle}>Why Go Premium?</Text>
+
             <View style={styles.benefitsList}>
               <View style={styles.benefitItem}>
                 <Ionicons name="close-circle" size={24} color="#047857" />
@@ -116,9 +147,10 @@ const PremiumScreen = () => {
               </View>
             </View>
 
-            {/* Purchase & Restore Buttons */}
             <TouchableOpacity style={styles.purchaseButton} onPress={handlePurchase}>
-              <Text style={styles.purchaseButtonText}>{`Subscribe for ${price || '$2.99/month'}`}</Text>
+              <Text style={styles.purchaseButtonText}>
+                {`Subscribe for ${price || '$2.99/month'}`}
+              </Text>
             </TouchableOpacity>
 
             <TouchableOpacity style={styles.restoreButton} onPress={handleRestore}>

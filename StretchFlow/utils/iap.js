@@ -1,72 +1,61 @@
-
-/* import * as InAppPurchases from 'expo-in-app-purchases';
+import * as InAppPurchases from 'expo-in-app-purchases';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-const SUBSCRIPTION_ID = 'premium_monthly'; // Must match App Store Connect exactly
+const SUBSCRIPTION_ID = 'premium_monthly'; // match App Store Connect exactly
 
-// Connect to IAP
+// Connect to IAP service
 export const connectIAP = async () => {
   try {
     await InAppPurchases.connectAsync();
-  } catch (err) {
-    console.error('IAP connect error:', err);
+  } catch (error) {
+    console.error('❌ IAP connection error:', error);
   }
 };
 
-// Get subscription products
+// Fetch available products
 export const getAvailableProducts = async () => {
-  const { responseCode, results } = await InAppPurchases.getProductsAsync([SUBSCRIPTION_ID]);
-  if (responseCode === InAppPurchases.IAPResponseCode.OK) {
-    return results;
-  }
-  return [];
-};
-
-// Purchase subscription
-export const buyPremiumSubscription = async () => {
   try {
-    await InAppPurchases.purchaseItemAsync(SUBSCRIPTION_ID);
-  } catch (err) {
-    console.error('Purchase error:', err);
+    const { responseCode, results } = await InAppPurchases.getProductsAsync([SUBSCRIPTION_ID]);
+    if (responseCode === InAppPurchases.IAPResponseCode.OK) {
+      return results;
+    } else {
+      console.warn('⚠️ Failed to fetch products:', responseCode);
+      return [];
+    }
+  } catch (error) {
+    console.error('❌ Product fetch error:', error);
+    return [];
   }
 };
 
-// Check if user has active subscription
-export const hasPremium = async () => {
+// Initiate purchase flow
+export const buyPremiumSubscription = async (productId) => {
   try {
-    const history = await InAppPurchases.getPurchaseHistoryAsync();
-    const active = history.results?.some((p) => {
-      if (p.productId === SUBSCRIPTION_ID && p.expirationDate) {
-        return new Date(p.expirationDate) > new Date(); // still valid
-      }
-      return false;
-    });
-    await AsyncStorage.setItem('hasPremium', active ? 'true' : 'false');
-    return active;
-  } catch (err) {
-    console.error('Check premium error:', err);
-    return false;
+    if (!productId) throw new Error('No Product ID provided');
+    await InAppPurchases.purchaseItemAsync(productId);
+  } catch (error) {
+    console.error('❌ Purchase error:', error);
   }
 };
 
-// Restore purchases
+// Restore previous purchases
 export const restorePurchase = async () => {
   try {
     const { results } = await InAppPurchases.getPurchaseHistoryAsync();
-    const valid = results?.some((p) => {
-      return p.productId === SUBSCRIPTION_ID && (!p.expirationDate || new Date(p.expirationDate) > new Date());
-    });
+    const valid = results?.some((purchase) =>
+      purchase.productId === SUBSCRIPTION_ID &&
+      (!purchase.expirationDate || new Date(purchase.expirationDate) > new Date())
+    );
     await AsyncStorage.setItem('hasPremium', valid ? 'true' : 'false');
     return valid;
-  } catch (err) {
-    console.error('Restore error:', err);
+  } catch (error) {
+    console.error('❌ Restore error:', error);
     return false;
   }
 };
 
-// Get local flag (for quick access)
+// Quick local check
 export const isPremiumLocally = async () => {
   const flag = await AsyncStorage.getItem('hasPremium');
   return flag === 'true';
 };
-*/

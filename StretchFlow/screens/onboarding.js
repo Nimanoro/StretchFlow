@@ -8,25 +8,37 @@ import {
   KeyboardAvoidingView,
   Platform,
 } from 'react-native';
+import {BottomTabNavigator} from './bottomNav';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { saveUserData } from '../utils/userStorage';
+import { TouchableWithoutFeedback, Keyboard } from 'react-native';
 
 const OnboardingScreen = ({ navigation }) => {
-    const handleContinue = async () => {
-        await saveUserData({
-            userName: name.trim(),
-            streak: 0,
-            lastCompleted: null,
-            lastRoutine: null,
-            history: {}
-          });
-        };
+  const handleContinue = async () => {
+    if (!name.trim()) {
+      Alert.alert('Hold on!', 'Please enter your name before continuing.');
+      return;
+    }
+  
+    await saveUserData({
+      userName: name.trim(),
+      streak: 0,
+      lastCompleted: null,
+      lastRoutine: null,
+      history: {},
+    });
+  
+    await AsyncStorage.setItem('isPremium', 'false');
+    navigation.replace('Tabs', { screen: 'Home' });
+  };
+
   const [name, setName] = useState('');
 
   
   
 
   return (
+    <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
     <KeyboardAvoidingView
       behavior={Platform.OS === 'ios' ? 'padding' : undefined}
       style={styles.container}
@@ -43,6 +55,8 @@ const OnboardingScreen = ({ navigation }) => {
         <Text style={styles.buttonText}>Continue</Text>
       </Pressable>
     </KeyboardAvoidingView>
+    </TouchableWithoutFeedback>
+
   );
 };
 

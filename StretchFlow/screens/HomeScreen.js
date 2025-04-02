@@ -35,6 +35,8 @@ const getNextMilestone = (streak) => {
   return streakMilestones.find(m => m > streak) || null;
 };
 
+// ... (imports remain the same)
+
 const HomeScreen = () => {
   const navigation = useNavigation();
   const pulseAnim = useRef(new Animated.Value(1)).current;
@@ -42,29 +44,32 @@ const HomeScreen = () => {
   const [greeting, setGreeting] = useState('');
   const [motivation, setMotivation] = useState('');
   const [name, setName] = useState('');
+  const [streakDays, setStreakDays] = useState(0);
+  const [lastSession, setLastSession] = useState('');
 
-const [streakDays, setStreakDays] = useState(0);
-const [lastSession, setLastSession] = useState('');
-
-useEffect(() => {
-  const loadUser = async () => {
-    const data = await getUserData();
-    if (data) {
-      setName(data.userName || '');
-      setStreakDays(data.streak || 0);
-      setLastSession(data.lastRoutine || '');
-    }
-  };
-  loadUser();
-}, []);
+  useEffect(() => {
+    const loadUser = async () => {
+      const data = await getUserData();
+      if (data) {
+        setName(data.userName || '');
+        setStreakDays(data.streak || 0);
+        setLastSession(data.lastRoutine || '');
+      }
+    };
+    loadUser();
+  }, []);
 
   useEffect(() => {
     if (!name) return;
 
     const hour = new Date().getHours();
-    if (hour < 12) setGreeting(`Good morning, ${name}`);
-    else if (hour < 18) setGreeting(`Good afternoon, ${name}`);
-    else setGreeting(`Good evening, ${name}`);
+    setGreeting(
+      hour < 12
+        ? `Good morning, ${name}`
+        : hour < 18
+        ? `Good afternoon, ${name}`
+        : `Good evening, ${name}`
+    );
 
     const randomLine = motivationalLines[Math.floor(Math.random() * motivationalLines.length)];
     setMotivation(randomLine);
@@ -90,132 +95,131 @@ useEffect(() => {
   }, []);
 
   return (
-    <ScrollView style={styles.container} contentContainerStyle={{ paddingBottom: 40 }}>
+    <ScrollView style={styles.container}>
       {/* === HERO HEADER === */}
       <ImageBackground
-        source={require('../assets/logo.png')}
+        source={require('../assets/hero.png')}
         style={styles.heroHeader}
         imageStyle={{ resizeMode: 'cover' }}
       >
-        <Image source={require('../assets/logo.png')} style={styles.heroWatermark} />
+        <Image source={require('../assets/image.png')} style={styles.heroWatermark} />
         <LinearGradient
-          colors={['rgba(224, 247, 241, 0.92)', 'rgba(240, 244, 243, 0.92)']}
+          colors={['#F0F0F0', 'rgba(224, 247, 241, 0.92)']}
           style={styles.gradientOverlay}
         >
           <View style={styles.headerContent}>
-            <Image source={require('../assets/logo.png')} style={styles.logo} />
+            <Image source={require('../assets/hero.png')} style={styles.logo} />
             <Text style={styles.brandTitle}>StretchFlow</Text>
             <Text style={styles.brandSubtitle}>Find your flow, one stretch at a time</Text>
           </View>
         </LinearGradient>
       </ImageBackground>
 
-      {/* === GREETING & MOTIVATION === */}
-      <View style={styles.greetingBox}>
-        <Text style={styles.greetingText}>{greeting}</Text>
-        <Text style={styles.greetingSubtext}>{motivation}</Text>
-      </View>
-
-      {/* === STREAK + CONTINUE === */}
-      <View style={styles.statusBar}>
-        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-          <Animated.View style={{ transform: [{ scale: pulseAnim }] }}>
-            <Ionicons name="flame" size={20} color="#F97316" />
-          </Animated.View>
-          <Text style={styles.statusText}>
-            {' '}{streakDays}-day streak – Keep it up!
-          </Text>
+      <View style={styles.bodySection}>
+        {/* === GREETING & MOTIVATION === */}
+        <View style={styles.greetingBox}>
+          <Text style={styles.greetingText}>{greeting}</Text>
+          <Text style={styles.greetingSubtext}>{motivation}</Text>
         </View>
 
-        {/* Milestone Progress Bar */}
-        {(() => {
-          const nextMilestone = getNextMilestone(streakDays);
-          if (!nextMilestone) return null;
+        {/* === STREAK BAR === */}
+        <View style={styles.statusBar}>
+          <View style={styles.streakRow}>
+            <Animated.View style={{ transform: [{ scale: pulseAnim }] }}>
+              <Ionicons name="flame" size={20} color="#F97316" />
+            </Animated.View>
+            <Text style={styles.statusText}>
+              {' '}{streakDays}-day streak – Keep it up!
+            </Text>
+          </View>
 
-          const progress = Math.min(streakDays / nextMilestone, 1);
-          const filledDots = Math.round(progress * 7);
+          {(() => {
+            const nextMilestone = getNextMilestone(streakDays);
+            if (!nextMilestone) return null;
 
-          return (
-            <View style={{ marginTop: 10 }}>
-              <View style={styles.dotRow}>
-                {Array.from({ length: 7 }).map((_, i) => (
-                  <View
-                    key={i}
-                    style={[
-                      styles.dot,
-                      { backgroundColor: i < filledDots ? '#10B981' : '#D1D5DB' },
-                    ]}
-                  />
-                ))}
-              </View>
-              <Text style={styles.milestoneCaption}>
-                {nextMilestone - streakDays} more to {nextMilestone}-day badge!
-              </Text>
-            </View>
-          );
-        })()}
-      </View>
-
-      <Pressable
-        onPress={() => {
-          const lastRoutine = routines.find(r => r.title === lastSession) || routines[0];
-          navigation.navigate('Timer', {
-            routine: lastRoutine,
-            stretches: lastRoutine.stretches,
-          });
-        }}
-        style={styles.resumeButton}
-      >
-        <Ionicons name="play" size={18} color="#fff" style={{ marginRight: 8 }} />
-        <Text style={styles.resumeText}>Continue: {lastSession}</Text>
-      </Pressable>
-
-      {/* === TODAY’S RECOMMENDATION === */}
-      <Text style={styles.sectionTitle}>Today’s Recommendation</Text>
-      <View style={{ marginHorizontal: 20, marginBottom: 20 }}>
-        <RoutineCard item={routines[0]} large enablePressAnimation />
-      </View>
-
-      {/* === POPULAR ROUTINES === */}
-      <Text style={styles.sectionTitle}>Popular Routines</Text>
-      <FlatList
-        data={routines}
-        renderItem={({ item }) => <RoutineCard item={item} enablePressAnimation />}
-        keyExtractor={(item) => item.id}
-        horizontal={true}
-        showsHorizontalScrollIndicator={false}
-        contentContainerStyle={styles.list}
-        style={{ marginBottom: 30 }}
-      />
-
-      {/* === PREMIUM UPGRADE === */}
-      <View style={styles.lockedCard}>
-        <Text style={styles.lockedTitle}>Ready to Level Up?</Text>
-        <Text style={styles.lockedSubtext}>Unlock the full StretchFlow experience:</Text>
-
-        <View style={styles.bulletList}>
-          <Text style={styles.lockedText}>✅ Unlimited sessions & routines</Text>
-          <Text style={styles.lockedText}>🎵 Ambient music & relaxing themes</Text>
-          <Text style={styles.lockedText}>🧠 Personalized daily suggestions</Text>
-          <Text style={styles.lockedText}>💾 Save and build custom flows</Text>
+            return (
+              <>
+                <View style={styles.dotRow}>
+                  {Array.from({ length: 7 }).map((_, i) => (
+                    <View
+                      key={i}
+                      style={[
+                        styles.dot,
+                        { backgroundColor: i < streakDays ? '#10B981' : '#D1D5DB' },
+                      ]}
+                    />
+                  ))}
+                </View>
+                <Text style={styles.milestoneCaption}>
+                  {nextMilestone - streakDays} more to {nextMilestone}-day badge!
+                </Text>
+              </>
+            );
+          })()}
         </View>
 
-        <Pressable style={styles.lockedButton} onPress={() => navigation.navigate('Premium')}>
-          <Text style={styles.lockedButtonText}>Unlock Premium</Text>
+        {/* === CONTINUE BUTTON === */}
+        <Pressable
+          onPress={() => {
+            const lastRoutine = routines.find(r => r.title === lastSession) || routines[0];
+            navigation.navigate('Timer', {
+              routine: lastRoutine,
+              stretches: lastRoutine.stretches,
+            });
+          }}
+          style={styles.resumeButton}
+        >
+          <Ionicons name="play" size={18} color="#fff" style={{ marginRight: 8 }} />
+          <Text style={styles.resumeText}>Continue: {lastSession || 'Any Routine'}</Text>
         </Pressable>
+
+        {/* === TODAY’S RECOMMENDATION === */}
+        <Text style={styles.sectionTitle}>Today’s Recommendation</Text>
+        <View style={{ marginHorizontal: 20, marginBottom: 20 }}>
+          <RoutineCard item={routines[0]} large enablePressAnimation />
+        </View>
+
+        {/* === POPULAR ROUTINES === */}
+        <Text style={styles.sectionTitle}>Popular Routines</Text>
+        <FlatList
+          data={routines}
+          renderItem={({ item }) => <RoutineCard item={item} enablePressAnimation />}
+          keyExtractor={(item) => item.id}
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          contentContainerStyle={styles.list}
+          style={{ marginBottom: 30 }}
+        />
+
+        {/* === PREMIUM BLOCK === */}
+        <View style={styles.lockedCard}>
+          <Text style={styles.lockedTitle}>Ready to Level Up?</Text>
+          <Text style={styles.lockedSubtext}>Unlock the full StretchFlow experience:</Text>
+
+          <View style={styles.bulletList}>
+            <Text style={styles.lockedText}>✅ Unlimited sessions & routines</Text>
+            <Text style={styles.lockedText}>🎵 Ambient music & relaxing themes</Text>
+            <Text style={styles.lockedText}>🧠 Personalized daily suggestions</Text>
+            <Text style={styles.lockedText}>💾 Save and build custom flows</Text>
+          </View>
+
+          <Pressable style={styles.lockedButton} onPress={() => navigation.navigate('Premium')}>
+            <Text style={styles.lockedButtonText}>Unlock Premium</Text>
+          </Pressable>
+        </View>
       </View>
     </ScrollView>
   );
 };
 
+
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
     backgroundColor: '#F0F4F3',
   },
   heroHeader: {
     height: 260,
-    marginBottom: 20,
+    marginBottom: 0,
     justifyContent: 'center',
     position: 'relative',
   },
@@ -255,9 +259,19 @@ const styles = StyleSheet.create({
     marginTop: 4,
     textAlign: 'center',
   },
+
+  bodySection: {
+    backgroundColor: '#F0FDF4',
+    borderTopLeftRadius: 24,
+    borderTopRightRadius: 24,
+    marginTop: -20,
+    paddingTop: 24,
+    paddingBottom: 60,
+  },
+
   greetingBox: {
     marginHorizontal: 20,
-    marginBottom: 16,
+    marginBottom: 12,
   },
   greetingText: {
     fontSize: 20,
@@ -269,18 +283,25 @@ const styles = StyleSheet.create({
     color: '#6B7280',
     marginTop: 4,
   },
+
   statusBar: {
     backgroundColor: '#FFFFFF',
     paddingVertical: 14,
     paddingHorizontal: 16,
-    borderRadius: 15,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 3 },
-    shadowOpacity: 0.1,
-    shadowRadius: 5,
-    elevation: 3,
+    borderRadius: 16,
     marginHorizontal: 20,
     marginBottom: 20,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.08,
+    shadowRadius: 6,
+    elevation: 4,
+  },
+  streakRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 10,
   },
   statusText: {
     fontSize: 15,
@@ -292,9 +313,10 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
-    gap: 8,
-    marginBottom: 4,
+    gap: 10, // Was 15 before, 10 feels more elegant now
+    marginBottom: 6, // Slightly tighter
   },
+  
   dot: {
     width: 10,
     height: 10,
@@ -306,6 +328,7 @@ const styles = StyleSheet.create({
     color: '#6B7280',
     textAlign: 'center',
   },
+
   resumeButton: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -315,38 +338,42 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     justifyContent: 'center',
     marginHorizontal: 20,
-    shadowColor: '#10B981',
-    shadowOffset: { width: 0, height: 6 },
-    shadowOpacity: 0.25,
-    shadowRadius: 10,
-    elevation: 5,
     marginBottom: 24,
+    shadowColor: '#10B981',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.2,
+    shadowRadius: 8,
+    elevation: 6,
   },
   resumeText: {
     color: '#fff',
     fontSize: 16,
     fontWeight: '600',
   },
+
   sectionTitle: {
     fontSize: 20,
     fontWeight: '600',
     color: '#394150',
     marginHorizontal: 20,
+    marginTop: 24,
     marginBottom: 12,
   },
   list: {
     paddingHorizontal: 20,
+    paddingVertical: 12,
   },
+
   lockedCard: {
     backgroundColor: '#F0FDFA',
     padding: 24,
     marginHorizontal: 20,
-    borderRadius: 16,
-    alignItems: 'flex-start',
-    borderWidth: 1,
-    borderColor: '#CCFBF1',
-    marginTop: 20,
     marginBottom: 40,
+    shadowColor: '#000',
+    shadowOpacity: 0.04,
+    shadowOffset: { width: 0, height: 2 },
+    shadowRadius: 6,
+    elevation: 2,
   },
   lockedTitle: {
     fontSize: 20,
@@ -369,8 +396,8 @@ const styles = StyleSheet.create({
   },
   lockedButton: {
     backgroundColor: '#047857',
-    paddingVertical: 10,
-    paddingHorizontal: 25,
+    paddingVertical: 12,
+    paddingHorizontal: 28,
     borderRadius: 25,
     alignSelf: 'center',
   },

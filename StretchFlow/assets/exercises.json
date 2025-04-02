@@ -1,319 +1,348 @@
 {
-    "routines": [
-      {
-        "id": "1",
-        "title": "Morning Energizer",
-        "description": "A quick routine to wake up your body and mind. Perfect to jumpstart your day.",
-        "duration": "5 min",
-        "difficulty": "Easy",
-        "steps": [
-          {
-            "step": 1,
-            "name": "Neck Rolls",
-            "duration": 30,
-            "animation": "animations/neckRolls.json",
-            "instruction": "Slowly roll your neck in a full circle, first clockwise then counterclockwise."
-          },
-          {
-            "step": 2,
-            "name": "Shoulder Circles",
-            "duration": 30,
-            "animation": "animations/shoulderCircles.json",
-            "instruction": "Rotate your shoulders in a circular motion to loosen up tension."
-          },
-          {
-            "step": 3,
-            "name": "Torso Twists",
-            "duration": 30,
-            "animation": "animations/torsoTwists.json",
-            "instruction": "Gently twist your torso from side to side to awaken your core."
-          }
-        ]
-      },
-      {
-        "id": "2",
-        "title": "Desk Break",
-        "description": "A quick routine to relieve stiffness and boost circulation during a busy workday.",
-        "duration": "3 min",
-        "difficulty": "Easy",
-        "steps": [
-          {
-            "step": 1,
-            "name": "Seated Shoulder Rolls",
-            "duration": 20,
-            "animation": "animations/seatedShoulderRolls.json",
-            "instruction": "While seated, roll your shoulders to release built-up tension."
-          },
-          {
-            "step": 2,
-            "name": "Wrist Stretches",
-            "duration": 20,
-            "animation": "animations/wristStretches.json",
-            "instruction": "Gently stretch your wrists and forearms to combat typing strain."
-          },
-          {
-            "step": 3,
-            "name": "Standing Forward Bend",
-            "duration": 20,
-            "animation": "animations/standingForwardBend.json",
-            "instruction": "Stand and slowly bend forward to stretch your back and legs."
-          }
-        ]
-      },
-      {
-        "id": "3",
-        "title": "Full Body Flow",
-        "description": "A comprehensive routine designed to improve overall mobility and flexibility.",
-        "duration": "10 min",
-        "difficulty": "Intermediate",
-        "steps": [
-          {
-            "step": 1,
-            "name": "Neck Rolls",
-            "duration": 30,
-            "animation": "animations/neckRolls.json",
-            "instruction": "Begin with gentle neck rolls to ease tension."
-          },
-          {
-            "step": 2,
-            "name": "Shoulder Circles",
-            "duration": 30,
-            "animation": "animations/shoulderCircles.json",
-            "instruction": "Perform shoulder rotations to prepare for deeper stretches."
-          },
-          {
-            "step": 3,
-            "name": "Hamstring Stretch",
-            "duration": 45,
-            "animation": "animations/hamstringStretch.json",
-            "instruction": "Reach toward your toes to lengthen your hamstrings."
-          },
-          {
-            "step": 4,
-            "name": "Quad Stretch",
-            "duration": 45,
-            "animation": "animations/quadStretch.json",
-            "instruction": "Pull your ankle toward your buttock to stretch your quadriceps."
-          }
-        ]
-      },
-      {
-        "id": "4",
-        "title": "Post-Workout Recovery",
-        "description": "Cool down and aid muscle recovery with this targeted post-workout routine.",
-        "duration": "7 min",
-        "difficulty": "Intermediate",
-        "steps": [
-          {
-            "step": 1,
-            "name": "Chest Opener",
-            "duration": 30,
-            "animation": "animations/chestOpener.json",
-            "instruction": "Extend your arms out and open up your chest to improve posture."
-          },
-          {
-            "step": 2,
-            "name": "Back Stretch",
-            "duration": 30,
-            "animation": "animations/backStretch.json",
-            "instruction": "Gently arch your back to release tension from your spine."
-          },
-          {
-            "step": 3,
-            "name": "Leg Stretch",
-            "duration": 30,
-            "animation": "animations/legStretch.json",
-            "instruction": "Sit down and extend your legs forward to stretch your lower body."
-          }
-        ]
-      },
-      {
-        "id": "5",
-        "title": "Evening Wind Down",
-        "description": "A calming routine to relax your body and mind before sleep.",
-        "duration": "4 min",
-        "difficulty": "Easy",
-        "steps": [
-          {
-            "step": 1,
-            "name": "Gentle Neck Stretches",
-            "duration": 30,
-            "animation": "animations/gentleNeckStretches.json",
-            "instruction": "Ease your neck muscles with slow, gentle stretches."
-          },
-          {
-            "step": 2,
-            "name": "Shoulder Shrugs",
-            "duration": 30,
-            "animation": "animations/shoulderShrugs.json",
-            "instruction": "Lift your shoulders and then drop them to release stress."
-          },
-          {
-            "step": 3,
-            "name": "Calm Breathing",
-            "duration": 30,
-            "animation": "animations/calmBreathing.json",
-            "instruction": "Focus on deep, slow breaths to prepare your body for rest."
-          }
-        ]
-      },
-      {
-        "id": "6",
-        "title": "Flexibility Booster",
-        "description": "Increase your range of motion with a series of dynamic stretches.",
-        "duration": "8 min",
-        "difficulty": "Advanced",
-        "steps": [
-          {
-            "step": 1,
-            "name": "Dynamic Leg Swings",
-            "duration": 40,
-            "animation": "animations/dynamicLegSwings.json",
-            "instruction": "Swing your legs forward and backward to loosen up your hip joints."
-          },
-          {
-            "step": 2,
-            "name": "Side Lunges",
-            "duration": 40,
-            "animation": "animations/sideLunges.json",
-            "instruction": "Perform lateral lunges to stretch your inner thighs and improve balance."
-          },
-          {
-            "step": 3,
-            "name": "Hip Circles",
-            "duration": 40,
-            "animation": "animations/hipCircles.json",
-            "instruction": "Rotate your hips in circular motions to open up the pelvic area."
-          }
-        ]
-      },
-      {
-        "id": "7",
-        "title": "Stress Relief Routine",
-        "description": "A calming sequence to alleviate stress and tension after a long day.",
-        "duration": "6 min",
-        "difficulty": "Easy",
-        "steps": [
-          {
-            "step": 1,
-            "name": "Deep Breathing",
-            "duration": 60,
-            "animation": "animations/deepBreathing.json",
-            "instruction": "Focus on slow, deep breaths to center your mind."
-          },
-          {
-            "step": 2,
-            "name": "Seated Forward Bend",
-            "duration": 60,
-            "animation": "animations/seatedForwardBend.json",
-            "instruction": "Sit down and gently lean forward to relax your back and legs."
-          },
-          {
-            "step": 3,
-            "name": "Mindful Stretch",
-            "duration": 60,
-            "animation": "animations/mindfulStretch.json",
-            "instruction": "Perform a slow stretch of your arms and back while staying mindful of your breath."
-          }
-        ]
-      },
-      {
-        "id": "8",
-        "title": "Yoga Flow",
-        "description": "A gentle yoga-inspired sequence to improve balance, strength, and mindfulness.",
-        "duration": "12 min",
-        "difficulty": "Intermediate",
-        "steps": [
-          {
-            "step": 1,
-            "name": "Cat-Cow Stretch",
-            "duration": 60,
-            "animation": "animations/catCowStretch.json",
-            "instruction": "Alternate between arching and rounding your back to warm up your spine."
-          },
-          {
-            "step": 2,
-            "name": "Downward Dog",
-            "duration": 60,
-            "animation": "animations/downwardDog.json",
-            "instruction": "Form an inverted V with your body, stretching your back and legs."
-          },
-          {
-            "step": 3,
-            "name": "Child's Pose",
-            "duration": 60,
-            "animation": "animations/childsPose.json",
-            "instruction": "Sit back on your heels and stretch your arms forward for a gentle release."
-          },
-          {
-            "step": 4,
-            "name": "Warrior II",
-            "duration": 60,
-            "animation": "animations/warriorII.json",
-            "instruction": "Step into a lunge and extend your arms outward, holding strong."
-          }
-        ]
-      },
-      {
-        "id": "9",
-        "title": "Active Break",
-        "description": "A short burst of movement to energize you during a busy day.",
-        "duration": "3 min",
-        "difficulty": "Easy",
-        "steps": [
-          {
-            "step": 1,
-            "name": "Jumping Jacks",
-            "duration": 30,
-            "animation": "animations/jumpingJacks.json",
-            "instruction": "Perform gentle jumping jacks to get your blood flowing."
-          },
-          {
-            "step": 2,
-            "name": "Arm Circles",
-            "duration": 30,
-            "animation": "animations/armCircles.json",
-            "instruction": "Circle your arms forward and backward to loosen your shoulder joints."
-          },
-          {
-            "step": 3,
-            "name": "High Knees",
-            "duration": 30,
-            "animation": "animations/highKnees.json",
-            "instruction": "Lift your knees high with each step to boost energy."
-          }
-        ]
-      },
-      {
-        "id": "10",
-        "title": "Yoga Stretch & Relax",
-        "description": "A calming yoga sequence to stretch and relax your entire body.",
-        "duration": "8 min",
-        "difficulty": "Easy",
-        "steps": [
-          {
-            "step": 1,
-            "name": "Mountain Pose",
-            "duration": 30,
-            "animation": "animations/mountainPose.json",
-            "instruction": "Stand tall with your feet together and relax your arms by your sides."
-          },
-          {
-            "step": 2,
-            "name": "Tree Pose",
-            "duration": 30,
-            "animation": "animations/treePose.json",
-            "instruction": "Balance on one leg while placing the opposite foot on your inner thigh."
-          },
-          {
-            "step": 3,
-            "name": "Seated Twist",
-            "duration": 30,
-            "animation": "animations/seatedTwist.json",
-            "instruction": "Sit down and gently twist your torso to each side to release tension."
-          }
-        ]
-      }
-    ]
-  }
-  
+  "routines": [
+    {
+      "id": "1",
+      "title": "Morning Energizer",
+      "description": "A quick routine to wake up your body and mind. Perfect to jumpstart your day.",
+      "duration": "5 min",
+      "difficulty": "Easy",
+      "tags": ["morning", "wake up", "energize"],
+      "category": "Warm-up",
+      "muscleGroups": ["neck", "shoulders", "core"],
+      "steps": [
+        {
+          "step": 1,
+          "name": "Neck Rolls",
+          "duration": 30,
+          "animation": "animations/neckRolls.json",
+          "instruction": "Roll your neck slowly in a full circle, first clockwise then counterclockwise, to release tension and increase mobility."
+        },
+        {
+          "step": 2,
+          "name": "Shoulder Circles",
+          "duration": 30,
+          "animation": "animations/shoulderCircles.json",
+          "instruction": "Rotate your shoulders in wide circles forward and backward to loosen up tension."
+        },
+        {
+          "step": 3,
+          "name": "Torso Twists",
+          "duration": 30,
+          "animation": "animations/torsoTwists.json",
+          "instruction": "Stand with feet shoulder-width apart and gently twist your torso side to side to activate your spine and core."
+        }
+      ]
+    },
+    {
+      "id": "2",
+      "title": "Desk Break",
+      "description": "Relieve stiffness and boost circulation with this quick mid-workday reset.",
+      "duration": "3 min",
+      "difficulty": "Easy",
+      "tags": ["office", "quick", "refresh"],
+      "category": "Seated Stretch",
+      "muscleGroups": ["shoulders", "wrists", "back"],
+      "steps": [
+        {
+          "step": 1,
+          "name": "Seated Shoulder Rolls",
+          "duration": 20,
+          "animation": "animations/seatedShoulderRolls.json",
+          "instruction": "While seated, roll your shoulders forward and backward to reduce tension from typing or poor posture."
+        },
+        {
+          "step": 2,
+          "name": "Wrist Stretches",
+          "duration": 20,
+          "animation": "animations/wristStretches.json",
+          "instruction": "Extend one arm and gently pull back on your fingers with the other hand to stretch your wrists and forearms."
+        },
+        {
+          "step": 3,
+          "name": "Standing Forward Bend",
+          "duration": 20,
+          "animation": "animations/standingForwardBend.json",
+          "instruction": "Stand up and slowly bend forward, letting your arms hang toward the ground to decompress your spine."
+        }
+      ]
+    },
+    {
+      "id": "3",
+      "title": "Full Body Flow",
+      "description": "A comprehensive routine for improving mobility and flexibility.",
+      "duration": "10 min",
+      "difficulty": "Intermediate",
+      "tags": ["mobility", "stretch", "flow"],
+      "category": "Full Body",
+      "muscleGroups": ["neck", "shoulders", "legs", "hips"],
+      "steps": [
+        {
+          "step": 1,
+          "name": "Neck Rolls",
+          "duration": 30,
+          "animation": "animations/neckRolls.json",
+          "instruction": "Gently roll your neck in a circle to release tightness and improve range of motion."
+        },
+        {
+          "step": 2,
+          "name": "Shoulder Circles",
+          "duration": 30,
+          "animation": "animations/shoulderCircles.json",
+          "instruction": "Move your shoulders forward and back in circular motions to warm up."
+        },
+        {
+          "step": 3,
+          "name": "Hamstring Stretch",
+          "duration": 45,
+          "animation": "animations/hamstringStretch.json",
+          "instruction": "Bend forward with legs straight and reach for your toes to lengthen your hamstrings."
+        },
+        {
+          "step": 4,
+          "name": "Quad Stretch",
+          "duration": 45,
+          "animation": "animations/quadStretch.json",
+          "instruction": "Stand tall and pull one foot toward your glutes to stretch the front of your thigh."
+        }
+      ]
+    },
+    {
+      "id": "4",
+      "title": "Post-Workout Recovery",
+      "description": "A cooldown sequence to help muscles recover and reduce soreness.",
+      "duration": "7 min",
+      "difficulty": "Intermediate",
+      "tags": ["recovery", "cooldown", "relax"],
+      "category": "Cooldown",
+      "muscleGroups": ["chest", "back", "legs"],
+      "steps": [
+        {
+          "step": 1,
+          "name": "Chest Opener",
+          "duration": 30,
+          "animation": "animations/chestOpener.json",
+          "instruction": "Stand or kneel, interlace your fingers behind you and lift your arms slightly to stretch the chest."
+        },
+        {
+          "step": 2,
+          "name": "Back Stretch",
+          "duration": 30,
+          "animation": "animations/backStretch.json",
+          "instruction": "Gently arch your back while on all fours or standing to stretch your spine."
+        },
+        {
+          "step": 3,
+          "name": "Leg Stretch",
+          "duration": 30,
+          "animation": "animations/legStretch.json",
+          "instruction": "Sit and reach toward your toes with both legs extended to loosen your hamstrings and calves."
+        }
+      ]
+    },
+    {
+      "id": "5",
+      "title": "Evening Wind Down",
+      "description": "A calming routine to help your body unwind before bed.",
+      "duration": "4 min",
+      "difficulty": "Easy",
+      "tags": ["night", "relax", "sleep"],
+      "category": "Bedtime",
+      "muscleGroups": ["neck", "shoulders", "lungs"],
+      "steps": [
+        {
+          "step": 1,
+          "name": "Gentle Neck Stretches",
+          "duration": 30,
+          "animation": "animations/gentleNeckStretches.json",
+          "instruction": "Slowly tilt your head side to side, forward and back, holding each stretch to relieve tension."
+        },
+        {
+          "step": 2,
+          "name": "Shoulder Shrugs",
+          "duration": 30,
+          "animation": "animations/shoulderShrugs.json",
+          "instruction": "Lift and drop your shoulders in a relaxed motion to release daily tension."
+        },
+        {
+          "step": 3,
+          "name": "Calm Breathing",
+          "duration": 30,
+          "animation": "animations/calmBreathing.json",
+          "instruction": "Breathe in through your nose for 4 seconds, hold for 4, and exhale slowly through your mouth for 4."
+        }
+      ]
+    },
+    {
+      "id": "6",
+      "title": "Flexibility Booster",
+      "description": "Dynamic stretches to expand your range of motion.",
+      "duration": "8 min",
+      "difficulty": "Advanced",
+      "tags": ["mobility", "advanced", "flexibility"],
+      "category": "Mobility",
+      "muscleGroups": ["hips", "legs", "glutes"],
+      "steps": [
+        {
+          "step": 1,
+          "name": "Dynamic Leg Swings",
+          "duration": 40,
+          "animation": "animations/dynamicLegSwings.json",
+          "instruction": "Swing your legs front to back with control to open up your hips."
+        },
+        {
+          "step": 2,
+          "name": "Side Lunges",
+          "duration": 40,
+          "animation": "animations/sideLunges.json",
+          "instruction": "Lunge side to side to stretch the inner thighs and improve lateral movement."
+        },
+        {
+          "step": 3,
+          "name": "Hip Circles",
+          "duration": 40,
+          "animation": "animations/hipCircles.json",
+          "instruction": "With hands on your hips, rotate your hips in full circles to increase mobility."
+        }
+      ]
+    },
+    {
+      "id": "7",
+      "title": "Stress Relief Routine",
+      "description": "Unwind after a long day with this relaxing sequence.",
+      "duration": "6 min",
+      "difficulty": "Easy",
+      "tags": ["stress", "mindful", "relax"],
+      "category": "Mental Reset",
+      "muscleGroups": ["back", "arms", "lungs"],
+      "steps": [
+        {
+          "step": 1,
+          "name": "Deep Breathing",
+          "duration": 60,
+          "animation": "animations/deepBreathing.json",
+          "instruction": "Breathe deeply and slowly, focusing on your breath to reduce anxiety and center yourself."
+        },
+        {
+          "step": 2,
+          "name": "Seated Forward Bend",
+          "duration": 60,
+          "animation": "animations/seatedForwardBend.json",
+          "instruction": "Sit tall, extend your legs, and gently bend forward, reaching for your toes while relaxing your back."
+        },
+        {
+          "step": 3,
+          "name": "Mindful Stretch",
+          "duration": 60,
+          "animation": "animations/mindfulStretch.json",
+          "instruction": "Gently stretch your arms and torso while staying present and relaxed."
+        }
+      ]
+    },
+    {
+      "id": "8",
+      "title": "Yoga Flow",
+      "description": "Improve strength and flexibility with a flowing yoga routine.",
+      "duration": "12 min",
+      "difficulty": "Intermediate",
+      "tags": ["yoga", "flow", "balance"],
+      "category": "Yoga",
+      "muscleGroups": ["core", "legs", "arms"],
+      "steps": [
+        {
+          "step": 1,
+          "name": "Cat-Cow Stretch",
+          "duration": 60,
+          "animation": "animations/catCowStretch.json",
+          "instruction": "On all fours, alternate between arching and rounding your back in sync with your breath."
+        },
+        {
+          "step": 2,
+          "name": "Downward Dog",
+          "duration": 60,
+          "animation": "animations/downwardDog.json",
+          "instruction": "Form an inverted V, pressing your hands and feet into the ground and lifting your hips up."
+        },
+        {
+          "step": 3,
+          "name": "Child's Pose",
+          "duration": 60,
+          "animation": "animations/childsPose.json",
+          "instruction": "Kneel down and stretch your arms forward while relaxing your torso toward the ground."
+        },
+        {
+          "step": 4,
+          "name": "Warrior II",
+          "duration": 60,
+          "animation": "animations/warriorII.json",
+          "instruction": "Step into a wide lunge and stretch your arms out horizontally while keeping your gaze over the front hand."
+        }
+      ]
+    },
+    {
+      "id": "9",
+      "title": "Active Break",
+      "description": "A quick, energizing burst of movement anytime you feel sluggish.",
+      "duration": "3 min",
+      "difficulty": "Easy",
+      "tags": ["energy", "boost", "movement"],
+      "category": "Quick Routine",
+      "muscleGroups": ["legs", "shoulders", "heart"],
+      "steps": [
+        {
+          "step": 1,
+          "name": "Jumping Jacks",
+          "duration": 30,
+          "animation": "animations/jumpingJacks.json",
+          "instruction": "Jump and move your arms overhead, landing with feet apart, then return to center in a rhythm."
+        },
+        {
+          "step": 2,
+          "name": "Arm Circles",
+          "duration": 30,
+          "animation": "animations/armCircles.json",
+          "instruction": "Make wide forward and backward circles with your arms to engage the shoulders."
+        },
+        {
+          "step": 3,
+          "name": "High Knees",
+          "duration": 30,
+          "animation": "animations/highKnees.json",
+          "instruction": "Lift your knees toward your chest one at a time while pumping your arms for added cardio."
+        }
+      ]
+    },
+    {
+      "id": "10",
+      "title": "Yoga Stretch & Relax",
+      "description": "End your day or workout with these calming, full-body yoga stretches.",
+      "duration": "8 min",
+      "difficulty": "Easy",
+      "tags": ["stretch", "calm", "balance"],
+      "category": "Yoga",
+      "muscleGroups": ["legs", "core", "spine"],
+      "steps": [
+        {
+          "step": 1,
+          "name": "Mountain Pose",
+          "duration": 30,
+          "animation": "animations/mountainPose.json",
+          "instruction": "Stand tall with feet together, arms by your sides, and breathe deeply to center yourself."
+        },
+        {
+          "step": 2,
+          "name": "Tree Pose",
+          "duration": 30,
+          "animation": "animations/treePose.json",
+          "instruction": "Balance on one foot and place the other foot on your inner thigh or calf, hands together at your chest."
+        },
+        {
+          "step": 3,
+          "name": "Seated Twist",
+          "duration": 30,
+          "animation": "animations/seatedTwist.json",
+          "instruction": "Sit tall and twist your torso to one side while keeping your hips grounded, then switch sides."
+        }
+      ]
+    }
+  ]
+}

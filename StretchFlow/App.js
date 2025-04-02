@@ -18,10 +18,13 @@ import ProfileScreen from './screens/ProfileScreen';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useState } from 'react';
 import BottomTabNavigator from './screens/bottomNav';
+import { connectIAP, disconnectIAP } from './utils/iap';
+
+
+
 const Stack = createNativeStackNavigator();
 export default function App() {
   const [initialRoute, setInitialRoute] = useState(null);
-
   useEffect(() => {
     const checkUser = async () => {
       const name = await AsyncStorage.getItem('userName');
@@ -34,12 +37,13 @@ export default function App() {
 
   return (
     <UserProvider>
-      <SafeAreaView style={{ backgroundColor: '#F0F4F3' }} />
+      <SafeAreaView style={{flex:0.05, backgroundColor: '#F0F4F3' }} />
       <NavigationContainer>
         <Stack.Navigator initialRouteName={initialRoute} screenOptions={{ headerShown: false }}>
+         
           <Stack.Screen name="Tabs" component={BottomTabNavigator} />
           <Stack.Screen name="Onboarding" component={OnboardingScreen} />
-          <Stack.Screen name="Routine" component={RoutineScreen} />
+          <Stack.Screen name= "Routine" component={RoutineScreen} />
           <Stack.Screen name="Timer" component={TimerScreen} />
           <Stack.Screen name="Premium" component={PremiumScreen} />
         </Stack.Navigator>
