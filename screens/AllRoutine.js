@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   View,
   Text,
@@ -8,15 +8,17 @@ import {
   LayoutAnimation,
   Platform,
   UIManager,
-  ScrollView,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import RoutineCard from '../components/RoutineCard';
+import { getMyRoutines } from '../utils/userStorage';
+import {getSavedRoutines} from '../utils/userStorage';
 import exercisesData from '../assets/exercises.json';
 
 if (Platform.OS === 'android') {
   UIManager.setLayoutAnimationEnabledExperimental(true);
 }
+
 const lowerCase = (str) => str.toLowerCase();
 const routines = exercisesData.routines || exercisesData;
 
@@ -25,8 +27,30 @@ const durationOptions = ['<5 min', '5–10 min', '>10 min'];
 const tagOptions = ['Morning', 'Desk', 'Yoga', 'Recovery', 'Mobility'];
 
 const AllRoutinesScreen = () => {
+  const [activeTab, setActiveTab] = useState('app'); // 'app' or 'user'
   const [filters, setFilters] = useState({ difficulty: null, duration: null, tag: null });
   const [openDropdown, setOpenDropdown] = useState(null);
+  const [myRoutines, setMyRoutines] = useState([]);
+
+  const [savedRoutines, setSavedRoutines] = useState([]);
+  useEffect(() => {
+    const fetchMyRoutines = async () => {
+      const routines = await getMyRoutines();
+      setMyRoutines(routines);
+      console.log("myRoutines", routines);
+    };
+    fetchMyRoutines();
+  }, []);
+
+  useEffect(() => {
+    const fetchSavedRoutines = async () => {
+      const savedRoutines = await getSavedRoutines();
+      setSavedRoutines(savedRoutines);
+      console.log("savedRoutines", savedRoutines);
+    };
+    fetchSavedRoutines();
+  }
+  , []);
 
   const handleToggleDropdown = (type) => {
     LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
@@ -34,14 +58,11 @@ const AllRoutinesScreen = () => {
   };
 
   const handleSelectOption = (type, value) => {
+    LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
     setFilters(prev => ({ ...prev, [type]: value }));
     setOpenDropdown(null);
   };
-  const chipColor = {
-    difficulty: '#10B981',
-   tags: '#FBBF24',
-   muscles: '#3B82F6',
- };
+
   const clearFilters = () => {
     LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
     setFilters({ difficulty: null, duration: null, tag: null });
@@ -61,78 +82,136 @@ const AllRoutinesScreen = () => {
 
   return (
     <View style={styles.container}>
-      <View style={styles.filterBar}>
-        <Pressable style={styles.filterBtn} onPress={() => handleToggleDropdown('difficulty')}>
-          <Ionicons name="barbell" size={16} color="#047857" />
-          <Text style={styles.filterText}>
-            {filters.difficulty || 'Difficulty'}
-          </Text>
-          <Ionicons name={openDropdown === 'difficulty' ? 'chevron-up' : 'chevron-down'} size={16} color="#6B7280" />
+      {/* Tabs */}
+      <View style={styles.tabContainer}>
+        <Pressable
+          style={[styles.tabBtn, activeTab === 'app' && styles.activeTabBtn]}
+          onPress={() => {
+            LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
+            setActiveTab('app');
+          }}
+        >
+          <Text style={[styles.tabText, activeTab === 'app' && styles.activeTabText]}>App Routines</Text>
         </Pressable>
-
-        <Pressable style={styles.filterBtn} onPress={() => handleToggleDropdown('duration')}>
-          <Ionicons name="time" size={16} color="#047857" />
-          <Text style={styles.filterText}>
-            {filters.duration || 'Duration'}
-          </Text>
-          <Ionicons name={openDropdown === 'duration' ? 'chevron-up' : 'chevron-down'} size={16} color="#6B7280" />
+        <Pressable
+          style={[styles.tabBtn, activeTab === 'user' && styles.activeTabBtn]}
+          onPress={() => {
+            LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
+            setActiveTab('user');
+          }}
+        >
+          <Text style={[styles.tabText, activeTab === 'user' && styles.activeTabText]}>My Routines</Text>
         </Pressable>
-
-        <Pressable style={styles.filterBtn} onPress={() => handleToggleDropdown('tag')}>
-          <Ionicons name="pricetags" size={16} color="#047857" />
-          <Text style={styles.filterText}>
-            {filters.tag || 'Tags'}
-          </Text>
-          <Ionicons name={openDropdown === 'tag' ? 'chevron-up' : 'chevron-down'} size={16} color="#6B7280" />
+        <Pressable
+          style={[styles.tabBtn, activeTab === 'saved' && styles.activeTabBtn]}
+          onPress={() => {
+            LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
+            setActiveTab('saved');
+          }}
+        >
+          <Text style={[styles.tabText, activeTab === 'saved' && styles.activeTabText]}>Saved Routines</Text>
         </Pressable>
       </View>
 
-      {openDropdown === 'difficulty' && (
-        <View style={styles.dropdown}>
-          {difficultyOptions.map(option => (
-            <Pressable key={option} style={styles.option} onPress={() => handleSelectOption('difficulty', option)}>
-              <Text style={styles.optionText}>{option}</Text>
+      {/* App Routines (with filters) */}
+      {activeTab === 'app' && (
+        <>
+          <View style={styles.filterBar}>
+            <Pressable style={styles.filterBtn} onPress={() => handleToggleDropdown('difficulty')}>
+              <Ionicons name="barbell" size={16} color="#047857" />
+              <Text style={styles.filterText}>{filters.difficulty || 'Difficulty'}</Text>
+              <Ionicons name={openDropdown === 'difficulty' ? 'chevron-up' : 'chevron-down'} size={16} color="#6B7280" />
             </Pressable>
-          ))}
-        </View>
-      )}
-      {openDropdown === 'duration' && (
-        <View style={styles.dropdown}>
-          {durationOptions.map(option => (
-            <Pressable key={option} style={styles.option} onPress={() => handleSelectOption('duration', option)}>
-              <Text style={styles.optionText}>{option}</Text>
-            </Pressable>
-          ))}
-        </View>
-      )}
-      {openDropdown === 'tag' && (
-        <View style={styles.dropdown}>
-          {tagOptions.map(option => (
-            <Pressable key={option} style={styles.option} onPress={() => handleSelectOption('tag', option)}>
-              <Text style={styles.optionText}>{option}</Text>
-            </Pressable>
-          ))}
-        </View>
-      )}
 
-      {(filters.difficulty || filters.duration || filters.tag) && (
-        <Pressable style={styles.clearBtn} onPress={clearFilters}>
-          <Ionicons name="close-circle-outline" size={16} color="#6B7280" />
-          <Text style={styles.clearText}>Clear Filters</Text>
-        </Pressable>
-      )}
+            <Pressable style={styles.filterBtn} onPress={() => handleToggleDropdown('duration')}>
+              <Ionicons name="time" size={16} color="#047857" />
+              <Text style={styles.filterText}>{filters.duration || 'Duration'}</Text>
+              <Ionicons name={openDropdown === 'duration' ? 'chevron-up' : 'chevron-down'} size={16} color="#6B7280" />
+            </Pressable>
 
-      <FlatList
-        data={filteredRoutines}
-        keyExtractor={(item) => item.id}
-        renderItem={({ item }) => (
-          <View style={{ marginBottom: 16 }}>
-            <RoutineCard large={true} item={item} enablePressAnimation />
+            <Pressable style={styles.filterBtn} onPress={() => handleToggleDropdown('tag')}>
+              <Ionicons name="pricetags" size={16} color="#047857" />
+              <Text style={styles.filterText}>{filters.tag || 'Tags'}</Text>
+              <Ionicons name={openDropdown === 'tag' ? 'chevron-up' : 'chevron-down'} size={16} color="#6B7280" />
+            </Pressable>
           </View>
-        )}
-        contentContainerStyle={{ padding: 20 }}
-        ListEmptyComponent={<Text style={styles.noResult}>No routines found.</Text>}
-      />
+
+          {openDropdown === 'difficulty' && (
+            <View style={styles.dropdown}>
+              {difficultyOptions.map(option => (
+                <Pressable key={option} style={styles.option} onPress={() => handleSelectOption('difficulty', option)}>
+                  <Text style={styles.optionText}>{option}</Text>
+                </Pressable>
+              ))}
+            </View>
+          )}
+          {openDropdown === 'duration' && (
+            <View style={styles.dropdown}>
+              {durationOptions.map(option => (
+                <Pressable key={option} style={styles.option} onPress={() => handleSelectOption('duration', option)}>
+                  <Text style={styles.optionText}>{option}</Text>
+                </Pressable>
+              ))}
+            </View>
+          )}
+          {openDropdown === 'tag' && (
+            <View style={styles.dropdown}>
+              {tagOptions.map(option => (
+                <Pressable key={option} style={styles.option} onPress={() => handleSelectOption('tag', option)}>
+                  <Text style={styles.optionText}>{option}</Text>
+                </Pressable>
+              ))}
+            </View>
+          )}
+
+          {(filters.difficulty || filters.duration || filters.tag) && (
+            <Pressable style={styles.clearBtn} onPress={clearFilters}>
+              <Ionicons name="close-circle-outline" size={16} color="#6B7280" />
+              <Text style={styles.clearText}>Clear Filters</Text>
+            </Pressable>
+          )}
+
+          <FlatList
+            data={filteredRoutines}
+            keyExtractor={(item) => item.id}
+            renderItem={({ item }) => (
+              <View style={{ marginBottom: 16 }}>
+                <RoutineCard large={true} item={item} enablePressAnimation initiallyFavorite={savedRoutines.some(r => r.id === item.id)} />
+              </View>
+            )}
+            contentContainerStyle={{ padding: 20 }}
+            ListEmptyComponent={<Text style={styles.noResult}>No routines found.</Text>}
+          />
+        </>
+      )}
+
+      {/* My Routines (no filters) */}
+      {activeTab === 'user' && (
+        <FlatList
+          data={myRoutines}
+          keyExtractor={(item) => item.id}
+          renderItem={({ item }) => (
+            <View style={{ marginBottom: 16 }}>
+              <RoutineCard large={true} item={item} enablePressAnimation initiallyFavorite={savedRoutines.some(r => r.id === item.id)}/>
+            </View>
+          )}
+          contentContainerStyle={{ padding: 20 }}
+          ListEmptyComponent={<Text style={styles.noResult}>No user-made routines yet.</Text>}
+        />
+      )}
+      {activeTab === 'saved' && (
+        <FlatList
+          data={savedRoutines}
+          keyExtractor={(item) => item.id}
+          renderItem={({ item }) => (
+            <View style={{ marginBottom: 16 }}>
+              <RoutineCard large={true} item={item} enablePressAnimation initiallyFavorite={savedRoutines.some(r => r.id === item.id)} />
+            </View>
+          )}
+          contentContainerStyle={{ padding: 20 }}
+          ListEmptyComponent={<Text style={styles.noResult}>No user-made routines yet.</Text>}
+        />
+      )}
     </View>
   );
 };
@@ -142,10 +221,35 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#F0F4F3',
   },
+  tabContainer: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    paddingVertical: 12,
+    backgroundColor: '#F0F4F3',
+    gap: 12,
+  },
+  tabBtn: {
+    paddingVertical: 6,
+    paddingHorizontal: 16,
+    borderRadius: 20,
+    backgroundColor: '#D1D5DB',
+  },
+  activeTabBtn: {
+    backgroundColor: '#10B981',
+  },
+  tabText: {
+    fontSize: 14,
+    color: '#374151',
+    fontWeight: '500',
+  },
+  activeTabText: {
+    color: '#FFFFFF',
+  },
   filterBar: {
     flexDirection: 'row',
     justifyContent: 'space-around',
     backgroundColor: '#F0F4F3',
+    paddingBottom: 4,
   },
   filterBtn: {
     flexDirection: 'row',

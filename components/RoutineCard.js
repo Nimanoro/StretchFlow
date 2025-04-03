@@ -1,4 +1,4 @@
-import React, { useRef, useState, useEffect } from 'react';
+import React, { useRef, useState, useEffect, useContext } from 'react';
 import {
   View,
   Text,
@@ -10,23 +10,26 @@ import {
   Alert,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { UserContext } from '../context/UserContext';
 import { useNavigation } from '@react-navigation/native';
 import { LinearGradient } from 'expo-linear-gradient';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { checkPremiumStatus } from '../utils/premium'; // Implement this or replace with hardcoded true/false
 import { LayoutAnimation } from 'react-native';
+import { getSavedRoutines, saveARoutine } from '../utils/userStorage';
+import { useFavorites } from '../context/FavoritesContext';
 
 
 
-
-const RoutineCard = ({ item, large = false, enablePressAnimation = false }) => {
+const RoutineCard = ({ item, large = false, enablePressAnimation = false, initiallyFavorite= false}) => {
   const navigation = useNavigation();
   const scale = useRef(new Animated.Value(1)).current;
   const heartScale = useRef(new Animated.Value(1)).current;
-  const [isFavorite, setIsFavorite] = useState(false);
-  const [isPremium, setIsPremium] = useState(false);
+  const { isPremium } = useContext(UserContext);
+
   const [showUpgradeModal, setShowUpgradeModal] = useState(false);
   const MAX_VISIBLE_TAGS = 2;
+  const { isFavorite, toggleFavorite } = useFavorites();
   const visibleTags = showAllTags ? item.tags : item.tags?.slice(0, 1) || [];
 const hiddenTagCount = item.tags?.length > 1 && !showAllTags ? item.tags.length - 1 : 0;
   
@@ -44,6 +47,18 @@ const getTagColor = (tag) => {
     if (["post-workout", "wind down"].includes(lowerTag)) return "#DCFCE7"; // green-100
     if (["flow", "movement"].includes(lowerTag)) return "#EDE9FE"; // indigo-100
     return "#ECFDF5";
+  };
+  const handleHeartPress = async () => {
+    if (!isPremium) {
+      const saved = await getSavedRoutines();
+    if (saved.length >= 1 && !isFavorite(item.id)) {
+        setShowUpgradeModal(true);
+        return;
+      }
+    }
+  
+    toggleFavorite(item);
+    animateHeart();
   };
   
   
@@ -66,18 +81,6 @@ const getTagColor = (tag) => {
     return 'pricetag-outline'; // Default
   };
   
-
-  useEffect(() => {
-    const loadStatus = async () => {
-      const status = await checkPremiumStatus(); // Implement this to return true/false
-      setIsPremium(status);
-
-      const saved = await AsyncStorage.getItem('favorites');
-      const favorites = saved ? JSON.parse(saved) : [];
-      setIsFavorite(favorites.includes(item.id));
-    };
-    loadStatus();
-  }, []);
 
   const onPressIn = () => {
     if (!enablePressAnimation) return;
@@ -112,26 +115,6 @@ const getTagColor = (tag) => {
     ]).start();
   };
 
-  const toggleFavorite = async () => {
-    if (!isPremium) {
-      setShowUpgradeModal(true);
-      return;
-    }
-
-    const saved = await AsyncStorage.getItem('favorites');
-    const favorites = saved ? JSON.parse(saved) : [];
-
-    let updated;
-    if (favorites.includes(item.id)) {
-      updated = favorites.filter((id) => id !== item.id);
-    } else {
-      updated = [...favorites, item.id];
-      animateHeart();
-    }
-
-    await AsyncStorage.setItem('favorites', JSON.stringify(updated));
-    setIsFavorite(updated.includes(item.id));
-  };
 
   return (
     
@@ -158,12 +141,12 @@ const getTagColor = (tag) => {
   {item.title}
 </Text>
 
-              <Pressable onPress={toggleFavorite}>
+              <Pressable onPress={handleHeartPress}>
                 <Animated.View style={{ transform: [{ scale: heartScale }] }}>
                   <Ionicons
-                    name={isFavorite ? 'heart' : 'heart-outline'}
+                    name={isFavorite(item.id) ? 'heart' : 'heart-outline'}
                     size={20}
-                    color={isFavorite ? '#EF4444' : '#9CA3AF'}
+                    color={isFavorite(item.id) ? '#EF4444' : '#9CA3AF'}
                   />
                 </Animated.View>
               </Pressable>
@@ -216,7 +199,7 @@ const getTagColor = (tag) => {
         </View>
         </View>
         </View>
-            <Modal
+        <Modal
   transparent
   visible={showUpgradeModal}
   animationType="fade"
@@ -224,25 +207,57 @@ const getTagColor = (tag) => {
 >
   <View style={styles.modalOverlay}>
     <View style={styles.modalCard}>
-      <Ionicons name="lock-closed-outline" size={36} color="#10B981" style={{ marginBottom: 12 }} />
-      <Text style={styles.modalTitle}>Premium Feature</Text>
-      <Text style={styles.modalText}>Favorites let you quickly access what works best for you. Get Premium to unlock this and more.
 
-</Text>
+      {/* Animated lock bounce (optional but 🔥) */}
+      <Ionicons name="lock-closed-outline" size={40} color="#10B981" style={{ marginBottom: 12 }} />
 
+      {/* 💡 Emotion-First Title */}
+      <Text style={styles.modalTitle}>Unlock Your Flow</Text>
+
+      {/* 🧠 Benefit-Driven Subheading */}
+      <Text style={styles.modalText}>
+        Get deeper stretches, calming themes, and distraction-free sessions —
+        all for just <Text style={{ fontWeight: 'bold' }}>$2.99/month</Text>.
+      </Text>
+
+      {/* ✅ Features List — Reordered by Power */}
+      <View style={styles.perksList}>
+        <View style={styles.perkItem}>
+          <Ionicons name="infinite-outline" size={18} color="#10B981" style={{ marginRight: 8 }} />
+          <Text style={styles.perkText}>Unlimited routines & favorites</Text>
+        </View>
+        <View style={styles.perkItem}>
+          <Ionicons name="musical-notes-outline" size={18} color="#10B981" style={{ marginRight: 8 }} />
+          <Text style={styles.perkText}>Voice guidance, music & themes</Text>
+        </View>
+        <View style={styles.perkItem}>
+          <Ionicons name="sparkles-outline" size={18} color="#10B981" style={{ marginRight: 8 }} />
+          <Text style={styles.perkText}>Early access to new features</Text>
+        </View>
+        <View style={styles.perkItem}>
+          <Ionicons name="close-circle-outline" size={18} color="#10B981" style={{ marginRight: 8 }} />
+          <Text style={styles.perkText}>No ads, ever</Text>
+        </View>
+      </View>
+
+      {/* 🌱 Primary CTA */}
       <Pressable style={styles.modalButton} onPress={() => {
         setShowUpgradeModal(false);
-        navigation.navigate('Premium'); // Navigate to your premium screen
+        navigation.navigate('Premium');
       }}>
-        <Text style={styles.modalButtonText}>Upgrade Now</Text>
+        <Text style={styles.modalButtonText}>Start My Flow</Text>
       </Pressable>
 
-      <Pressable onPress={() => setShowUpgradeModal(false)}>
-        <Text style={styles.modalCloseText}>Maybe later</Text>
+      {/* 👋 Softer Dismiss CTA */}
+      <Pressable onPress={() => setShowUpgradeModal(false)} style={{ marginTop: 10 }}>
+        <Text style={styles.modalCloseText}>Not right now</Text>
       </Pressable>
+
     </View>
   </View>
 </Modal>
+
+
         </LinearGradient>
       </Animated.View>
 
@@ -360,6 +375,36 @@ const styles = StyleSheet.create({
     right: -5,
     zIndex: 1,
   },
+  modalTitle: {
+    fontSize: 22,
+    fontWeight: '700',
+    color: '#1F2937',
+    textAlign: 'center',
+    marginBottom: 8,
+  },
+  modalText: {
+    fontSize: 15,
+    color: '#374151',
+    textAlign: 'center',
+  },
+  modalButton: {
+    backgroundColor: '#10B981',
+    paddingVertical: 14,
+    paddingHorizontal: 40,
+    borderRadius: 30,
+    alignItems: 'center',
+  },
+  modalButtonText: {
+    color: '#FFFFFF',
+    fontSize: 16,
+    fontWeight: '600',
+  },
+  modalCloseText: {
+    color: '#9CA3AF',
+    fontSize: 14,
+    textAlign: 'center',
+  },
+  
   
   chevronCircle: {
     width: 32,
@@ -433,6 +478,20 @@ const styles = StyleSheet.create({
     color: '#9CA3AF',
     fontSize: 14,
     textAlign: 'center',
+  },
+  perksList: {
+    marginVertical: 16,
+    width: '100%',
+    alignItems: 'center',
+  },
+  perkItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 6,
+  },
+  perkText: {
+    fontSize: 14,
+    color: '#374151',
   },
   
   

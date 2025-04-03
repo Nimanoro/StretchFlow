@@ -27,8 +27,7 @@ const OnboardingScreen = ({ navigation }) => {
       lastRoutine: null,
       history: {},
     });
-  
-    await AsyncStorage.setItem('isPremium', 'false');
+
     navigation.replace('Tabs', { screen: 'Home' });
   };
 

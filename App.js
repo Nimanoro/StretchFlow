@@ -18,7 +18,9 @@ import ProfileScreen from './screens/ProfileScreen';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useState } from 'react';
 import BottomTabNavigator from './screens/bottomNav';
-import { connectIAP, disconnectIAP } from './utils/iap';
+import { getUserData } from './utils/userStorage';
+import { FavoritesProvider } from './context/FavoritesContext';
+
 
 
 
@@ -27,8 +29,12 @@ export default function App() {
   const [initialRoute, setInitialRoute] = useState(null);
   useEffect(() => {
     const checkUser = async () => {
-      const name = await AsyncStorage.getItem('userName');
-      setInitialRoute(name ? 'Tabs' : 'Onboarding');
+      const userData = await getUserData();
+      if (userData) {
+        setInitialRoute('Tabs');
+      } else {
+        setInitialRoute('Onboarding');
+      }
     };
     checkUser();
   }, []);
@@ -36,11 +42,14 @@ export default function App() {
   if (!initialRoute) return null;
 
   return (
+
     <UserProvider>
-      <SafeAreaView style={{flex:0.05, backgroundColor: '#F0F4F3' }} />
+      <FavoritesProvider>
+
       <NavigationContainer>
+        <SafeAreaView></SafeAreaView>
         <Stack.Navigator initialRouteName={initialRoute} screenOptions={{ headerShown: false }}>
-         
+
           <Stack.Screen name="Tabs" component={BottomTabNavigator} />
           <Stack.Screen name="Onboarding" component={OnboardingScreen} />
           <Stack.Screen name= "Routine" component={RoutineScreen} />
@@ -48,6 +57,7 @@ export default function App() {
           <Stack.Screen name="Premium" component={PremiumScreen} />
         </Stack.Navigator>
       </NavigationContainer>
+      </FavoritesProvider>
     </UserProvider>
   );
 }

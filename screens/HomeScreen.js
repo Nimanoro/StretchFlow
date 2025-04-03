@@ -35,7 +35,6 @@ const getNextMilestone = (streak) => {
   return streakMilestones.find(m => m > streak) || null;
 };
 
-// ... (imports remain the same)
 
 const HomeScreen = () => {
   const navigation = useNavigation();
@@ -45,7 +44,7 @@ const HomeScreen = () => {
   const [motivation, setMotivation] = useState('');
   const [name, setName] = useState('');
   const [streakDays, setStreakDays] = useState(0);
-  const [lastSession, setLastSession] = useState('');
+  const [lastSession, setLastSession] = useState(routines[0]);
 
   useEffect(() => {
     const loadUser = async () => {
@@ -53,7 +52,7 @@ const HomeScreen = () => {
       if (data) {
         setName(data.userName || '');
         setStreakDays(data.streak || 0);
-        setLastSession(data.lastRoutine || '');
+        setLastSession(data.lastRoutine || exercisesData.routines[0]);
       }
     };
     loadUser();
@@ -161,16 +160,15 @@ const HomeScreen = () => {
         {/* === CONTINUE BUTTON === */}
         <Pressable
           onPress={() => {
-            const lastRoutine = routines.find(r => r.title === lastSession) || routines[0];
-            navigation.navigate('Timer', {
-              routine: lastRoutine,
-              stretches: lastRoutine.stretches,
+            const lastRoutine = routines.find(r => r.title === lastSession.title) || routines[0].title;
+            navigation.navigate('Routine', {
+              routine: lastSession,
             });
           }}
           style={styles.resumeButton}
         >
           <Ionicons name="play" size={18} color="#fff" style={{ marginRight: 8 }} />
-          <Text style={styles.resumeText}>Continue: {lastSession || 'Any Routine'}</Text>
+          <Text style={styles.resumeText}>Continue: {lastSession.title || 'Any Routine'}</Text>
         </Pressable>
 
         {/* === TODAY’S RECOMMENDATION === */}

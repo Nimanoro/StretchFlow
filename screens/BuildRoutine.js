@@ -14,6 +14,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { ScrollView, TextInput as RNTextInput } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import stretchesData from '../assets/stretches.json';
+import { saveMyRoutines } from '../utils/userStorage';
 import comingsoon from '../assets/image.png';
 
 const BuildRoutineScreen = () => {
@@ -118,16 +119,15 @@ const BuildRoutineScreen = () => {
       steps: selected,
       duration: calculateDuration(),
       difficulty: 'Custom',
+      muscleGroups: selected.reduce((acc, s) => { acc.push(...s.muscleGroups); return acc; }, []),
+      description: 'Custom routine created by you.',
+      category: 'User Created',
+      tags: []
     };
 
     try {
-      const saved = await AsyncStorage.getItem('myRoutines');
-      const parsed = saved ? JSON.parse(saved) : [];
-      await AsyncStorage.setItem('myRoutines', JSON.stringify([...parsed, routine]));
-
-      Alert.alert('✅ Routine Saved', `"${routine.title}" is ready!`);
-      setSelected([]);
-      setRoutineName('');
+      console.log('routine', routine);
+      saveMyRoutines(routine);
     } catch (error) {
       Alert.alert('Error', 'Something went wrong while saving your routine.');
     }
@@ -176,14 +176,6 @@ const BuildRoutineScreen = () => {
           <View style={styles.addButton}>
             <Text style={styles.addButtonText}>{isSelected ? '✓' : '+'}</Text>
           </View>
-        </View>
-
-        <View style={styles.previewWrapper}>
-          <Image
-            source={comingsoon}
-            style={styles.previewImage}
-            resizeMode="contain"
-          />
         </View>
       </Pressable>
     );

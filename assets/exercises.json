@@ -343,6 +343,329 @@
           "instruction": "Sit tall and twist your torso to one side while keeping your hips grounded, then switch sides."
         }
       ]
-    }
-  ]
+    },
+      {
+        "id": "11",
+        "title": "Posture Reset",
+        "description": "Combat slouching and open up your chest and spine after long hours at a desk.",
+        "duration": "5 min",
+        "difficulty": "Easy",
+        "tags": ["posture", "spine", "desk"],
+        "category": "Corrective",
+        "muscleGroups": ["back", "chest", "shoulders"],
+        "steps": [
+          {
+            "step": 1,
+            "name": "Wall Angels",
+            "duration": 30,
+            "animation": "animations/wallAngels.json",
+            "instruction": "Stand against a wall and slide your arms up and down like snow angels to align posture and activate upper back."
+          },
+          {
+            "step": 2,
+            "name": "Chest Opener",
+            "duration": 30,
+            "animation": "animations/chestOpener.json",
+            "instruction": "Clasp your hands behind your back and lift slightly to stretch your chest and shoulders."
+          },
+          {
+            "step": 3,
+            "name": "Cat-Cow Stretch",
+            "duration": 30,
+            "animation": "animations/catCowStretch.json",
+            "instruction": "Alternate between arching and rounding your spine to mobilize your back and improve posture."
+          }
+        ]
+      },
+      {
+        "id": "12",
+        "title": "Lower Back Relief",
+        "description": "Soothe your lower back with gentle, targeted stretches.",
+        "duration": "6 min",
+        "difficulty": "Easy",
+        "tags": ["back pain", "relief", "recovery"],
+        "category": "Therapeutic",
+        "muscleGroups": ["lower back", "hips", "hamstrings"],
+        "steps": [
+          {
+            "step": 1,
+            "name": "Knees to Chest",
+            "duration": 30,
+            "animation": "animations/kneesToChest.json",
+            "instruction": "Lie on your back and gently pull your knees toward your chest to release lower back tension."
+          },
+          {
+            "step": 2,
+            "name": "Figure Four Stretch",
+            "duration": 45,
+            "animation": "animations/figureFour.json",
+            "instruction": "Cross one ankle over the opposite thigh and pull the bottom leg in to stretch glutes and lower back."
+          },
+          {
+            "step": 3,
+            "name": "Seated Twist",
+            "duration": 30,
+            "animation": "animations/seatedTwist.json",
+            "instruction": "Sit upright and gently twist to one side to open your spine and improve mobility."
+          }
+        ]
+      },
+      {
+        "id": "13",
+        "title": "Hip Mobility Flow",
+        "description": "Free up tight hips with this focused routine for movement and relief.",
+        "duration": "7 min",
+        "difficulty": "Intermediate",
+        "tags": ["hips", "mobility", "release"],
+        "category": "Mobility",
+        "muscleGroups": ["hips", "glutes", "quads"],
+        "steps": [
+          {
+            "step": 1,
+            "name": "Lunge Hip Stretch",
+            "duration": 45,
+            "animation": "animations/lungeHipStretch.json",
+            "instruction": "Step into a deep lunge and gently press your hips forward to stretch your hip flexors."
+          },
+          {
+            "step": 2,
+            "name": "Pigeon Pose",
+            "duration": 60,
+            "animation": "animations/pigeonPose.json",
+            "instruction": "Bring one leg forward bent and stretch the opposite leg back to deeply stretch the hips and glutes."
+          },
+          {
+            "step": 3,
+            "name": "Butterfly Stretch",
+            "duration": 30,
+            "animation": "animations/butterflyStretch.json",
+            "instruction": "Sit with feet together and gently press knees down to stretch inner thighs and hips."
+          }
+        ]
+      },
+      {
+        "id": "14",
+        "title": "Neck & Shoulder Relief",
+        "description": "Melt away neck and shoulder tension with this simple routine.",
+        "duration": "4 min",
+        "difficulty": "Easy",
+        "tags": ["neck", "shoulders", "relief"],
+        "category": "Quick Relief",
+        "muscleGroups": ["neck", "traps", "shoulders"],
+        "steps": [
+          {
+            "step": 1,
+            "name": "Neck Tilts",
+            "duration": 30,
+            "animation": "animations/neckTilts.json",
+            "instruction": "Gently tilt your head toward one shoulder and hold, then switch sides."
+          },
+          {
+            "step": 2,
+            "name": "Shoulder Rolls",
+            "duration": 30,
+            "animation": "animations/shoulderRolls.json",
+            "instruction": "Lift and roll your shoulders forward and backward to release tension."
+          },
+          {
+            "step": 3,
+            "name": "Chin Tucks",
+            "duration": 30,
+            "animation": "animations/chinTucks.json",
+            "instruction": "Tuck your chin inward like making a double chin to activate deep neck muscles."
+          }
+        ]
+      },
+      {
+        "id": "15",
+        "title": "After Sitting Too Long",
+        "description": "A short routine to undo the effects of prolonged sitting.",
+        "duration": "5 min",
+        "difficulty": "Easy",
+        "tags": ["sitting", "circulation", "posture"],
+        "category": "Break Routine",
+        "muscleGroups": ["hips", "back", "legs"],
+        "steps": [
+          {
+            "step": 1,
+            "name": "Hip Circles",
+            "duration": 30,
+            "animation": "animations/hipCircles.json",
+            "instruction": "With hands on hips, rotate your hips in both directions to loosen up after sitting."
+          },
+          {
+            "step": 2,
+            "name": "Standing Quad Stretch",
+            "duration": 30,
+            "animation": "animations/standingQuadStretch.json",
+            "instruction": "Pull one foot toward your glutes to open up the front of your legs and hip flexors."
+          },
+          {
+            "step": 3,
+            "name": "Backbend Reach",
+            "duration": 30,
+            "animation": "animations/backbendReach.json",
+            "instruction": "Reach upward and gently arch your back to counteract spinal compression."
+          }
+        ]
+      },
+      {
+        "id": "16",
+        "title": "Pre-Workout Prep",
+        "description": "Get your body primed for movement with dynamic, energizing stretches.",
+        "duration": "6 min",
+        "difficulty": "Intermediate",
+        "tags": ["warm-up", "activation", "prep"],
+        "category": "Pre-Workout",
+        "muscleGroups": ["shoulders", "legs", "core"],
+        "steps": [
+          {
+            "step": 1,
+            "name": "Arm Swings",
+            "duration": 30,
+            "animation": "animations/armSwings.json",
+            "instruction": "Swing your arms across your chest and out wide to wake up your upper body."
+          },
+          {
+            "step": 2,
+            "name": "Leg Kicks",
+            "duration": 30,
+            "animation": "animations/legKicks.json",
+            "instruction": "Kick one leg forward at a time with control to activate the hamstrings."
+          },
+          {
+            "step": 3,
+            "name": "Torso Rotations",
+            "duration": 30,
+            "animation": "animations/torsoRotations.json",
+            "instruction": "Twist from side to side with bent elbows to activate the spine and core."
+          }
+        ]
+      },
+      {
+        "id": "17",
+        "title": "Balance & Stability",
+        "description": "Challenge your stability and improve joint control with this focused flow.",
+        "duration": "8 min",
+        "difficulty": "Advanced",
+        "tags": ["balance", "control", "mobility"],
+        "category": "Stability",
+        "muscleGroups": ["ankles", "hips", "core"],
+        "steps": [
+          {
+            "step": 1,
+            "name": "Single-Leg Stand",
+            "duration": 45,
+            "animation": "animations/singleLegStand.json",
+            "instruction": "Balance on one leg with arms extended to the sides. Switch legs after 20 seconds."
+          },
+          {
+            "step": 2,
+            "name": "Toe Taps",
+            "duration": 45,
+            "animation": "animations/toeTaps.json",
+            "instruction": "Tap your toe forward and to the side while balancing on the opposite leg."
+          },
+          {
+            "step": 3,
+            "name": "Bird Dog",
+            "duration": 45,
+            "animation": "animations/birdDog.json",
+            "instruction": "On all fours, extend opposite arm and leg, hold for balance, then switch sides."
+          }
+        ]
+      },
+      {
+        "id": "18",
+        "title": "Quick Calm Down",
+        "description": "Feel overwhelmed? Use this calming reset to slow down and center yourself.",
+        "duration": "3 min",
+        "difficulty": "Easy",
+        "tags": ["mindful", "relax", "anxiety"],
+        "category": "Mental Reset",
+        "muscleGroups": ["lungs", "neck", "core"],
+        "steps": [
+          {
+            "step": 1,
+            "name": "Box Breathing",
+            "duration": 60,
+            "animation": "animations/boxBreathing.json",
+            "instruction": "Inhale for 4 seconds, hold for 4, exhale for 4, hold for 4. Repeat."
+          },
+          {
+            "step": 2,
+            "name": "Overhead Stretch",
+            "duration": 30,
+            "animation": "animations/overheadStretch.json",
+            "instruction": "Reach your arms up and interlace fingers, lengthening the spine and expanding the chest."
+          }
+        ]
+      },
+      {
+        "id": "19",
+        "title": "Knee-Friendly Flow",
+        "description": "A gentle full-body sequence that avoids strain on the knees.",
+        "duration": "7 min",
+        "difficulty": "Easy",
+        "tags": ["low impact", "seniors", "joint safe"],
+        "category": "Joint Friendly",
+        "muscleGroups": ["shoulders", "hips", "spine"],
+        "steps": [
+          {
+            "step": 1,
+            "name": "Seated Side Bends",
+            "duration": 30,
+            "animation": "animations/seatedSideBends.json",
+            "instruction": "Sit upright and reach one arm overhead while leaning gently to the side."
+          },
+          {
+            "step": 2,
+            "name": "Arm Circles",
+            "duration": 30,
+            "animation": "animations/armCircles.json",
+            "instruction": "Make gentle circles with your arms to warm up shoulders without pressure on knees."
+          },
+          {
+            "step": 3,
+            "name": "Spinal Rolls",
+            "duration": 30,
+            "animation": "animations/spinalRolls.json",
+            "instruction": "While seated or standing, slowly roll your spine forward and back to release tension."
+          }
+        ]
+      },
+      {
+        "id": "20",
+        "title": "Mood Booster",
+        "description": "Boost your mood and energy with this feel-good movement flow.",
+        "duration": "5 min",
+        "difficulty": "Easy",
+        "tags": ["happy", "feel good", "boost"],
+        "category": "Uplifting",
+        "muscleGroups": ["legs", "shoulders", "core"],
+        "steps": [
+          {
+            "step": 1,
+            "name": "March in Place",
+            "duration": 30,
+            "animation": "animations/marchInPlace.json",
+            "instruction": "March on the spot with energy and lift your knees high."
+          },
+          {
+            "step": 2,
+            "name": "Sun Reaches",
+            "duration": 30,
+            "animation": "animations/sunReaches.json",
+            "instruction": "Raise arms to the sky and take a big inhale. Exhale and relax."
+          },
+          {
+            "step": 3,
+            "name": "Jumping Jacks",
+            "duration": 30,
+            "animation": "animations/jumpingJacks.json",
+            "instruction": "Get your heart rate up and your mind lifted with jumping jacks."
+          }
+        ]
+      }
+]
 }

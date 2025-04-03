@@ -8,6 +8,7 @@ import {
   Switch,
   Animated,
 } from 'react-native';
+import { Share } from 'react-native';
 import { useRoute, useNavigation } from '@react-navigation/native';
 import { LinearGradient } from 'expo-linear-gradient';
 import * as Speech from 'expo-speech';
@@ -18,6 +19,7 @@ import ConfettiCannon from 'react-native-confetti-cannon';
 import { updateUserData, getUserData } from '../utils/userStorage';
 import moment from 'moment'; // or native Date strings
 import { Ionicons } from '@expo/vector-icons';
+import RoutineSummaryCard from '../components/RoutineSummary';
 
 const TimerScreen = () => {
   const navigation = useNavigation();
@@ -35,7 +37,8 @@ const TimerScreen = () => {
   const [showConfetti, setShowConfetti] = useState(false);
   const [handleSkip, setHandleSkip] = useState(false);
   const [voiceChecked, setVoiceChecked] = useState(false);
-  const totalTime = stretches.reduce((sum, s) => sum + s.duration, 0) + 10 * (stretches.length - 1);
+  const [totalTime, setTotalTime] = useState(0);
+
   const handleRoutineComplete = async (routine) => {
     const today = moment().format('YYYY-MM-DD');
     const user = await getUserData();
@@ -50,7 +53,7 @@ const TimerScreen = () => {
     const updated = await updateUserData({
       streak: newStreak,
       lastCompleted: today,
-      lastRoutine: routine.title,
+      lastRoutine: routine,
       history: {
         ...(user?.history || {}),
         [today]: routine.title,
@@ -112,7 +115,8 @@ const TimerScreen = () => {
     if (!isRunning || paused) return;
   
     const interval = setInterval(() => {
-      setSecondsLeft((prev) => (prev > 0 ? prev - 1 : 0));
+      setSecondsLeft((prev) => (prev > 0 ? prev - 1 : 0))
+      setTotalTime((prev) => (prev>0? prev + 1 : prev))
     }, 1000);
   
     return () => clearInterval(interval);
@@ -355,50 +359,54 @@ const TimerScreen = () => {
         </>
       ) : (
         <>
-          <Text style={styles.complete}>🎉 Routine Complete!</Text>
+  <Ionicons name="trophy-outline" size={48} color="#FBBF24" style={{ marginBottom: 12 }} />
+  <Text style={styles.completeHeader}> Routine Complete!</Text>
 
-<Text style={styles.completeStats}>
-  You completed {stretches.length} stretches in {totalTime} seconds.
-</Text>
+    <RoutineSummaryCard
+    title={routine.title}
+    stretchCount={stretches.length}
+    duration={`${totalTime}s`}
+    muscleGroups={routine.muscleGroups}
+    difficulty={routine.difficulty}
+    tags={routine.tags}
+    
+  />
+  <Text style={styles.quoteText}>
+    “Small steps every day lead to big change.” 🧘
+  </Text>
 
-<Pressable
-  style={styles.pauseBtn}
-  onPress={() => {
-    setCurrentStep(0);
-    setSecondsLeft(stretches[0].duration);
-    setIsRunning(true);
-    setPaused(false);
-    setShowConfetti(false);
-    setVoiceChecked(false);
-    animateFade();
-  }}
->
-  <Text style={styles.pauseBtnText}>Repeat Routine</Text>
-</Pressable>
+  <View style={styles.ctaRow}>
+    <Pressable style={styles.ctaButtonOutline} onPress={() => {
+      Share.share({
+        message: `I just finished my '${routine.title}' stretch with StretchFlow! 💪 ${stretches.length} moves in ${totalTime}s. Feeling great!`,
+      });
+    }}>
+      <Ionicons name="share-social-outline" size={16} color="#10B981" />
+      <Text style={styles.ctaButtonTextAlt}>Share</Text>
+    </Pressable>
 
-<Pressable style={styles.backButton} onPress={() => navigation.popToTop()}>
-  <Text style={styles.backButtonText}>← Back to Home</Text>
-</Pressable>
-        </>
+    <Pressable style={styles.ctaButton} onPress={() => {
+      setCurrentStep(0);
+      setSecondsLeft(stretches[0].duration);
+      setIsRunning(true);
+      setPaused(false);
+      setShowConfetti(false);
+      setVoiceChecked(false);
+      animateFade();
+    }}>
+      <Text style={styles.ctaButtonText}>Repeat</Text>
+    </Pressable>
+  </View>
+
+  <Pressable style={styles.backButton} onPress={() => navigation.popToTop()}>
+    <Text style={styles.backToHome}>← Back to Home</Text>
+  </Pressable>
+</>
       )}
 
       {showConfetti && <ConfettiCannon count={120} origin={{ x: 200, y: 0 }} fadeOut />}
 
       <View style={styles.bottomToggleContainer}>
-    
-    <Text style={styles.toggleLabel}>Voice Guidance </Text>
-  
-
-  <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-  <Ionicons name="headset-outline" size={16} color="#34D399" style={{ marginRight: 6 }} />
-  <Switch
-    value={silentMode}
-    onValueChange={toggleSilentMode}
-    trackColor={{ false: '#d1d5db', true: '#34D399' }}
-    thumbColor={silentMode ? '#047857' : '#f4f3f4'}
-    disabled={voiceCreditsUsed}
-  />
-  </View>
 </View>
 
 
@@ -663,6 +671,79 @@ skipCircle: {
     marginBottom: 20,
     textAlign: 'center',
   },
+
+  completeHeader: {
+    fontSize: 26,
+    fontWeight: 'bold',
+    color: '#10B981',
+    textAlign: 'center',
+    marginBottom: 8,
+  },
+  statsBox: {
+    backgroundColor: '#ECFDF5',
+    padding: 16,
+    borderRadius: 12,
+    alignItems: 'center',
+    marginBottom: 16,
+  },
+  statsText: {
+    fontSize: 15,
+    color: '#047857',
+    marginVertical: 2,
+  },
+  quoteText: {
+    fontSize: 14,
+    fontStyle: 'italic',
+    color: '#6B7280',
+    textAlign: 'center',
+    marginBottom: 20,
+  },
+  ctaRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    gap: 12,
+    marginTop: 10,
+    marginBottom: 16,
+  },
+  ctaButton: {
+    flex: 1,
+    backgroundColor: '#10B981',
+    paddingVertical: 12,
+    borderRadius: 10,
+    alignItems: 'center',
+  },
+  ctaButtonText: {
+    color: '#fff',
+    fontWeight: '600',
+  },
+  ctaButtonOutline: {
+    flex: 1,
+    borderWidth: 1,
+    borderColor: '#10B981',
+    paddingVertical: 12,
+    borderRadius: 10,
+    alignItems: 'center',
+    flexDirection: 'row',
+    justifyContent: 'center',
+    gap: 6,
+  },
+  ctaButtonTextAlt: {
+    color: '#10B981',
+    fontWeight: '600',
+  },
+  backToHome: {
+    fontSize: 14,
+    textAlign: 'center',
+    color: '#6B7280',
+  },
+  backButton: {
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 10,
+    backgroundColor: '#E5E7EB',
+    marginTop: 10,
+  }
+  
   
 });
 
