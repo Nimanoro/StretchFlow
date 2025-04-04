@@ -10,6 +10,7 @@ import {
 } from 'react-native';
 import { getUserData, updateUserData, resetUserData } from '../utils/userStorage';
 import { Ionicons } from '@expo/vector-icons';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 const ProfileScreen = () => {
   const [name, setName] = useState('');
@@ -59,6 +60,7 @@ const ProfileScreen = () => {
 
   return (
     <View style={styles.container}>
+      <SafeAreaView style={{ flex: 1 }}/>
       <View style={styles.card}>
         <Text style={styles.label}>Your Name</Text>
         <TextInput

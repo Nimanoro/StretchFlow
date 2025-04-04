@@ -47,8 +47,7 @@ export default function App() {
       <FavoritesProvider>
 
       <NavigationContainer>
-        <SafeAreaView></SafeAreaView>
-        <Stack.Navigator initialRouteName={initialRoute} screenOptions={{ headerShown: false }}>
+      <Stack.Navigator initialRouteName={initialRoute} screenOptions={{ headerShown: false }}>
 
           <Stack.Screen name="Tabs" component={BottomTabNavigator} />
           <Stack.Screen name="Onboarding" component={OnboardingScreen} />

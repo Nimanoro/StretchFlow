@@ -8,8 +8,6 @@ import {
   KeyboardAvoidingView,
   Platform,
 } from 'react-native';
-import {BottomTabNavigator} from './bottomNav';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { saveUserData } from '../utils/userStorage';
 import { TouchableWithoutFeedback, Keyboard } from 'react-native';
 

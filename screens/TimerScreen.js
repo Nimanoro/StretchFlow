@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useContext } from 'react';
 import {
   View,
   Text,
@@ -8,6 +8,7 @@ import {
   Switch,
   Animated,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { Share } from 'react-native';
 import { useRoute, useNavigation } from '@react-navigation/native';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -20,6 +21,14 @@ import { updateUserData, getUserData } from '../utils/userStorage';
 import moment from 'moment'; // or native Date strings
 import { Ionicons } from '@expo/vector-icons';
 import RoutineSummaryCard from '../components/RoutineSummary';
+import { UserContext } from '../context/UserContext';
+import { captureRef } from 'react-native-view-shot';
+import * as Sharing from 'expo-sharing';
+import * as FileSystem from 'expo-file-system';
+
+
+import { Vibration } from 'react-native';
+
 
 const TimerScreen = () => {
   const navigation = useNavigation();
@@ -38,6 +47,36 @@ const TimerScreen = () => {
   const [handleSkip, setHandleSkip] = useState(false);
   const [voiceChecked, setVoiceChecked] = useState(false);
   const [totalTime, setTotalTime] = useState(0);
+  const { isPremium } = useContext(UserContext);
+  const cardRef = useRef(); // 📸 Reference to the card
+
+  const nextFadeAnim = useRef(new Animated.Value(0)).current;
+
+const animateNext = () => {
+  nextFadeAnim.setValue(0);
+  Animated.timing(nextFadeAnim, {
+    toValue: 1,
+    duration: 400,
+    useNativeDriver: true,
+  }).start();
+};
+const handleShare = async () => {
+  try {
+    const uri = await captureRef(cardRef, {
+      format: 'png',
+      quality: 1,
+    });
+
+    if (!(await Sharing.isAvailableAsync())) {
+      alert('Sharing is not available on this device');
+      return;
+    }
+
+    await Sharing.shareAsync(uri);
+  } catch (err) {
+    console.error('Error sharing card:', err);
+  }
+};
 
   const handleRoutineComplete = async (routine) => {
     const today = moment().format('YYYY-MM-DD');
@@ -64,13 +103,38 @@ const TimerScreen = () => {
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const pulseAnim = useRef(new Animated.Value(1)).current;
   const progressAnim = useRef(new Animated.Value(0)).current;
+  useEffect(() => {
+    pulseAnim.setValue(1);
+    const pulseLoop = Animated.loop(
+      Animated.sequence([
+        Animated.timing(pulseAnim, {
+          toValue: 1.1,
+          duration: 1000,
+          useNativeDriver: true,
+        }),
+        Animated.timing(pulseAnim, {
+          toValue: 1,
+          duration: 1000,
+          useNativeDriver: true,
+        }),
+      ])
+    );
+    pulseLoop.start();
+  
+    return () => pulseLoop.stop(); // Cleanup to prevent stacking
+  }, [currentStep, isResting]);
+  
 
   useEffect(() => {
     isSilentMode().then(setSilentMode);
   }, []);
 
   const toggleSilentMode = async () => {
-    if (voiceCreditsUsed) return;
+
+    if (voiceCreditsUsed && !isPremium) {
+      setShowVoiceLimitModal(true);
+      return;
+    }
     const newVal = !silentMode;
     setSilentMode(newVal);
     await persistSilentMode(newVal);
@@ -78,8 +142,8 @@ const TimerScreen = () => {
 
   const safeSpeak = async (text) => {
     const silent = await isSilentMode();
-    const allowed = await checkVoiceAccess();
-    if (!silent && allowed) {
+    const allowed = await checkVoiceAccess(isPremium);
+    if (silent && allowed) {
       Speech.stop();
       Speech.speak(text, { language: 'en-US', pitch: 1.0, rate: 0.9 });
     }
@@ -95,32 +159,19 @@ const TimerScreen = () => {
   };
 
   useEffect(() => {
-    Animated.loop(
-      Animated.sequence([
-        Animated.timing(pulseAnim, {
-          toValue: 1.1,
-          duration: 1000,
-          useNativeDriver: true,
-        }),
-        Animated.timing(pulseAnim, {
-          toValue: 1,
-          duration: 1000,
-          useNativeDriver: true,
-        }),
-      ])
-    ).start();
-  }, []);
-
-  useEffect(() => {
     if (!isRunning || paused) return;
   
     const interval = setInterval(() => {
-      setSecondsLeft((prev) => (prev > 0 ? prev - 1 : 0))
-      setTotalTime((prev) => (prev>0? prev + 1 : prev))
+      setSecondsLeft((prev) => (prev > 0 ? prev - 1 : 0));
+      setTotalTime((prev) => {
+        // only increment if time is ticking
+        if (secondsLeft > 0) return prev + 1;
+        return prev;
+      });
     }, 1000);
   
     return () => clearInterval(interval);
-  }, [isRunning, paused]);
+  }, [isRunning, paused, secondsLeft]);
   
   useEffect(() => {
     if (!isRunning || !voiceChecked || paused) return;
@@ -135,7 +186,9 @@ const TimerScreen = () => {
         setIsRunning(false);
         safeSpeak('Routine complete. Great job!');
         handleRoutineComplete(routine);
-        setShowConfetti(true);
+        setTimeout(() => {
+          setShowConfetti(true);
+        }, 1000); 
       }
     }
   
@@ -151,13 +204,14 @@ const TimerScreen = () => {
 
   useEffect(() => {
     const initVoice = async () => {
-      const allowed = await checkVoiceAccess();
+      const allowed = await checkVoiceAccess(isPremium);
       const s = stretches[currentStep];
       if (!allowed && !voiceCreditsUsed) {
         setShowVoiceLimitModal(true);
         setSilentMode(true);
-        setVoiceCreditsUsed(true); // prevent re-showing
-      }
+        setVoiceCreditsUsed(true); // ✅ now gated correctly
+        return;
+      }      
        else {
         if (!silentMode) await incrementVoiceUsage();
         safeSpeak(`${s.name}. ${s.instruction}`);
@@ -180,7 +234,11 @@ const TimerScreen = () => {
   const backgroundStyle = isResting ? styles.restBackground : styles.container;
 
   return (
+
     <View style={backgroundStyle}>
+
+    <SafeAreaView style={{ backgroundColor: '#F0F4F3' }}/>  
+
       <View style={styles.topBar}>
         <Animated.View
           style={[
@@ -194,6 +252,20 @@ const TimerScreen = () => {
           ]}
         />
       </View>
+      <Pressable
+  onPress={() => navigation.goBack()}
+  style={{
+    position: 'absolute',
+    top: 50,
+    left: 20,
+    zIndex: 10,
+    backgroundColor: 'rgba(0,0,0,0.3)',
+    padding: 8,
+    borderRadius: 30,
+  }}
+>
+  <Ionicons name="arrow-back" size={22} color="#fff" />
+</Pressable>
 
       <Text style={styles.routineTitle}>{routine.title}</Text>
 
@@ -206,15 +278,15 @@ const TimerScreen = () => {
           {isResting ? (
   <>
   <LinearGradient
-  colors={['#D1FAE5', '#ECFDF5']}
+  colors={['#ECFDF5', '#DBF4FF']}
   style={[StyleSheet.absoluteFill, { zIndex: -1 }]}
 />
-    
-<Animated.Text style={[styles.stretchName, { opacity: fadeAnim }]}>
-                resting...
-              </Animated.Text>
-
-              <Animated.View style={{ transform: [{ scale: pulseAnim }], marginBottom: 20 }}>
+<Animated.Text style={[styles.restLabelMain, { opacity: fadeAnim }]}>
+  Time to Rest
+</Animated.Text>
+<Text style={styles.restSubLabel}>10 seconds to reset & refocus</Text>
+            
+              <Animated.View style={[styles.timerAura,  {transform: [{ scale: pulseAnim }]}, {marginBottom: 20 }]}>
                 <AnimatedCircularProgress
                   size={180}
                   width={12}
@@ -228,7 +300,9 @@ const TimerScreen = () => {
                 </AnimatedCircularProgress>
               </Animated.View>
     {nextStretch && (
+      <Animated.View style={{ opacity: nextFadeAnim }}>
       <Text style={styles.nextUp}>Up Next: {nextStretch.name}</Text>
+    </Animated.View>
     )}
 
     <View style={styles.controlWrapper}>
@@ -238,9 +312,15 @@ const TimerScreen = () => {
       </View>
 
       {/* Center icon - peaceful resting symbol */}
-      <View style={styles.playPauseCircle}>
-        <Ionicons name="leaf-outline" size={26} color="#fff" />
-      </View>
+<Pressable
+  onPress={() => setPaused((prev) => !prev)}
+  style={({ pressed }) => [
+    styles.playPauseCircle,
+    pressed && styles.playPauseCirclePressed,
+  ]}
+>
+  <Ionicons name={paused ? 'play' : 'pause'} size={28} color="#fff" />
+</Pressable>
 
       {/* Skip Rest button */}
       <Pressable
@@ -256,6 +336,9 @@ const TimerScreen = () => {
         <Ionicons name="play-skip-forward" size={22} color="#6B7280" />
       </Pressable>
     </View>
+
+
+  
   </>
 
 ) : (
@@ -264,7 +347,7 @@ const TimerScreen = () => {
                 {currentStretch.name}
               </Animated.Text>
 
-              <Animated.View style={{ transform: [{ scale: pulseAnim }], marginBottom: 20 }}>
+              <Animated.View style={[styles.timerAura,  {transform: [{ scale: pulseAnim }]}, {marginBottom: 20 }]}>
                 <AnimatedCircularProgress
                   size={180}
                   width={12}
@@ -274,7 +357,7 @@ const TimerScreen = () => {
                   rotation={0}
                   lineCap="round"
                 >
-                  {() => <Text style={styles.timer}>{secondsLeft}s</Text>}
+                  {() => <Text style={styles.timer}>{secondsLeft}</Text>}
                 </AnimatedCircularProgress>
               </Animated.View>
               {currentStretch.instruction && (
@@ -284,9 +367,12 @@ const TimerScreen = () => {
               )}
 
           {nextStretch && !isResting && (
+            <Animated.View style={{ opacity: nextFadeAnim }}>
             <View style={styles.nextContainer}>
-              <Text style={styles.nextUp}>Up Next: {nextStretch.name}</Text>
+            <Text style={styles.nextUp}>Get ready for: {nextStretch.name}</Text>
+
             </View>
+          </Animated.View>
 
           
           )}
@@ -347,6 +433,7 @@ const TimerScreen = () => {
 </View>
 
 
+
             </>
           )}
 
@@ -355,13 +442,20 @@ const TimerScreen = () => {
 
 
 
-
+<View style={styles.bottomToggleContainer}>
+  <Text style={styles.toggleLabel}>Voice Guidance</Text>
+  <Switch
+    value={!silentMode}
+    onValueChange={toggleSilentMode}
+  />
+</View>
         </>
+        
       ) : (
         <>
   <Ionicons name="trophy-outline" size={48} color="#FBBF24" style={{ marginBottom: 12 }} />
   <Text style={styles.completeHeader}> Routine Complete!</Text>
-
+  <View ref={cardRef} collapsable={false}>
     <RoutineSummaryCard
     title={routine.title}
     stretchCount={stretches.length}
@@ -371,16 +465,13 @@ const TimerScreen = () => {
     tags={routine.tags}
     
   />
+  </View>
   <Text style={styles.quoteText}>
     “Small steps every day lead to big change.” 🧘
   </Text>
 
   <View style={styles.ctaRow}>
-    <Pressable style={styles.ctaButtonOutline} onPress={() => {
-      Share.share({
-        message: `I just finished my '${routine.title}' stretch with StretchFlow! 💪 ${stretches.length} moves in ${totalTime}s. Feeling great!`,
-      });
-    }}>
+    <Pressable style={styles.ctaButtonOutline} onPress={handleShare}>
       <Ionicons name="share-social-outline" size={16} color="#10B981" />
       <Text style={styles.ctaButtonTextAlt}>Share</Text>
     </Pressable>
@@ -399,40 +490,66 @@ const TimerScreen = () => {
   </View>
 
   <Pressable style={styles.backButton} onPress={() => navigation.popToTop()}>
-    <Text style={styles.backToHome}>← Back to Home</Text>
+    <Text style={styles.backToHome}>Back to Home</Text>
   </Pressable>
+
 </>
       )}
 
       {showConfetti && <ConfettiCannon count={120} origin={{ x: 200, y: 0 }} fadeOut />}
-
-      <View style={styles.bottomToggleContainer}>
-</View>
+      
 
 
       <Modal visible={showVoiceLimitModal} transparent animationType="fade">
-        <View style={styles.modalBackdrop}>
-          <View style={styles.modalContent}>
-          <Text style={styles.modalTitle}>Voice Guidance Locked</Text>
-            <Text style={styles.modalText}>
-            You've used your 3 free guided sessions this week. Go Premium for unlimited coaching.
-            </Text>
+  <View style={styles.modalBackdrop}>
+    <View style={styles.modalContent}>
+      {/* Premium Header Banner */}
+      <LinearGradient
+        colors={['#10B981', '#059669']}
+        style={styles.modalHeader}
+      >
+        <Ionicons name="sparkles-outline" size={32} color="#fff" />
+        <Text style={styles.modalHeaderText}>StretchFlow Premium</Text>
+      </LinearGradient>
 
-            <Pressable
-              style={styles.modalButton}
-              onPress={() => {
-                setShowVoiceLimitModal(false);
-                navigation.navigate('Premium');
-              }}
-            >
-              <Text style={styles.modalButtonText}>Upgrade Now</Text>
-            </Pressable>
-            <Pressable onPress={() => setShowVoiceLimitModal(false)}>
-              <Text style={styles.modalSkipText}>Continue Without Voice</Text>
-            </Pressable>
-          </View>
+      <Text style={styles.modalText}>
+      You’ve hit your 3 free voice sessions this week.
+      Unlock unlimited voice coaching and boost your focus during every routine.
+      </Text>
+
+      {/* Feature bullets */}
+      <View style={styles.modalBulletList}>
+        <View style={styles.bulletItem}>
+          <Ionicons name="volume-high-outline" size={18} color="#10B981" />
+          <Text style={styles.bulletText}>Unlimited Voice Guidance</Text>
         </View>
-      </Modal>
+        <View style={styles.bulletItem}>
+          <Ionicons name="checkmark-done-outline" size={18} color="#10B981" />
+          <Text style={styles.bulletText}>Personalized Experience</Text>
+        </View>
+        <View style={styles.bulletItem}>
+          <Ionicons name="heart-outline" size={18} color="#10B981" />
+          <Text style={styles.bulletText}>Support App Growth</Text>
+        </View>
+      </View>
+
+      <Pressable
+        style={styles.modalButton}
+        onPress={() => {
+          setShowVoiceLimitModal(false);
+          navigation.navigate('Premium');
+        }}
+      >
+        <Text style={styles.modalButtonText}>Upgrade to Premium</Text>
+      </Pressable>
+
+      <Pressable onPress={() => setShowVoiceLimitModal(false)}>
+        <Text style={styles.modalSkipText}>Maybe Later</Text>
+      </Pressable>
+    </View>
+  </View>
+</Modal>
+
     </View>
   );
 };
@@ -500,75 +617,41 @@ const styles = StyleSheet.create({
     marginTop: 30,
     alignItems: 'center',
   },
-  nextSoon: {
-    fontSize: 10,
-    color: '#9CA3AF',
-    fontWeight: '600',
-    letterSpacing: 1,
-    marginBottom: 4,
-  },
   controlWrapper: {
-  flexDirection: 'row',
-  justifyContent: 'center',
-  alignItems: 'center',
-  gap: 28,
-  marginTop: 24,
-},
-
-playPauseCircle: {
-  width: 64,
-  height: 64,
-  borderRadius: 32,
-  backgroundColor: '#10B981',
-  justifyContent: 'center',
-  alignItems: 'center',
-  shadowColor: '#000',
-  shadowOffset: { width: 0, height: 3 },
-  shadowOpacity: 0.15,
-  shadowRadius: 6,
-  elevation: 6,
-},
-
-playPauseCirclePressed: {
-  transform: [{ scale: 0.96 }],
-},
-
-skipCircle: {
-  width: 48,
-  height: 48,
-  borderRadius: 24,
-  backgroundColor: '#E5E7EB',
-  justifyContent: 'center',
-  alignItems: 'center',
-},
-
-  
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    gap: 28,
+    marginTop: 24,
+  },
+  playPauseCircle: {
+    width: 64,
+    height: 64,
+    borderRadius: 32,
+    backgroundColor: '#10B981',
+    justifyContent: 'center',
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.15,
+    shadowRadius: 6,
+    elevation: 6,
+  },
+  playPauseCirclePressed: {
+    transform: [{ scale: 0.96 }],
+  },
+  skipCircle: {
+    width: 48,
+    height: 48,
+    borderRadius: 24,
+    backgroundColor: '#E5E7EB',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
   nextUp: {
     fontSize: 14,
     color: '#6B7280',
     fontStyle: 'italic',
-  },
-  pauseBtn: {
-    marginTop: 20,
-    paddingVertical: 10,
-    paddingHorizontal: 24,
-    backgroundColor: '#34D399',
-    borderRadius: 8,
-  },
-  pauseBtnText: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: '#fff',
-  },
-  complete: {
-    fontSize: 28,
-    fontWeight: '700',
-    color: '#10B981',
-    marginBottom: 30,
-  },
-  backButton: {
-    paddingVertical: 10,
-    paddingHorizontal: 20,
   },
   instructionText: {
     marginTop: 12,
@@ -578,13 +661,6 @@ skipCircle: {
     lineHeight: 20,
     fontStyle: 'italic',
   },
-  
-  backButtonText: {
-    fontSize: 14,
-    color: '#374151',
-    fontWeight: '500',
-  },
-  
   bottomToggleContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -597,7 +673,6 @@ skipCircle: {
     width: '100%',
     gap: 12,
   },
-  
   toggleLabel: {
     fontSize: 15,
     color: '#374151',
@@ -610,66 +685,89 @@ skipCircle: {
     alignItems: 'center',
     paddingHorizontal: 24,
   },
+
+  // 🟢 NEW Modal Style Cleanup Below 🟢
+
   modalContent: {
     backgroundColor: '#fff',
-    borderRadius: 16,
-    padding: 24,
+    borderRadius: 20,
+    paddingTop: 28,
+    paddingBottom: 16,
+    paddingHorizontal: 20,
     width: '100%',
     maxWidth: 360,
     alignItems: 'center',
+    position: 'relative',
+    marginTop: -20,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.1,
+    shadowRadius: 16,
+    elevation: 12,
   },
-  modalTitle: {
-    fontSize: 20,
+  modalHeader: {
+    position: 'absolute',
+    top: -32,
+    backgroundColor: '#10B981',
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 12,
+    alignItems: 'center',
+    justifyContent: 'center',
+    flexDirection: 'row',
+    gap: 8,
+    shadowColor: '#000',
+    shadowOpacity: 0.1,
+    shadowRadius: 6,
+    elevation: 5,
+  },
+  modalHeaderText: {
+    fontSize: 15,
     fontWeight: '700',
-    marginBottom: 12,
-    color: '#1F2937',
-    textAlign: 'center',
+    color: '#fff',
   },
   modalText: {
     fontSize: 14,
     color: '#4B5563',
     textAlign: 'center',
+    lineHeight: 22,
     marginBottom: 20,
-    lineHeight: 20,
+    marginTop: 10,
+  },
+  modalBulletList: {
+    width: '100%',
+    marginBottom: 20,
+    gap: 14,
+  },
+  bulletItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+  },
+  bulletText: {
+    fontSize: 14,
+    color: '#374151',
   },
   modalButton: {
     backgroundColor: '#047857',
-    paddingVertical: 10,
-    paddingHorizontal: 24,
-    borderRadius: 10,
+    paddingVertical: 16,
+    paddingHorizontal: 32,
+    borderRadius: 12,
+    marginTop: 10,
     marginBottom: 10,
-  },
-  modalButtonText: {
-    color: '#fff',
-    fontWeight: '600',
-    fontSize: 15,
+    width: '100%',
+    alignItems: 'center',
   },
   modalSkipText: {
     color: '#6B7280',
     fontSize: 13,
+    opacity: 0.9,
+    marginTop: 2,
   },
-  pauseBtn: {
-    marginTop: 20,
-    paddingVertical: 10,
-    paddingHorizontal: 24,
-    backgroundColor: '#34D399',
-    borderRadius: 10,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.1,
-    shadowRadius: 6,
-    elevation: 4,
-    transform: [{ scale: 1 }],
-  },
-  pauseBtnPressed: {
-    transform: [{ scale: 0.97 }],
-  },
-  
-  completeStats: {
+  modalButtonText: {
+    color: '#FFFFFF',
     fontSize: 16,
-    color: '#374151',
-    marginBottom: 20,
-    textAlign: 'center',
+    opacity: 1,
   },
 
   completeHeader: {
@@ -678,18 +776,6 @@ skipCircle: {
     color: '#10B981',
     textAlign: 'center',
     marginBottom: 8,
-  },
-  statsBox: {
-    backgroundColor: '#ECFDF5',
-    padding: 16,
-    borderRadius: 12,
-    alignItems: 'center',
-    marginBottom: 16,
-  },
-  statsText: {
-    fontSize: 15,
-    color: '#047857',
-    marginVertical: 2,
   },
   quoteText: {
     fontSize: 14,
@@ -731,20 +817,29 @@ skipCircle: {
     color: '#10B981',
     fontWeight: '600',
   },
-  backToHome: {
-    fontSize: 14,
-    textAlign: 'center',
-    color: '#6B7280',
-  },
   backButton: {
     paddingVertical: 10,
     paddingHorizontal: 20,
     borderRadius: 10,
     backgroundColor: '#E5E7EB',
     marginTop: 10,
-  }
-  
-  
+  },
+  backToHome: {
+    fontSize: 14,
+    textAlign: 'center',
+    color: '#6B7280',
+  },
+  timerAura: {
+    padding: 12,
+    borderRadius: 999,
+    backgroundColor: '#E0FDF4',
+    shadowColor: '#10B981',
+    shadowOpacity: 0.25,
+    shadowRadius: 16,
+    elevation: 10,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
 });
 
 export default TimerScreen;

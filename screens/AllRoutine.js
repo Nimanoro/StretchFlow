@@ -14,7 +14,7 @@ import RoutineCard from '../components/RoutineCard';
 import { getMyRoutines } from '../utils/userStorage';
 import {getSavedRoutines} from '../utils/userStorage';
 import exercisesData from '../assets/exercises.json';
-
+import { SafeAreaView } from 'react-native-safe-area-context';
 if (Platform.OS === 'android') {
   UIManager.setLayoutAnimationEnabledExperimental(true);
 }
@@ -82,6 +82,7 @@ const AllRoutinesScreen = () => {
 
   return (
     <View style={styles.container}>
+      <SafeAreaView style={{ backgroundColor: '#F0F4F3' }} />
       {/* Tabs */}
       <View style={styles.tabContainer}>
         <Pressable

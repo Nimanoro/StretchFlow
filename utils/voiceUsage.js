@@ -1,11 +1,17 @@
 // utils/voiceUsage.js
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useContext } from 'react';
+import { UserContext } from '../context/UserContext';
 
 const WEEK_MS = 7 * 24 * 60 * 60 * 1000;
 const STORAGE_KEY = 'voice-usage';
+export const checkVoiceAccess = async (isPremium) => {
 
-export const checkVoiceAccess = async () => {
+  if (isPremium) {
+    return true;
+  }
   const now = Date.now();
+
   const data = await AsyncStorage.getItem(STORAGE_KEY);
   let usage = { lastReset: now, count: 0 };
 
@@ -18,11 +24,7 @@ export const checkVoiceAccess = async () => {
     }
   }
 
-  if (usage.count >= 3) {
-    return false;
-  }
-
-  return true;
+  return usage.count < 3;
 };
 
 export const incrementVoiceUsage = async () => {

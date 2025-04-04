@@ -18,6 +18,7 @@ import RoutineCard from '../components/RoutineCard';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import exercisesData from '../assets/exercises.json';
 import BottomTabNavigator from './bottomNav';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { getUserData } from '../utils/userStorage';
 
@@ -95,6 +96,8 @@ const HomeScreen = () => {
 
   return (
     <ScrollView style={styles.container}>
+
+      <SafeAreaView style={{ flex: 1, backgroundColor: '#F0F4F3' }}/> 
       {/* === HERO HEADER === */}
       <ImageBackground
         source={require('../assets/hero.png')}

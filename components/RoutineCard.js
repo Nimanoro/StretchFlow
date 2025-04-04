@@ -20,7 +20,6 @@ import { getSavedRoutines, saveARoutine } from '../utils/userStorage';
 import { useFavorites } from '../context/FavoritesContext';
 
 
-
 const RoutineCard = ({ item, large = false, enablePressAnimation = false, initiallyFavorite= false}) => {
   const navigation = useNavigation();
   const scale = useRef(new Animated.Value(1)).current;
@@ -164,8 +163,9 @@ const getTagColor = (tag) => {
 
   {hiddenTagCount > 0 && (
     <Pressable onPress={() => toggleTags()} style={styles.tag}>
+      <Ionicons name={showAllTags ? "chevron-up-outline":"chevron-down-outline"} size={12} color="#047857" />
       <Text style={[styles.tagText, { color: '#047857', fontWeight: '700' }]}>
-        {showAllTags ? 'SHOW LESS' : `+${hiddenTagCount} MORE`}
+        {showAllTags ? 'SHOW LESS' : ` +${hiddenTagCount}`}
       </Text>
     </Pressable>
   )}

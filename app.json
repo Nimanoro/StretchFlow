@@ -4,11 +4,11 @@
     "slug": "StretchFlow",
     "version": "1.0.1",
     "orientation": "portrait",
-    "icon": "./assets/logo.png",
+    "icon": "./assets/hero.png",
     "userInterfaceStyle": "light",
     "newArchEnabled": true,
     "splash": {
-      "image": "./assets/splash-icon.png",
+      "image": "./assets/hero.png",
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },

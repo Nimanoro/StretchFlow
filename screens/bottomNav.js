@@ -49,7 +49,7 @@ export default function BottomTabNavigator() {
         options={{
           tabBarIcon: ({ color, focused }) => (
             <View style={styles.iconWrapper}>
-              <Ionicons name="home-outline" size={24} color={focused ? '#10B981' : '#9CA3AF'} />
+              <Ionicons name="home-outline" size={28} color={focused ? '#10B981' : '#9CA3AF'} />
 
             </View>
           ),
@@ -62,7 +62,7 @@ export default function BottomTabNavigator() {
         options={{
           tabBarIcon: ({ color, focused }) => (
             <View style={styles.iconWrapper}>
-              <Feather name="compass" size={24} color={focused ? '#10B981' : '#9CA3AF'} />
+              <Feather name="compass" size={28} color={focused ? '#10B981' : '#9CA3AF'} />
             </View>
           ),
         }}
@@ -75,7 +75,7 @@ export default function BottomTabNavigator() {
           tabBarIcon: ({ focused }) => (
             <MaterialCommunityIcons
               name="plus-circle"
-              size={28}
+              size={30}
               color={focused ? '#10B981' : '#9CA3AF'}
               style={styles.iconWrapper}
             />
@@ -89,7 +89,7 @@ export default function BottomTabNavigator() {
         options={{
           tabBarIcon: ({ color, focused }) => (
             <View style={styles.iconWrapper}>
-              <Ionicons name="person-circle-outline" size={24} color={focused ? '#10B981' : '#9CA3AF'} />
+              <Ionicons name="person-circle-outline" size={28} color={focused ? '#10B981' : '#9CA3AF'} />
             </View>
           ),
         }}

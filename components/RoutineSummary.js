@@ -75,7 +75,7 @@ const RoutineSummaryCard = ({
                 <Text style={styles.label}>Muscles</Text>
               </View>
               <Text style={styles.value} numberOfLines={1}>
-                {muscleGroups.slice(0, 5).map(capitalize).join(', ')}
+                {muscleGroups.slice(0, 1).map(capitalize).join(', ')}, ... 
               </Text>
             </View>
           </>
@@ -85,7 +85,7 @@ const RoutineSummaryCard = ({
       {tags.length > 0 && (
         <View style={styles.hashtagWrap}>
           {tags.slice(0, 6).map((tag, idx) => (
-            <Text key={idx} style={styles.hashtag}>#{tag.toLowerCase()}</Text>
+            <Text key={idx} style={styles.hashtag}>#{capitalize(tag)}</Text>
           ))}
         </View>
       )}

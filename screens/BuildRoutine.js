@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import {
   View,
   Text,
@@ -10,12 +10,20 @@ import {
   Image,
   Modal,
 } from 'react-native';
+import { LinearGradient } from 'react-native-svg';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { ScrollView, TextInput as RNTextInput } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import stretchesData from '../assets/stretches.json';
 import { saveMyRoutines } from '../utils/userStorage';
 import comingsoon from '../assets/image.png';
+import { KeyboardAvoidingView, Platform} from 'react-native';
+import { UserContext } from '../context/UserContext';
+import { getMyRoutines } from '../utils/userStorage';
+import { saveMyRoutines } from '../utils/userStorage';
+import { TouchableWithoutFeedback, Keyboard } from 'react-native';
+
 
 const BuildRoutineScreen = () => {
   const categories = ['All', 'Easy', 'Intermediate', 'Advanced'];
@@ -29,6 +37,7 @@ const BuildRoutineScreen = () => {
   const [selectedDiff, setSelectedDiff] = useState(null);
   const [muscleFilters, setMuscleFilters] = useState([]);
   const [tagFilters, setTagFilters] = useState([]);
+  const [showModal, setShowModal] = useState(false);
   const [diffFilters, setDiffFilters] = useState([]);
   const getChipLabel = (type) => {
     if (type === 'muscles' && muscleFilters.length) return capitalize(muscleFilters[0]);
@@ -36,6 +45,7 @@ const BuildRoutineScreen = () => {
     if (type === 'difficulty' && diffFilters.length) return capitalize(diffFilters[0]);
     return type.charAt(0).toUpperCase() + type.slice(1); // fallback
   };
+  const {isPremium} = useContext(UserContext);
 
   const chipColor = {
      difficulty: '#10B981',
@@ -78,7 +88,7 @@ const BuildRoutineScreen = () => {
       item.tags.some((t) => tagFilters.includes((t)));
   
     const matchesDiff = diffFilters.length === 0 ||
-      diffFilters.includes((item.difficulty));
+      item.difficulty.toLowerCase() === diffFilters[0].toLowerCase() || item.difficulty.toLowerCase() === diffFilters[1]?.toLowerCase() || item.difficulty.toLowerCase() === diffFilters[2]?.toLowerCase();
   
     return matchesSearch && matchesCategory && matchesMuscle && matchesTag && matchesDiff;
   });
@@ -112,7 +122,11 @@ const BuildRoutineScreen = () => {
       Alert.alert('Incomplete', 'Please name your routine and add at least one stretch.');
       return;
     }
-
+    const madeRoutine = await getMyRoutines();
+    if (!isPremium && madeRoutine.length >= 2) {
+      setShowModal(true);
+      return;
+    }
     const routine = {
       id: Date.now().toString(),
       title: routineName.trim(),
@@ -183,6 +197,8 @@ const BuildRoutineScreen = () => {
 
   return (
     <View style={styles.container}>
+
+<SafeAreaView style={{backgroundColor: '#F0F4F3' }}/> 
       <Modal visible={isNamingModalVisible} animationType="slide" transparent>
         <View style={styles.modalOverlay}>
           <View style={styles.modalContent}>
@@ -214,6 +230,11 @@ const BuildRoutineScreen = () => {
       <Text style={styles.title}>Build Your Routine</Text>
 
       <View style={styles.filterContainer}>
+
+    <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+    <KeyboardAvoidingView
+      behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+    >
         <TextInput
           placeholder="Search stretches..."
           placeholderTextColor="#9CA3AF"
@@ -221,6 +242,8 @@ const BuildRoutineScreen = () => {
           onChangeText={setSearchTerm}
           style={styles.searchInput}
         />
+      </KeyboardAvoidingView>
+    </TouchableWithoutFeedback>
         <View style={{ marginVertical: 8 }}>
   <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8 }}>
   {['muscles', 'tags', 'difficulty'].map((filterKey) => (
@@ -398,7 +421,54 @@ const BuildRoutineScreen = () => {
       <Text style={styles.saveText}>Save Routine ({selected.length} stretch{selected.length > 1 ? 'es' : ''} • {calculateDuration()})</Text>
 
   </Pressable>
+  <Modal visible={showModal} transparent animationType="fade">
+  <View style={styles.modalBackdrop}>
+    <View style={styles.modalContent}>
+      {/* Premium Header Banner */}
+      <LinearGradient
+        colors={['#10B981', '#059669']}
+        style={styles.modalHeader}
+      >
+        <Ionicons name="sparkles-outline" size={32} color="#fff" />
+        <Text style={styles.modalHeaderText}>StretchFlow Premium</Text>
+      </LinearGradient>
 
+      <Text style={styles.modalText}>
+      You’ve made 2 personal routines. Upgrade to Premium for unlimited access to personalized routines and voice guidance.
+      </Text>
+
+      {/* Feature bullets */}
+      <View style={styles.modalBulletList}>
+      <View style={styles.bulletItem}>
+          <Ionicons name="checkmark-done-outline" size={18} color="#10B981" />
+          <Text style={styles.bulletText}>Unlimited Personalized Routines</Text>
+        </View>
+        <View style={styles.bulletItem}>
+          <Ionicons name="volume-high-outline" size={18} color="#10B981" />
+          <Text style={styles.bulletText}>Unlimited Voice Guidance</Text>
+        </View>
+        <View style={styles.bulletItem}>
+          <Ionicons name="heart-outline" size={18} color="#10B981" />
+          <Text style={styles.bulletText}>Support App Growth</Text>
+        </View>
+      </View>
+
+      <Pressable
+        style={styles.modalButton}
+        onPress={() => {
+          setShowModal(false);
+          navigation.navigate('Premium');
+        }}
+      >
+        <Text style={styles.modalButtonText}>Upgrade to Premium</Text>
+      </Pressable>
+
+      <Pressable onPress={() => setShowModal(false)}>
+        <Text style={styles.modalSkipText}>Maybe Later</Text>
+      </Pressable>
+    </View>
+  </View>
+</Modal>
     </View>
   );
 };
@@ -647,6 +717,102 @@ const styles = StyleSheet.create({
     fontSize: 13,
     color: '#fff',
     fontWeight: '500',
+  },
+
+  modalContent: {
+    backgroundColor: '#fff',
+    borderRadius: 20,
+    paddingTop: 28,
+    paddingBottom: 16,
+    paddingHorizontal: 20,
+    width: '100%',
+    maxWidth: 360,
+    alignItems: 'center',
+    position: 'relative',
+    marginTop: -20,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.1,
+    shadowRadius: 16,
+    elevation: 12,
+  },
+  modalHeader: {
+    position: 'absolute',
+    top: -32,
+    backgroundColor: '#10B981',
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 12,
+    alignItems: 'center',
+    justifyContent: 'center',
+    flexDirection: 'row',
+    gap: 8,
+    shadowColor: '#000',
+    shadowOpacity: 0.1,
+    shadowRadius: 6,
+    elevation: 5,
+  },
+  modalHeaderText: {
+    fontSize: 15,
+    fontWeight: '700',
+    color: '#fff',
+  },
+  modalText: {
+    fontSize: 14,
+    color: '#4B5563',
+    textAlign: 'center',
+    lineHeight: 22,
+    marginBottom: 20,
+    marginTop: 10,
+  },
+  modalBulletList: {
+    width: '100%',
+    marginBottom: 20,
+    gap: 14,
+  },
+  bulletItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+  },
+  bulletText: {
+    fontSize: 14,
+    color: '#374151',
+  },
+  modalButton: {
+    backgroundColor: '#047857',
+    paddingVertical: 16,
+    paddingHorizontal: 32,
+    borderRadius: 12,
+    marginTop: 10,
+    marginBottom: 10,
+    width: '100%',
+    alignItems: 'center',
+  },
+  modalSkipText: {
+    color: '#6B7280',
+    fontSize: 13,
+    opacity: 0.9,
+    marginTop: 2,
+  },
+  modalButtonText: {
+    color: '#FFFFFF',
+    fontSize: 16,
+    opacity: 1,
+  },
+
+
+  modalBackdrop: {
+    flex: 1,
+    backgroundColor: '#00000099',
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingHorizontal: 24,
+  },
+  modalSkipText: {
+    color: '#6B7280',
+    fontSize: 13,
+    marginTop: 10,
   },
   
   
