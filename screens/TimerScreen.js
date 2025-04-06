@@ -40,6 +40,8 @@ const TimerScreen = () => {
   const [isRunning, setIsRunning] = useState(true);
   const [paused, setPaused] = useState(false);
   const [isResting, setIsResting] = useState(false);
+  const [hasSwitchedSide, setHasSwitchedSide] = useState(false);
+
   const [showVoiceLimitModal, setShowVoiceLimitModal] = useState(false);
   const [silentMode, setSilentMode] = useState(false);
   const [voiceCreditsUsed, setVoiceCreditsUsed] = useState(false);
@@ -160,7 +162,16 @@ const handleShare = async () => {
 
   useEffect(() => {
     if (!isRunning || paused) return;
-  
+    const stretch = stretches[currentStep];
+    if (
+      stretch?.unilateral &&
+      !hasSwitchedSide &&
+      newTime === Math.floor(stretch.duration / 2)
+    ) {
+      safeSpeak("Switch sides");
+      Vibration.vibrate(300);
+      setHasSwitchedSide(true);
+    }
     const interval = setInterval(() => {
       setSecondsLeft((prev) => (prev > 0 ? prev - 1 : 0));
       setTotalTime((prev) => {
@@ -351,8 +362,16 @@ const handleShare = async () => {
                 <AnimatedCircularProgress
                   size={180}
                   width={12}
-                  fill={(secondsLeft / currentStretch.duration) * 100}
-                  tintColor="#10B981"
+                  fill={
+                    currentStretch.unilateral
+                      ? (secondsLeft / currentStretch.duration) * 100
+                      : (secondsLeft / currentStretch.duration) * 100
+                  }
+                  tintColor={
+                    currentStretch.unilateral && secondsLeft <= currentStretch.duration / 2
+                      ? '#60A5FA' // Indigo for side 2
+                      : '#10B981' // Green for side 1
+                  }
                   backgroundColor="#E5E7EB"
                   rotation={0}
                   lineCap="round"

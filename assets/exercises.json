@@ -22,23 +22,26 @@
       {
         "step": 1,
         "name": "Neck Tilts",
-        "duration": 60,
+        "duration": 100,
         "animation": "animations/neckTilts.json",
-        "instruction": "Gently tilt your head toward one shoulder and hold, then switch sides."
+        "instruction": "Gently tilt your head toward one shoulder and hold, then switch sides. After the timer ends, switch sides.",
+        "unilateral": true
       },
       {
         "step": 2,
         "name": "Arm Swings",
-        "duration": 60,
+        "duration": 100,
         "animation": "animations/armSwings.json",
-        "instruction": "Swing your arms across your chest and out wide to wake up your upper body."
+        "instruction": "Swing your arms across your chest and out wide to wake up your upper body.",
+        "unilateral": false
       },
       {
         "step": 3,
         "name": "Torso Twists",
-        "duration": 60,
+        "duration": 100,
         "animation": "animations/torsoTwists.json",
-        "instruction": "Stand with feet shoulder-width apart and gently twist your torso side to side to activate your spine and core."
+        "instruction": "Stand with feet shoulder-width apart and gently twist your torso side to side to activate your spine and core.",
+        "unilateral": false
       }
     ]
   },
@@ -63,23 +66,26 @@
       {
         "step": 1,
         "name": "Seated Shoulder Rolls",
-        "duration": 50,
+        "duration": 60,
         "animation": "animations/seatedShoulderRolls.json",
-        "instruction": "While seated, roll your shoulders forward and backward to reduce tension from typing or poor posture."
+        "instruction": "While seated, roll your shoulders forward and backward to reduce tension from typing or poor posture.",
+        "unilateral": false
       },
       {
         "step": 2,
         "name": "Wrist Stretches",
-        "duration": 50,
+        "duration": 60,
         "animation": "animations/wristStretches.json",
-        "instruction": "Extend one arm and gently pull back on your fingers with the other hand to stretch your wrists and forearms."
+        "instruction": "Extend one arm and gently pull back on your fingers with the other hand to stretch your wrists and forearms.",
+        "unilateral": false
       },
       {
         "step": 3,
         "name": "Standing Forward Bend",
-        "duration": 50,
+        "duration": 60,
         "animation": "animations/standingForwardBend.json",
-        "instruction": "Stand up and slowly bend forward, letting your arms hang toward the ground to decompress your spine."
+        "instruction": "Stand up and slowly bend forward, letting your arms hang toward the ground to decompress your spine.",
+        "unilateral": false
       }
     ]
   },
@@ -105,30 +111,34 @@
       {
         "step": 1,
         "name": "Neck Tilts",
-        "duration": 60,
+        "duration": 120,
         "animation": "animations/neckTilts.json",
-        "instruction": "Gently tilt your head toward one shoulder and hold, then switch sides."
+        "instruction": "Gently tilt your head toward one shoulder and hold, then switch sides. After the timer ends, switch sides.",
+        "unilateral": true
       },
       {
         "step": 2,
         "name": "Arm Swings",
-        "duration": 60,
+        "duration": 120,
         "animation": "animations/armSwings.json",
-        "instruction": "Swing your arms across your chest and out wide to wake up your upper body."
+        "instruction": "Swing your arms across your chest and out wide to wake up your upper body.",
+        "unilateral": false
       },
       {
         "step": 3,
         "name": "Hamstring Stretch",
-        "duration": 90,
+        "duration": 180,
         "animation": "animations/hamstringStretch.json",
-        "instruction": "Bend forward with legs straight and reach for your toes to lengthen your hamstrings."
+        "instruction": "Bend forward with legs straight and reach for your toes to lengthen your hamstrings.",
+        "unilateral": false
       },
       {
         "step": 4,
         "name": "Quad Stretch",
-        "duration": 90,
+        "duration": 180,
         "animation": "animations/quadStretch.json",
-        "instruction": "Stand tall and pull one foot toward your glutes to stretch the front of your thigh."
+        "instruction": "Stand tall and pull one foot toward your glutes to stretch the front of your thigh.",
+        "unilateral": false
       }
     ]
   },
@@ -153,23 +163,26 @@
       {
         "step": 1,
         "name": "Chest Opener",
-        "duration": 45,
+        "duration": 126,
         "animation": "animations/chestOpener.json",
-        "instruction": "Stand or kneel, interlace your fingers behind you and lift your arms slightly to stretch the chest."
+        "instruction": "Stand or kneel, interlace your fingers behind you and lift your arms slightly to stretch the chest.",
+        "unilateral": false
       },
       {
         "step": 2,
         "name": "Back Stretch",
-        "duration": 45,
+        "duration": 126,
         "animation": "animations/backStretch.json",
-        "instruction": "Gently arch your back while on all fours or standing to stretch your spine."
+        "instruction": "Gently arch your back while on all fours or standing to stretch your spine.",
+        "unilateral": false
       },
       {
         "step": 3,
         "name": "Leg Stretch",
-        "duration": 60,
+        "duration": 168,
         "animation": "animations/legStretch.json",
-        "instruction": "Sit and reach toward your toes with both legs extended to loosen your hamstrings and calves."
+        "instruction": "Sit and reach toward your toes with both legs extended to loosen your hamstrings and calves.",
+        "unilateral": false
       }
     ]
   },
@@ -194,23 +207,26 @@
       {
         "step": 1,
         "name": "Gentle Neck Stretches",
-        "duration": 60,
+        "duration": 69,
         "animation": "animations/gentleNeckStretches.json",
-        "instruction": "Slowly tilt your head side to side, forward and back, holding each stretch to relieve tension."
+        "instruction": "Slowly tilt your head side to side, forward and back, holding each stretch to relieve tension.",
+        "unilateral": false
       },
       {
         "step": 2,
         "name": "Shoulder Shrugs",
-        "duration": 60,
+        "duration": 69,
         "animation": "animations/shoulderShrugs.json",
-        "instruction": "Lift and drop your shoulders in a relaxed motion to release daily tension."
+        "instruction": "Lift and drop your shoulders in a relaxed motion to release daily tension.",
+        "unilateral": false
       },
       {
         "step": 3,
         "name": "Calm Breathing",
-        "duration": 90,
+        "duration": 103,
         "animation": "animations/calmBreathing.json",
-        "instruction": "Breathe in through your nose for 4 seconds, hold for 4, and exhale slowly through your mouth for 4."
+        "instruction": "Breathe in through your nose for 4 seconds, hold for 4, and exhale slowly through your mouth for 4.",
+        "unilateral": false
       }
     ]
   },
@@ -235,23 +251,26 @@
       {
         "step": 1,
         "name": "Dynamic Leg Swings",
-        "duration": 90,
+        "duration": 160,
         "animation": "animations/dynamicLegSwings.json",
-        "instruction": "Swing your legs front to back with control to open up your hips."
+        "instruction": "Swing your legs front to back with control to open up your hips.",
+        "unilateral": false
       },
       {
         "step": 2,
         "name": "Side Lunges",
-        "duration": 90,
+        "duration": 160,
         "animation": "animations/sideLunges.json",
-        "instruction": "Lunge side to side to stretch the inner thighs and improve lateral movement."
+        "instruction": "Lunge side to side to stretch the inner thighs and improve lateral movement.",
+        "unilateral": false
       },
       {
         "step": 3,
         "name": "Hip Circles",
-        "duration": 90,
+        "duration": 160,
         "animation": "animations/hipCircles.json",
-        "instruction": "With hands on your hips, rotate your hips in full circles to increase mobility."
+        "instruction": "With hands on your hips, rotate your hips in full circles to increase mobility.",
+        "unilateral": false
       }
     ]
   },
@@ -276,30 +295,34 @@
       {
         "step": 1,
         "name": "Deep Breathing",
-        "duration": 60,
+        "duration": 80,
         "animation": "animations/deepBreathing.json",
-        "instruction": "Breathe deeply and slowly, focusing on your breath to reduce anxiety and center yourself."
+        "instruction": "Breathe deeply and slowly, focusing on your breath to reduce anxiety and center yourself.",
+        "unilateral": false
       },
       {
         "step": 2,
         "name": "Legs on Chair Pose",
-        "duration": 60,
+        "duration": 80,
         "animation": "animations/legsOnChairPose.json",
-        "instruction": "Lie on your back with your legs resting on a chair, creating a 90-degree angle at the hips and knees. Breathe deeply."
+        "instruction": "Lie on your back with your legs resting on a chair, creating a 90-degree angle at the hips and knees. Breathe deeply.",
+        "unilateral": false
       },
       {
         "step": 3,
         "name": "Mindful Stretch",
-        "duration": 90,
+        "duration": 120,
         "animation": "animations/mindfulStretch.json",
-        "instruction": "Gently stretch your arms and torso while staying present and relaxed."
+        "instruction": "Gently stretch your arms and torso while staying present and relaxed.",
+        "unilateral": false
       },
       {
         "step": 4,
         "name": "Supine Twist",
-        "duration": 60,
+        "duration": 80,
         "animation": "animations/supineTwist.json",
-        "instruction": "Lie on your back and gently guide one knee across your body to stretch your back and release tension."
+        "instruction": "Lie on your back and gently guide one knee across your body to stretch your back and release tension.",
+        "unilateral": false
       }
     ]
   },
@@ -324,30 +347,34 @@
       {
         "step": 1,
         "name": "Thoracic Spine Opener",
-        "duration": 60,
+        "duration": 87,
         "animation": "animations/thoracicSpineOpener.json",
-        "instruction": "Place your hands on a wall or chair back, hinge at the hips, and let your chest sink to stretch your upper back."
+        "instruction": "Place your hands on a wall or chair back, hinge at the hips, and let your chest sink to stretch your upper back.",
+        "unilateral": false
       },
       {
         "step": 2,
         "name": "Downward Dog",
-        "duration": 90,
+        "duration": 131,
         "animation": "animations/downwardDog.json",
-        "instruction": "Form an inverted V, pressing your hands and feet into the ground and lifting your hips up."
+        "instruction": "Form an inverted V, pressing your hands and feet into the ground and lifting your hips up.",
+        "unilateral": false
       },
       {
         "step": 3,
         "name": "Child's Pose",
-        "duration": 90,
+        "duration": 131,
         "animation": "animations/childsPose.json",
-        "instruction": "Kneel down and stretch your arms forward while relaxing your torso toward the ground."
+        "instruction": "Kneel down and stretch your arms forward while relaxing your torso toward the ground.",
+        "unilateral": false
       },
       {
         "step": 4,
         "name": "Warrior II",
-        "duration": 90,
+        "duration": 131,
         "animation": "animations/warriorII.json",
-        "instruction": "Step into a wide lunge and stretch your arms out horizontally while keeping your gaze over the front hand."
+        "instruction": "Step into a wide lunge and stretch your arms out horizontally while keeping your gaze over the front hand.",
+        "unilateral": false
       }
     ]
   },
@@ -372,23 +399,26 @@
       {
         "step": 1,
         "name": "Jumping Jacks",
-        "duration": 30,
+        "duration": 40,
         "animation": "animations/jumpingJacks.json",
-        "instruction": "Jump and move your arms overhead, landing with feet apart, then return to center in a rhythm."
+        "instruction": "Jump and move your arms overhead, landing with feet apart, then return to center in a rhythm.",
+        "unilateral": false
       },
       {
         "step": 2,
         "name": "Arm Circles",
-        "duration": 60,
+        "duration": 80,
         "animation": "animations/armCircles.json",
-        "instruction": "Make wide forward and backward circles with your arms to engage the shoulders."
+        "instruction": "Make wide forward and backward circles with your arms to engage the shoulders.",
+        "unilateral": false
       },
       {
         "step": 3,
         "name": "High Knees",
-        "duration": 45,
+        "duration": 60,
         "animation": "animations/highKnees.json",
-        "instruction": "Lift your knees toward your chest one at a time while pumping your arms for added cardio."
+        "instruction": "Lift your knees toward your chest one at a time while pumping your arms for added cardio.",
+        "unilateral": false
       }
     ]
   },
@@ -413,23 +443,26 @@
       {
         "step": 1,
         "name": "Mountain Pose",
-        "duration": 30,
+        "duration": 96,
         "animation": "animations/mountainPose.json",
-        "instruction": "Stand tall with feet together, arms by your sides, and breathe deeply to center yourself."
+        "instruction": "Stand tall with feet together, arms by your sides, and breathe deeply to center yourself.",
+        "unilateral": false
       },
       {
         "step": 2,
         "name": "Tree Pose",
-        "duration": 60,
+        "duration": 192,
         "animation": "animations/treePose.json",
-        "instruction": "Balance on one foot and place the other foot on your inner thigh or calf, hands together at your chest."
+        "instruction": "Balance on one foot and place the other foot on your inner thigh or calf, hands together at your chest.",
+        "unilateral": false
       },
       {
         "step": 3,
         "name": "Reclined Spinal Twist",
-        "duration": 60,
+        "duration": 192,
         "animation": "animations/reclinedSpinalTwist.json",
-        "instruction": "Lie on your back, bring one knee across your body, and stretch your arms out for a relaxing spinal twist."
+        "instruction": "Lie on your back, bring one knee across your body, and stretch your arms out for a relaxing spinal twist.",
+        "unilateral": false
       }
     ]
   },
@@ -454,23 +487,26 @@
       {
         "step": 1,
         "name": "Wall Angels",
-        "duration": 60,
+        "duration": 87,
         "animation": "animations/wallAngels.json",
-        "instruction": "Stand against a wall and slide your arms up and down like snow angels to align posture and activate upper back."
+        "instruction": "Stand against a wall and slide your arms up and down like snow angels to align posture and activate upper back.",
+        "unilateral": false
       },
       {
         "step": 2,
         "name": "Chest Opener",
-        "duration": 45,
+        "duration": 65,
         "animation": "animations/chestOpener.json",
-        "instruction": "Clasp your hands behind your back and lift slightly to stretch your chest and shoulders."
+        "instruction": "Clasp your hands behind your back and lift slightly to stretch your chest and shoulders.",
+        "unilateral": false
       },
       {
         "step": 3,
         "name": "Thoracic Spine Opener",
-        "duration": 60,
+        "duration": 87,
         "animation": "animations/thoracicSpineOpener.json",
-        "instruction": "Place your hands on a wall or chair back, hinge at the hips, and let your chest sink to stretch your upper back."
+        "instruction": "Place your hands on a wall or chair back, hinge at the hips, and let your chest sink to stretch your upper back.",
+        "unilateral": false
       }
     ]
   },
@@ -495,23 +531,26 @@
       {
         "step": 1,
         "name": "Knees to Chest",
-        "duration": 60,
+        "duration": 86,
         "animation": "animations/kneesToChest.json",
-        "instruction": "Lie on your back and gently pull your knees toward your chest to release lower back tension."
+        "instruction": "Lie on your back and gently pull your knees toward your chest to release lower back tension.",
+        "unilateral": false
       },
       {
         "step": 2,
         "name": "Figure Four Stretch",
-        "duration": 90,
+        "duration": 129,
         "animation": "animations/figureFour.json",
-        "instruction": "Cross one ankle over the opposite thigh and pull the bottom leg in to stretch glutes and lower back."
+        "instruction": "Cross one ankle over the opposite thigh and pull the bottom leg in to stretch glutes and lower back.",
+        "unilateral": false
       },
       {
         "step": 3,
         "name": "Reclined Spinal Twist",
-        "duration": 60,
+        "duration": 86,
         "animation": "animations/reclinedSpinalTwist.json",
-        "instruction": "Lie on your back, bring one knee across your body, and stretch your arms out for a relaxing spinal twist."
+        "instruction": "Lie on your back, bring one knee across your body, and stretch your arms out for a relaxing spinal twist.",
+        "unilateral": false
       }
     ]
   },
@@ -536,23 +575,26 @@
       {
         "step": 1,
         "name": "Lunge Hip Stretch",
-        "duration": 90,
+        "duration": 72,
         "animation": "animations/lungeHipStretch.json",
-        "instruction": "Step into a deep lunge and gently press your hips forward to stretch your hip flexors."
+        "instruction": "Step into a deep lunge and gently press your hips forward to stretch your hip flexors.",
+        "unilateral": false
       },
       {
         "step": 2,
         "name": "Pigeon Pose",
-        "duration": 90,
+        "duration": 72,
         "animation": "animations/pigeonPose.json",
-        "instruction": "Bring one leg forward bent and stretch the opposite leg back to deeply stretch the hips and glutes."
+        "instruction": "Bring one leg forward bent and stretch the opposite leg back to deeply stretch the hips and glutes.",
+        "unilateral": false
       },
       {
         "step": 3,
         "name": "Butterfly Stretch",
-        "duration": 345,
+        "duration": 276,
         "animation": "animations/butterflyStretch.json",
-        "instruction": "Sit with feet together and gently press knees down to stretch inner thighs and hips."
+        "instruction": "Sit with feet together and gently press knees down to stretch inner thighs and hips.",
+        "unilateral": false
       }
     ]
   },
@@ -577,23 +619,26 @@
       {
         "step": 1,
         "name": "Neck Tilts",
-        "duration": 60,
+        "duration": 26,
         "animation": "animations/neckTilts.json",
-        "instruction": "Gently tilt your head toward one shoulder and hold, then switch sides."
+        "instruction": "Gently tilt your head toward one shoulder and hold, then switch sides. After the timer ends, switch sides.",
+        "unilateral": true
       },
       {
         "step": 2,
         "name": "Shoulder Rolls",
-        "duration": 450,
+        "duration": 195,
         "animation": "animations/shoulderRolls.json",
-        "instruction": "Lift and roll your shoulders forward and backward to release tension."
+        "instruction": "Lift and roll your shoulders forward and backward to release tension.",
+        "unilateral": false
       },
       {
         "step": 3,
         "name": "Chin Tucks",
-        "duration": 45,
+        "duration": 19,
         "animation": "animations/chinTucks.json",
-        "instruction": "Tuck your chin inward like making a double chin to activate deep neck muscles."
+        "instruction": "Tuck your chin inward like making a double chin to activate deep neck muscles.",
+        "unilateral": false
       }
     ]
   },
@@ -618,23 +663,26 @@
       {
         "step": 1,
         "name": "Hip Circles",
-        "duration": 30,
+        "duration": 100,
         "animation": "animations/hipCircles.json",
-        "instruction": "With hands on hips, rotate your hips in both directions to loosen up after sitting."
+        "instruction": "With hands on hips, rotate your hips in both directions to loosen up after sitting.",
+        "unilateral": false
       },
       {
         "step": 2,
         "name": "Standing Quad Stretch",
-        "duration": 30,
+        "duration": 100,
         "animation": "animations/standingQuadStretch.json",
-        "instruction": "Pull one foot toward your glutes to open up the front of your legs and hip flexors."
+        "instruction": "Pull one foot toward your glutes to open up the front of your legs and hip flexors.",
+        "unilateral": false
       },
       {
         "step": 3,
         "name": "Backbend Reach",
-        "duration": 30,
+        "duration": 100,
         "animation": "animations/backbendReach.json",
-        "instruction": "Reach upward and gently arch your back to counteract spinal compression."
+        "instruction": "Reach upward and gently arch your back to counteract spinal compression.",
+        "unilateral": false
       }
     ]
   },
@@ -659,23 +707,26 @@
       {
         "step": 1,
         "name": "Arm Swings",
-        "duration": 30,
+        "duration": 120,
         "animation": "animations/armSwings.json",
-        "instruction": "Swing your arms across your chest and out wide to wake up your upper body."
+        "instruction": "Swing your arms across your chest and out wide to wake up your upper body.",
+        "unilateral": false
       },
       {
         "step": 2,
         "name": "Leg Kicks",
-        "duration": 30,
+        "duration": 120,
         "animation": "animations/legKicks.json",
-        "instruction": "Kick one leg forward at a time with control to activate the hamstrings."
+        "instruction": "Kick one leg forward at a time with control to activate the hamstrings.",
+        "unilateral": false
       },
       {
         "step": 3,
         "name": "Torso Rotations",
-        "duration": 30,
+        "duration": 120,
         "animation": "animations/torsoRotations.json",
-        "instruction": "Twist from side to side with bent elbows to activate the spine and core."
+        "instruction": "Twist from side to side with bent elbows to activate the spine and core.",
+        "unilateral": false
       }
     ]
   },
@@ -700,23 +751,26 @@
       {
         "step": 1,
         "name": "Single-Leg Stand",
-        "duration": 45,
+        "duration": 160,
         "animation": "animations/singleLegStand.json",
-        "instruction": "Balance on one leg with arms extended to the sides. Switch legs after 20 seconds."
+        "instruction": "Balance on one leg with arms extended to the sides. Switch legs after 20 seconds.",
+        "unilateral": false
       },
       {
         "step": 2,
         "name": "Toe Taps",
-        "duration": 45,
+        "duration": 160,
         "animation": "animations/toeTaps.json",
-        "instruction": "Tap your toe forward and to the side while balancing on the opposite leg."
+        "instruction": "Tap your toe forward and to the side while balancing on the opposite leg.",
+        "unilateral": false
       },
       {
         "step": 3,
         "name": "Bird Dog",
-        "duration": 45,
+        "duration": 160,
         "animation": "animations/birdDog.json",
-        "instruction": "On all fours, extend opposite arm and leg, hold for balance, then switch sides."
+        "instruction": "On all fours, extend opposite arm and leg, hold for balance, then switch sides. After the timer ends, switch sides.",
+        "unilateral": true
       }
     ]
   },
@@ -741,16 +795,18 @@
       {
         "step": 1,
         "name": "Box Breathing",
-        "duration": 60,
+        "duration": 120,
         "animation": "animations/boxBreathing.json",
-        "instruction": "Inhale for 4 seconds, hold for 4, exhale for 4, hold for 4. Repeat."
+        "instruction": "Inhale for 4 seconds, hold for 4, exhale for 4, hold for 4. Repeat.",
+        "unilateral": false
       },
       {
         "step": 2,
         "name": "Overhead Stretch",
-        "duration": 30,
+        "duration": 60,
         "animation": "animations/overheadStretch.json",
-        "instruction": "Reach your arms up and interlace fingers, lengthening the spine and expanding the chest."
+        "instruction": "Reach your arms up and interlace fingers, lengthening the spine and expanding the chest.",
+        "unilateral": false
       }
     ]
   },
@@ -775,23 +831,26 @@
       {
         "step": 1,
         "name": "Seated Side Bends",
-        "duration": 30,
+        "duration": 140,
         "animation": "animations/seatedSideBends.json",
-        "instruction": "Sit upright and reach one arm overhead while leaning gently to the side."
+        "instruction": "Sit upright and reach one arm overhead while leaning gently to the side.",
+        "unilateral": false
       },
       {
         "step": 2,
         "name": "Arm Circles",
-        "duration": 30,
+        "duration": 140,
         "animation": "animations/armCircles.json",
-        "instruction": "Make gentle circles with your arms to warm up shoulders without pressure on knees."
+        "instruction": "Make gentle circles with your arms to warm up shoulders without pressure on knees.",
+        "unilateral": false
       },
       {
         "step": 3,
         "name": "Spinal Rolls",
-        "duration": 30,
+        "duration": 140,
         "animation": "animations/spinalRolls.json",
-        "instruction": "While seated or standing, slowly roll your spine forward and back to release tension."
+        "instruction": "While seated or standing, slowly roll your spine forward and back to release tension.",
+        "unilateral": false
       }
     ]
   },
@@ -816,23 +875,26 @@
       {
         "step": 1,
         "name": "March in Place",
-        "duration": 30,
+        "duration": 100,
         "animation": "animations/marchInPlace.json",
-        "instruction": "March on the spot with energy and lift your knees high."
+        "instruction": "March on the spot with energy and lift your knees high.",
+        "unilateral": false
       },
       {
         "step": 2,
         "name": "Sun Reaches",
-        "duration": 30,
+        "duration": 100,
         "animation": "animations/sunReaches.json",
-        "instruction": "Raise arms to the sky and take a big inhale. Exhale and relax."
+        "instruction": "Raise arms to the sky and take a big inhale. Exhale and relax.",
+        "unilateral": false
       },
       {
         "step": 3,
         "name": "Jumping Jacks",
-        "duration": 30,
+        "duration": 100,
         "animation": "animations/jumpingJacks.json",
-        "instruction": "Get your heart rate up and your mind lifted with jumping jacks."
+        "instruction": "Get your heart rate up and your mind lifted with jumping jacks.",
+        "unilateral": false
       }
     ]
   }
