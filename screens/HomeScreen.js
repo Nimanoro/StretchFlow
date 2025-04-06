@@ -95,16 +95,16 @@ const HomeScreen = () => {
   }, []);
 
   return (
-    <ScrollView style={styles.container}>
 
-      <SafeAreaView style={{ flex: 1, backgroundColor: '#F0F4F3' }}/> 
+
+    <SafeAreaView style={{ flex: 1 }} edges={['top']}>
+    <ScrollView style={styles.container}>
       {/* === HERO HEADER === */}
       <ImageBackground
         source={require('../assets/hero.png')}
         style={styles.heroHeader}
         imageStyle={{ resizeMode: 'cover' }}
       >
-        <Image source={require('../assets/image.png')} style={styles.heroWatermark} />
         <LinearGradient
           colors={['#F0F0F0', 'rgba(224, 247, 241, 0.92)']}
           style={styles.gradientOverlay}
@@ -192,24 +192,11 @@ const HomeScreen = () => {
           style={{ marginBottom: 30 }}
         />
 
-        {/* === PREMIUM BLOCK === */}
-        <View style={styles.lockedCard}>
-          <Text style={styles.lockedTitle}>Ready to Level Up?</Text>
-          <Text style={styles.lockedSubtext}>Unlock the full StretchFlow experience:</Text>
+       
 
-          <View style={styles.bulletList}>
-            <Text style={styles.lockedText}>✅ Unlimited sessions & routines</Text>
-            <Text style={styles.lockedText}>🎵 Ambient music & relaxing themes</Text>
-            <Text style={styles.lockedText}>🧠 Personalized daily suggestions</Text>
-            <Text style={styles.lockedText}>💾 Save and build custom flows</Text>
-          </View>
-
-          <Pressable style={styles.lockedButton} onPress={() => navigation.navigate('Premium')}>
-            <Text style={styles.lockedButtonText}>Unlock Premium</Text>
-          </Pressable>
-        </View>
       </View>
     </ScrollView>
+    </SafeAreaView> 
   );
 };
 
@@ -366,47 +353,68 @@ const styles = StyleSheet.create({
   },
 
   lockedCard: {
-    backgroundColor: '#F0FDFA',
-    padding: 24,
+    backgroundColor: '#ECFDF5', // lighter mint tone, more premium wellness feel
+    paddingVertical: 24,
+    paddingHorizontal: 20,
     marginHorizontal: 20,
-    marginBottom: 40,
+    marginTop: 24,
+    marginBottom: 48,
+    borderRadius: 16,
     shadowColor: '#000',
-    shadowOpacity: 0.04,
+    shadowOpacity: 0.05,
     shadowOffset: { width: 0, height: 2 },
-    shadowRadius: 6,
-    elevation: 2,
+    shadowRadius: 8,
+    elevation: 3,
+    alignItems: 'center',
   },
+  
   lockedTitle: {
     fontSize: 20,
     fontWeight: '700',
-    color: '#047857',
+    color: '#047857', // deep emerald (consistent with your CTA)
     marginBottom: 6,
+    textAlign: 'center',
   },
+  
   lockedSubtext: {
     fontSize: 14,
     color: '#4B5563',
-    marginBottom: 12,
-  },
-  bulletList: {
     marginBottom: 16,
+    textAlign: 'center',
   },
+  
+  bulletList: {
+    alignSelf: 'stretch',
+    paddingLeft: 12,
+    marginBottom: 20,
+  },
+  
   lockedText: {
     fontSize: 14,
     color: '#065F46',
-    marginBottom: 6,
+    marginBottom: 8,
+    lineHeight: 20,
   },
+  
   lockedButton: {
     backgroundColor: '#047857',
-    paddingVertical: 12,
-    paddingHorizontal: 28,
+    paddingVertical: 14,
+    paddingHorizontal: 36,
     borderRadius: 25,
     alignSelf: 'center',
+    shadowColor: '#047857',
+    shadowOpacity: 0.15,
+    shadowOffset: { width: 0, height: 4 },
+    shadowRadius: 6,
+    elevation: 4,
   },
+  
   lockedButtonText: {
     fontSize: 15,
     fontWeight: '600',
     color: '#FFFFFF',
   },
+  
 });
 
 export default HomeScreen;

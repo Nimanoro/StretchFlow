@@ -281,7 +281,7 @@ const handleShare = async () => {
   colors={['#ECFDF5', '#DBF4FF']}
   style={[StyleSheet.absoluteFill, { zIndex: -1 }]}
 />
-<Animated.Text style={[styles.restLabelMain, { opacity: fadeAnim }]}>
+<Animated.Text style={[styles.stretchName, { opacity: fadeAnim }]}>
   Time to Rest
 </Animated.Text>
 <Text style={styles.restSubLabel}>10 seconds to reset & refocus</Text>
@@ -513,8 +513,10 @@ const handleShare = async () => {
       </LinearGradient>
 
       <Text style={styles.modalText}>
-      You’ve hit your 3 free voice sessions this week.
-      Unlock unlimited voice coaching and boost your focus during every routine.
+        You’ve used all 3 free voice sessions this week.
+Stay focused and unlock unlimited guidance for just $2.99/month.
+
+
       </Text>
 
       {/* Feature bullets */}
@@ -572,9 +574,6 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
   },
   topBar: {
-    position: 'absolute',
-    top: 0,
-    height: 6,
     backgroundColor: '#E5E7EB',
     width: '100%',
   },
@@ -654,13 +653,14 @@ const styles = StyleSheet.create({
     fontStyle: 'italic',
   },
   instructionText: {
-    marginTop: 12,
-    fontSize: 14,
+    marginTop: 18,
+    fontSize: 15,
     color: '#6B7280',
     textAlign: 'center',
-    lineHeight: 20,
+    lineHeight: 22,
     fontStyle: 'italic',
-  },
+    paddingHorizontal: 20,
+  },  
   bottomToggleContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -823,6 +823,7 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     backgroundColor: '#E5E7EB',
     marginTop: 10,
+    marginBottom: 20,
   },
   backToHome: {
     fontSize: 14,
@@ -839,7 +840,16 @@ const styles = StyleSheet.create({
     elevation: 10,
     alignItems: 'center',
     justifyContent: 'center',
+
+  shadowOffset: { width: 0, height: 0 },
   },
+  restSubLabel: {
+    fontSize: 15,
+    color: '#4B5563',
+    fontStyle: 'italic',
+    marginBottom: 16,
+  },
+  
 });
 
 export default TimerScreen;

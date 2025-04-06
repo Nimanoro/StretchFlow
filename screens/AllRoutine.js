@@ -81,8 +81,9 @@ const AllRoutinesScreen = () => {
   });
 
   return (
+    <SafeAreaView style={{ flex: 1 }} edges={['top']}>
+
     <View style={styles.container}>
-      <SafeAreaView style={{ backgroundColor: '#F0F4F3' }} />
       {/* Tabs */}
       <View style={styles.tabContainer}>
         <Pressable
@@ -214,6 +215,7 @@ const AllRoutinesScreen = () => {
         />
       )}
     </View>
+    </SafeAreaView>
   );
 };
 

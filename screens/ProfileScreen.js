@@ -59,8 +59,8 @@ const ProfileScreen = () => {
   };
 
   return (
+    <SafeAreaView style={{ flex: 1 }} edges={['top']}>
     <View style={styles.container}>
-      <SafeAreaView style={{ flex: 1 }}/>
       <View style={styles.card}>
         <Text style={styles.label}>Your Name</Text>
         <TextInput
@@ -118,6 +118,7 @@ const ProfileScreen = () => {
         <Text style={styles.linkText}>support@stretchflow.app</Text>
       </View>
     </View>
+    </SafeAreaView>
   );
 }  
 

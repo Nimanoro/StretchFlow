@@ -9,39 +9,62 @@ export const UserProvider = ({ children }) => {
   const [isPremium, setIsPremium] = useState(false);
   const [iapInitialized, setIapInitialized] = useState(false);
 
+  // ✅ Load from storage on app startup
   useEffect(() => {
-    const setupListener = () => {
-      InAppPurchases.setPurchaseListener(async ({ responseCode, results }) => {
+    const checkStoredPremium = async () => {
+      try {
+        const stored = await AsyncStorage.getItem('hasPremium');
+        if (stored === 'true') {
+          setIsPremium(true);
+        }
+      } catch (err) {
+        console.warn('Failed to load premium flag:', err);
+      }
+    };
+    checkStoredPremium();
+  }, []);
+
+  // ✅ Setup purchase listener
+  useEffect(() => {
+    const purchaseListener = InAppPurchases.setPurchaseListener(
+      async ({ responseCode, results }) => {
         if (responseCode === InAppPurchases.IAPResponseCode.OK) {
           for (const purchase of results) {
             if (!purchase.acknowledged) {
-              await InAppPurchases.finishTransactionAsync(purchase, true);
-              await AsyncStorage.setItem('hasPremium', 'true');
-              setIsPremium(true);
+              try {
+                await InAppPurchases.finishTransactionAsync(purchase, true);
+                await AsyncStorage.setItem('hasPremium', 'true');
+                setIsPremium(true);
+              } catch (err) {
+                console.warn('Failed to finish transaction:', err);
+              }
             }
           }
         }
-      });
-    };
+      }
+    );
 
-    setupListener();
     return () => {
       InAppPurchases.disconnectAsync();
     };
   }, []);
 
-  // lazy-restore on demand (e.g. from PremiumScreen, not startup)
+  // ✅ Manual restore/init function
   const initIAP = async () => {
     if (iapInitialized) return;
     try {
       await InAppPurchases.connectAsync();
       const restored = await restorePurchase();
-      if (restored) setIsPremium(true);
-      setIapInitialized(true);
+      if (restored) {
+        await AsyncStorage.setItem('hasPremium', 'true');
+        setIsPremium(true);
+      }
     } catch (err) {
       if (!err.message.includes('Already connected')) {
-        console.log('IAP init error:', err);
+        console.error('IAP init error:', err);
       }
+    } finally {
+      setIapInitialized(true);
     }
   };
 

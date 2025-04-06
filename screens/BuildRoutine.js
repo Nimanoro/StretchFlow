@@ -10,7 +10,7 @@ import {
   Image,
   Modal,
 } from 'react-native';
-import { LinearGradient } from 'react-native-svg';
+import { LinearGradient } from 'expo-linear-gradient';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { ScrollView, TextInput as RNTextInput } from 'react-native';
@@ -21,7 +21,6 @@ import comingsoon from '../assets/image.png';
 import { KeyboardAvoidingView, Platform} from 'react-native';
 import { UserContext } from '../context/UserContext';
 import { getMyRoutines } from '../utils/userStorage';
-import { saveMyRoutines } from '../utils/userStorage';
 import { TouchableWithoutFeedback, Keyboard } from 'react-native';
 
 
@@ -151,6 +150,7 @@ const BuildRoutineScreen = () => {
     const isSelected = !!selected.find((s) => s.id === item.id);
 
     return (
+      
       <Pressable
         onPress={() => toggleStretch(item)}
         style={({ pressed }) => [
@@ -196,9 +196,9 @@ const BuildRoutineScreen = () => {
   };
 
   return (
+    <SafeAreaView style={{ flex: 1 }} edges={['top']}>
     <View style={styles.container}>
 
-<SafeAreaView style={{backgroundColor: '#F0F4F3' }}/> 
       <Modal visible={isNamingModalVisible} animationType="slide" transparent>
         <View style={styles.modalOverlay}>
           <View style={styles.modalContent}>
@@ -434,8 +434,7 @@ const BuildRoutineScreen = () => {
       </LinearGradient>
 
       <Text style={styles.modalText}>
-      You’ve made 2 personal routines. Upgrade to Premium for unlimited access to personalized routines and voice guidance.
-      </Text>
+      You’ve reached your free limit of 2 personal routines. Upgrade to Premium for unlimited routines, voice guidance, and more.      </Text>
 
       {/* Feature bullets */}
       <View style={styles.modalBulletList}>
@@ -460,7 +459,7 @@ const BuildRoutineScreen = () => {
           navigation.navigate('Premium');
         }}
       >
-        <Text style={styles.modalButtonText}>Upgrade to Premium</Text>
+        <Text style={styles.modalButtonText}>Start Your Journey </Text>
       </Pressable>
 
       <Pressable onPress={() => setShowModal(false)}>
@@ -470,6 +469,7 @@ const BuildRoutineScreen = () => {
   </View>
 </Modal>
     </View>
+    </SafeAreaView>
   );
 };
 
@@ -638,6 +638,7 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: '600',
     marginBottom: 12,
+    
   },
   modalInput: {
     borderColor: '#D1D5DB',
@@ -646,12 +647,14 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     fontSize: 16,
     marginBottom: 16,
+    width: '60%',
   },
   modalSaveButton: {
     backgroundColor: '#10B981',
     paddingVertical: 14,
     borderRadius: 12,
     alignItems: 'center',
+    paddingHorizontal: 20, 
   },
   modalSaveButtonText: {
     color: '#FFFFFF',
@@ -753,10 +756,12 @@ const styles = StyleSheet.create({
     elevation: 5,
   },
   modalHeaderText: {
-    fontSize: 15,
-    fontWeight: '700',
     color: '#fff',
+    fontSize: 18,
+    fontWeight: '600',
+    marginLeft: 8,
   },
+  
   modalText: {
     fontSize: 14,
     color: '#4B5563',

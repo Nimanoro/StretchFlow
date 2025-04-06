@@ -21,6 +21,9 @@ import BottomTabNavigator from './screens/bottomNav';
 import { getUserData } from './utils/userStorage';
 import { FavoritesProvider } from './context/FavoritesContext';
 
+import * as Updates from 'expo-updates';
+
+
 
 
 
@@ -38,7 +41,16 @@ export default function App() {
     };
     checkUser();
   }, []);
-
+  useEffect(() => {
+    async function updateApp() {
+      const update = await Updates.checkForUpdateAsync();
+      if (update.isAvailable) {
+        await Updates.fetchUpdateAsync();
+        await Updates.reloadAsync(); // reloads app with new update
+      }
+    }
+    updateApp();
+  }, []);
   if (!initialRoute) return null;
 
   return (
