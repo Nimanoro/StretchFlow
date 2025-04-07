@@ -8,6 +8,8 @@ export const UserContext = createContext();
 export const UserProvider = ({ children }) => {
   const [isPremium, setIsPremium] = useState(false);
   const [iapInitialized, setIapInitialized] = useState(false);
+  const [madeRoutine, setMadeRoutine] = useState(false);
+  
 
   // ✅ Load from storage on app startup
   useEffect(() => {

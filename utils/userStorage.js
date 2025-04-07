@@ -19,6 +19,10 @@ export const updateUserData = async (updates) => {
 
 export const resetUserData = async () => {
   await AsyncStorage.removeItem(USER_KEY);
+  await AsyncStorage.removeItem("myRoutines");
+  await AsyncStorage.removeItem("savedRoutines");
+  await AsyncStorage.removeItem("favorites");
+
 };
 
 export const getMyRoutines = async () => {

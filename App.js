@@ -20,8 +20,14 @@ import { useState } from 'react';
 import BottomTabNavigator from './screens/bottomNav';
 import { getUserData } from './utils/userStorage';
 import { FavoritesProvider } from './context/FavoritesContext';
+let Updates;
+try {
+  Updates = require('expo-updates');
+} catch (e) {
+  // Running in Expo Go or unsupported environment
+  Updates = null;
+}
 
-import * as Updates from 'expo-updates';
 
 
 

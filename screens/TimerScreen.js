@@ -53,6 +53,24 @@ const TimerScreen = () => {
   const cardRef = useRef(); // 📸 Reference to the card
 
   const nextFadeAnim = useRef(new Animated.Value(0)).current;
+const restartRoutine = () => {
+  setCurrentStep(0);
+  setSecondsLeft(stretches[0].duration);
+  setIsRunning(true);
+  setPaused(false);
+  setHasSwitchedSide(false);
+  setIsResting(false);
+  setTotalTime(0);
+  setShowConfetti(false);
+  setVoiceChecked(false);
+  animateFade();
+};
+const getGreeting = () => {
+  const hour = new Date().getHours();
+  if (hour < 12) return 'Good morning';
+  if (hour < 18) return 'Good afternoon';
+  return 'Good evening';
+};
 
 const animateNext = () => {
   nextFadeAnim.setValue(0);
@@ -162,27 +180,30 @@ const handleShare = async () => {
 
   useEffect(() => {
     if (!isRunning || paused) return;
-    const stretch = stretches[currentStep];
-    if (
-      stretch?.unilateral &&
-      !hasSwitchedSide &&
-      newTime === Math.floor(stretch.duration / 2)
-    ) {
-      safeSpeak("Switch sides");
-      Vibration.vibrate(300);
-      setHasSwitchedSide(true);
-    }
+  
     const interval = setInterval(() => {
-      setSecondsLeft((prev) => (prev > 0 ? prev - 1 : 0));
-      setTotalTime((prev) => {
-        // only increment if time is ticking
-        if (secondsLeft > 0) return prev + 1;
-        return prev;
+      setSecondsLeft((prev) => {
+        const stretch = stretches[currentStep];
+  
+        if (
+          stretch?.unilateral &&
+          !hasSwitchedSide &&
+          prev === Math.floor(stretch.duration / 2)
+        ) {
+          safeSpeak('Switch sides');
+          Vibration.vibrate(300);
+          setHasSwitchedSide(true);
+        }
+  
+        return prev > 0 ? prev - 1 : 0;
       });
+  
+      setTotalTime((prev) => (secondsLeft > 0 ? prev + 1 : prev));
     }, 1000);
   
     return () => clearInterval(interval);
-  }, [isRunning, paused, secondsLeft]);
+  }, [isRunning, paused, currentStep, hasSwitchedSide]);
+  
   
   useEffect(() => {
     if (!isRunning || !voiceChecked || paused) return;
@@ -208,6 +229,7 @@ const handleShare = async () => {
       setIsResting(false);
       setCurrentStep(next);
       setSecondsLeft(stretches[next].duration);
+      safeSpeak(`${s.name}. ${s.instruction}`);
       animateFade();
     }
   }, [secondsLeft, isRunning, voiceChecked, paused, isResting]);
@@ -225,7 +247,6 @@ const handleShare = async () => {
       }      
        else {
         if (!silentMode) await incrementVoiceUsage();
-        safeSpeak(`${s.name}. ${s.instruction}`);
       }
       setVoiceChecked(true);
     };
@@ -496,13 +517,7 @@ const handleShare = async () => {
     </Pressable>
 
     <Pressable style={styles.ctaButton} onPress={() => {
-      setCurrentStep(0);
-      setSecondsLeft(stretches[0].duration);
-      setIsRunning(true);
-      setPaused(false);
-      setShowConfetti(false);
-      setVoiceChecked(false);
-      animateFade();
+      restartRoutine();
     }}>
       <Text style={styles.ctaButtonText}>Repeat</Text>
     </Pressable>

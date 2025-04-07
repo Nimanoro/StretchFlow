@@ -8,11 +8,11 @@
     "duration": "5 min",
     "difficulty": "Easy",
     "tags": [
+      "energize",
       "morning",
-      "wake up",
-      "energize"
+      "wake up"
     ],
-    "category": "Warm-up",
+    "category": "Prep & Warm-Up",
     "muscleGroups": [
       "neck",
       "shoulders",
@@ -24,7 +24,7 @@
         "name": "Neck Tilts",
         "duration": 100,
         "animation": "animations/neckTilts.json",
-        "instruction": "Gently tilt your head toward one shoulder and hold, then switch sides. After the timer ends, switch sides.",
+        "instruction": "Gently tilt your head toward one shoulder and hold, then switch sides.",
         "unilateral": true
       },
       {
@@ -56,7 +56,7 @@
       "quick",
       "refresh"
     ],
-    "category": "Seated Stretch",
+    "category": "Recovery & Relief",
     "muscleGroups": [
       "shoulders",
       "wrists",
@@ -96,11 +96,11 @@
     "duration": "10 min",
     "difficulty": "Intermediate",
     "tags": [
+      "flow",
       "mobility",
-      "stretch",
-      "flow"
+      "stretch"
     ],
-    "category": "Full Body",
+    "category": "Mobility & Flexibility",
     "muscleGroups": [
       "neck",
       "shoulders",
@@ -113,7 +113,7 @@
         "name": "Neck Tilts",
         "duration": 120,
         "animation": "animations/neckTilts.json",
-        "instruction": "Gently tilt your head toward one shoulder and hold, then switch sides. After the timer ends, switch sides.",
+        "instruction": "Gently tilt your head toward one shoulder and hold.",
         "unilateral": true
       },
       {
@@ -149,11 +149,11 @@
     "duration": "7 min",
     "difficulty": "Intermediate",
     "tags": [
-      "recovery",
       "cooldown",
+      "recovery",
       "relax"
     ],
-    "category": "Cooldown",
+    "category": "Recovery & Relief",
     "muscleGroups": [
       "chest",
       "back",
@@ -197,7 +197,7 @@
       "relax",
       "sleep"
     ],
-    "category": "Bedtime",
+    "category": "Recovery & Relief",
     "muscleGroups": [
       "neck",
       "shoulders",
@@ -237,11 +237,11 @@
     "duration": "8 min",
     "difficulty": "Advanced",
     "tags": [
-      "mobility",
       "advanced",
-      "flexibility"
+      "flexibility",
+      "mobility"
     ],
-    "category": "Mobility",
+    "category": "Mobility & Flexibility",
     "muscleGroups": [
       "hips",
       "legs",
@@ -281,11 +281,11 @@
     "duration": "6 min",
     "difficulty": "Easy",
     "tags": [
-      "stress",
       "mindful",
-      "relax"
+      "relax",
+      "stress"
     ],
-    "category": "Mental Reset",
+    "category": "Mindfulness & Calm",
     "muscleGroups": [
       "back",
       "arms",
@@ -333,11 +333,11 @@
     "duration": "8 min",
     "difficulty": "Intermediate",
     "tags": [
-      "yoga",
+      "balance",
       "flow",
-      "balance"
+      "yoga"
     ],
-    "category": "Yoga",
+    "category": "Mobility & Flexibility",
     "muscleGroups": [
       "core",
       "legs",
@@ -385,11 +385,11 @@
     "duration": "3 min",
     "difficulty": "Easy",
     "tags": [
-      "energy",
       "boost",
+      "energy",
       "movement"
     ],
-    "category": "Quick Routine",
+    "category": "Quick Boost",
     "muscleGroups": [
       "legs",
       "shoulders",
@@ -429,11 +429,11 @@
     "duration": "8 min",
     "difficulty": "Easy",
     "tags": [
-      "stretch",
+      "balance",
       "calm",
-      "balance"
+      "stretch"
     ],
-    "category": "Yoga",
+    "category": "Mobility & Flexibility",
     "muscleGroups": [
       "legs",
       "core",
@@ -473,11 +473,11 @@
     "duration": "4 min",
     "difficulty": "Easy",
     "tags": [
+      "desk",
       "posture",
-      "spine",
-      "desk"
+      "spine"
     ],
-    "category": "Corrective",
+    "category": "Recovery & Relief",
     "muscleGroups": [
       "back",
       "chest",
@@ -518,10 +518,10 @@
     "difficulty": "Easy",
     "tags": [
       "back pain",
-      "relief",
-      "recovery"
+      "recovery",
+      "relief"
     ],
-    "category": "Therapeutic",
+    "category": "Recovery & Relief",
     "muscleGroups": [
       "lower back",
       "hips",
@@ -565,7 +565,7 @@
       "mobility",
       "release"
     ],
-    "category": "Mobility",
+    "category": "Mobility & Flexibility",
     "muscleGroups": [
       "hips",
       "glutes",
@@ -606,10 +606,10 @@
     "difficulty": "Easy",
     "tags": [
       "neck",
-      "shoulders",
-      "relief"
+      "relief",
+      "shoulders"
     ],
-    "category": "Quick Relief",
+    "category": "Recovery & Relief",
     "muscleGroups": [
       "neck",
       "traps",
@@ -621,7 +621,7 @@
         "name": "Neck Tilts",
         "duration": 26,
         "animation": "animations/neckTilts.json",
-        "instruction": "Gently tilt your head toward one shoulder and hold, then switch sides. After the timer ends, switch sides.",
+        "instruction": "Gently tilt your head toward one shoulder and hold, then switch sides.",
         "unilateral": true
       },
       {
@@ -649,11 +649,11 @@
     "duration": "5 min",
     "difficulty": "Easy",
     "tags": [
-      "sitting",
       "circulation",
-      "posture"
+      "posture",
+      "sitting"
     ],
-    "category": "Break Routine",
+    "category": "Quick Boost",
     "muscleGroups": [
       "hips",
       "back",
@@ -693,11 +693,11 @@
     "duration": "6 min",
     "difficulty": "Intermediate",
     "tags": [
-      "warm-up",
       "activation",
-      "prep"
+      "prep",
+      "warm-up"
     ],
-    "category": "Pre-Workout",
+    "category": "Prep & Warm-Up",
     "muscleGroups": [
       "shoulders",
       "legs",
@@ -741,7 +741,7 @@
       "control",
       "mobility"
     ],
-    "category": "Stability",
+    "category": "Balance & Stability",
     "muscleGroups": [
       "ankles",
       "hips",
@@ -769,7 +769,7 @@
         "name": "Bird Dog",
         "duration": 160,
         "animation": "animations/birdDog.json",
-        "instruction": "On all fours, extend opposite arm and leg, hold for balance, then switch sides. After the timer ends, switch sides.",
+        "instruction": "On all fours, extend opposite arm and leg, hold for balance, then switch sides.",
         "unilateral": true
       }
     ]
@@ -781,11 +781,11 @@
     "duration": "3 min",
     "difficulty": "Easy",
     "tags": [
+      "anxiety",
       "mindful",
-      "relax",
-      "anxiety"
+      "relax"
     ],
-    "category": "Mental Reset",
+    "category": "Mindfulness & Calm",
     "muscleGroups": [
       "lungs",
       "neck",
@@ -817,11 +817,11 @@
     "duration": "7 min",
     "difficulty": "Easy",
     "tags": [
+      "joint safe",
       "low impact",
-      "seniors",
-      "joint safe"
+      "seniors"
     ],
-    "category": "Joint Friendly",
+    "category": "Recovery & Relief",
     "muscleGroups": [
       "shoulders",
       "hips",
@@ -861,11 +861,11 @@
     "duration": "5 min",
     "difficulty": "Easy",
     "tags": [
-      "happy",
+      "boost",
       "feel good",
-      "boost"
+      "happy"
     ],
-    "category": "Uplifting",
+    "category": "Quick Boost",
     "muscleGroups": [
       "legs",
       "shoulders",

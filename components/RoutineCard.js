@@ -47,6 +47,14 @@ const getTagColor = (tag) => {
     if (["flow", "movement"].includes(lowerTag)) return "#EDE9FE"; // indigo-100
     return "#ECFDF5";
   };
+  const categoryIcons = {
+    "Prep & Warm-Up": "flame-outline",
+    "Recovery & Relief": "leaf-outline",
+    "Mobility & Flexibility": "walk-outline",
+    "Quick Boost": "flash-outline",
+    "Balance & Stability": "accessibility-outline",
+    "Mindfulness & Calm": "medkit-outline",
+  };
   const handleHeartPress = async () => {
     if (!isPremium) {
       const saved = await getSavedRoutines();
@@ -163,10 +171,11 @@ const getTagColor = (tag) => {
 
   {hiddenTagCount > 0 && (
     <Pressable onPress={() => toggleTags()} style={styles.tag}>
-      <Ionicons name={showAllTags ? "chevron-up-outline":"chevron-down-outline"} size={12} color="#047857" />
       <Text style={[styles.tagText, { color: '#047857', fontWeight: '700' }]}>
         {showAllTags ? 'SHOW LESS' : ` +${hiddenTagCount}`}
       </Text>
+      <Ionicons name={showAllTags ? "chevron-up-outline":"chevron-down-outline"} size={12} color="#047857" />
+
     </Pressable>
   )}
 </View>
@@ -187,7 +196,7 @@ const getTagColor = (tag) => {
 </View>
 
             <View style={styles.metaIconText}>
-            <Ionicons name="albums-outline" size={16} color="#10B981" />
+            <Ionicons name={categoryIcons[item.category]} size={16} color="#10B981" />
             <Text style={styles.metaText}>{item.category}</Text>
             </View>
             <View style={styles.metaIconText}>

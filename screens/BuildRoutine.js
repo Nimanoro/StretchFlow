@@ -10,6 +10,7 @@ import {
   Image,
   Modal,
 } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -31,13 +32,13 @@ const BuildRoutineScreen = () => {
   const [isNamingModalVisible, setNamingModalVisible] = useState(false);
   const [routineName, setRoutineName] = useState('');
   const [selected, setSelected] = useState([]);
-  const [selectedMuscle, setSelectedMuscle] = useState(null);
-  const [selectedTag, setSelectedTag] = useState(null);
-  const [selectedDiff, setSelectedDiff] = useState(null);
   const [muscleFilters, setMuscleFilters] = useState([]);
   const [tagFilters, setTagFilters] = useState([]);
   const [showModal, setShowModal] = useState(false);
   const [diffFilters, setDiffFilters] = useState([]);
+  const [isPreviewVisible, setPreviewVisible] = useState(false);
+
+  const navigation = useNavigation();
   const getChipLabel = (type) => {
     if (type === 'muscles' && muscleFilters.length) return capitalize(muscleFilters[0]);
     if (type === 'tags' && tagFilters.length) return capitalize(tagFilters[0]);
@@ -132,7 +133,7 @@ const BuildRoutineScreen = () => {
       steps: selected,
       duration: calculateDuration(),
       difficulty: 'Custom',
-      muscleGroups: selected.reduce((acc, s) => { acc.push(...s.muscleGroups); return acc; }, []),
+      muscleGroups: [...new Set(selected.flatMap(s => s.muscleGroups))],
       description: 'Custom routine created by you.',
       category: 'User Created',
       tags: []
@@ -141,6 +142,12 @@ const BuildRoutineScreen = () => {
     try {
       console.log('routine', routine);
       saveMyRoutines(routine);
+      
+      setSelected([]);
+      Alert.alert('Success', 'Your routine has been saved!');
+      setRoutineName('');
+      setNamingModalVisible(false);
+      navigation.navigate('Explore');
     } catch (error) {
       Alert.alert('Error', 'Something went wrong while saving your routine.');
     }
@@ -623,17 +630,6 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: '#6B7280',
   },
-  modalOverlay: {
-    flex: 1,
-    backgroundColor: 'rgba(0,0,0,0.4)',
-    justifyContent: 'flex-end',
-  },
-  modalContent: {
-    backgroundColor: '#fff',
-    padding: 20,
-    borderTopLeftRadius: 20,
-    borderTopRightRadius: 20,
-  },
   modalTitle: {
     fontSize: 18,
     fontWeight: '600',
@@ -813,11 +809,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     paddingHorizontal: 24,
-  },
-  modalSkipText: {
-    color: '#6B7280',
-    fontSize: 13,
-    marginTop: 10,
   },
   
   
