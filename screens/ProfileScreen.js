@@ -115,7 +115,7 @@ const ProfileScreen = () => {
           <Ionicons name="chatbubble-ellipses" size={20} color="#3B82F6" />
           <Text style={styles.infoText}>Feedback</Text>
         </View>
-        <Text style={styles.linkText}>support@stretchflow.app</Text>
+        <Text style={styles.linkText}>stretchflow.app@gmail.com</Text>
       </View>
     </View>
     </SafeAreaView>

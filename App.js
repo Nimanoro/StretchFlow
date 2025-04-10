@@ -24,7 +24,6 @@ let Updates;
 try {
   Updates = require('expo-updates');
 } catch (e) {
-  // Running in Expo Go or unsupported environment
   Updates = null;
 }
 

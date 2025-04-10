@@ -143,6 +143,11 @@ const handleShare = async () => {
   
     return () => pulseLoop.stop(); // Cleanup to prevent stacking
   }, [currentStep, isResting]);
+  useEffect(() => {
+    if (voiceChecked && currentStretch && isRunning && !paused && !isResting) {
+      safeSpeak(`${currentStretch.name}. ${currentStretch.instruction}`);
+    }
+  }, [currentStep]);
   
 
   useEffect(() => {
@@ -163,7 +168,7 @@ const handleShare = async () => {
   const safeSpeak = async (text) => {
     const silent = await isSilentMode();
     const allowed = await checkVoiceAccess(isPremium);
-    if (silent && allowed) {
+    if (!silent && allowed) {
       Speech.stop();
       Speech.speak(text, { language: 'en-US', pitch: 1.0, rate: 0.9 });
     }
@@ -193,6 +198,13 @@ const handleShare = async () => {
           safeSpeak('Switch sides');
           Vibration.vibrate(300);
           setHasSwitchedSide(true);
+        }
+        if (
+          !stretch?.unilateral &&
+          prev === Math.floor(stretch.duration / 2)
+        ) {
+          safeSpeak('Halfway there');
+          Vibration.vibrate(300);
         }
   
         return prev > 0 ? prev - 1 : 0;
@@ -226,10 +238,14 @@ const handleShare = async () => {
   
     if (isResting && secondsLeft === 0) {
       const next = currentStep + 1;
+
       setIsResting(false);
       setCurrentStep(next);
-      setSecondsLeft(stretches[next].duration);
-      safeSpeak(`${s.name}. ${s.instruction}`);
+      const s = stretches[next];
+      if (s) {
+        setSecondsLeft(s.duration);
+        safeSpeak(`${s.name}. ${s.instruction}`);
+      }
       animateFade();
     }
   }, [secondsLeft, isRunning, voiceChecked, paused, isResting]);
@@ -246,7 +262,9 @@ const handleShare = async () => {
         return;
       }      
        else {
-        if (!silentMode) await incrementVoiceUsage();
+        if (!silentMode && !isPremium) await incrementVoiceUsage();
+        safeSpeak(`${s.name}. ${s.instruction}`);
+        
       }
       setVoiceChecked(true);
     };
