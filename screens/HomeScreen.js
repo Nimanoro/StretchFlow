@@ -10,7 +10,11 @@ import {
   ScrollView,
   Animated,
   Easing,
+  Linking,
 } from 'react-native';
+import { useContext } from 'react';
+import { ThemeContext } from '../context/ThemeContext';
+
 import { LinearGradient } from 'expo-linear-gradient';
 import { useNavigation } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
@@ -19,6 +23,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import exercisesData from '../assets/exercises.json';
 import BottomTabNavigator from './bottomNav';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import FeedbackModal from '../components/feedbackmodal';
 
 import { getUserData } from '../utils/userStorage';
 
@@ -46,6 +51,14 @@ const HomeScreen = () => {
   const [name, setName] = useState('');
   const [streakDays, setStreakDays] = useState(0);
   const [lastSession, setLastSession] = useState(routines[0]);
+  const { theme, toggleTheme, themeName } = useContext(ThemeContext);
+  const isDark = themeName === 'dark';
+  const themedStyles = getThemedStyles(isDark);
+
+  const heroGradient = isDark
+  ? ['#1F2937', '#111827']
+  : ['#F0F0F0', 'rgba(224, 247, 241, 0.92)'];
+
 
   useEffect(() => {
     const loadUser = async () => {
@@ -97,8 +110,8 @@ const HomeScreen = () => {
   return (
 
 
-    <SafeAreaView style={{ flex: 1 }} edges={['top']}>
-    <ScrollView style={styles.container}>
+    <SafeAreaView style={[{flex: 1 }, themedStyles.container]} edges={['top']}>
+    <ScrollView style={[styles.container, themedStyles.container]}>
       {/* === HERO HEADER === */}
       <ImageBackground
         source={require('../assets/hero.png')}
@@ -106,31 +119,39 @@ const HomeScreen = () => {
         imageStyle={{ resizeMode: 'cover' }}
       >
         <LinearGradient
-          colors={['#F0F0F0', 'rgba(224, 247, 241, 0.92)']}
-          style={styles.gradientOverlay}
+          colors={heroGradient}
+          style={[styles.gradientOverlay, themedStyles.gradientOverlay]}
         >
           <View style={styles.headerContent}>
             <Image source={require('../assets/hero.png')} style={styles.logo} />
-            <Text style={styles.brandTitle}>StretchFlow</Text>
-            <Text style={styles.brandSubtitle}>Find your flow, one stretch at a time</Text>
+            <Text style={[styles.brandTitle, themedStyles.brandTitle]}>StretchFlow</Text>
+            <Text style={[styles.brandSubtitle, themedStyles.brandSubtitle]}>Find your flow, one stretch at a time</Text>
           </View>
         </LinearGradient>
       </ImageBackground>
+      <Pressable onPress={toggleTheme} style={{ position: 'absolute', top: 10, right: 16 }}>
+  <Ionicons
+    name={themeName === 'dark' ? 'sunny-outline' : 'moon-outline'}
+    size={24}
+    color={themeName === 'dark' ? '#FFF' : '#111827'}
+  />
+</Pressable>
 
-      <View style={styles.bodySection}>
+
+      <View style={[styles.bodySection, themedStyles.bodySection]}>
         {/* === GREETING & MOTIVATION === */}
-        <View style={styles.greetingBox}>
-          <Text style={styles.greetingText}>{greeting}</Text>
-          <Text style={styles.greetingSubtext}>{motivation}</Text>
+        <View style={[styles.greetingBox, themedStyles.greetingBox]}>
+          <Text style={[styles.greetingText, themedStyles.greetingText]}>{greeting}</Text>
+          <Text style={[styles.greetingSubtext, themedStyles.greetingSubtext]}>{motivation}</Text>
         </View>
-
+        <FeedbackModal />
         {/* === STREAK BAR === */}
-        <View style={styles.statusBar}>
-          <View style={styles.streakRow}>
+        <View style={[styles.statusBar, themedStyles.statusBar]}>
+          <View style={[styles.streakRow, themedStyles.streakRow]}>
             <Animated.View style={{ transform: [{ scale: pulseAnim }] }}>
               <Ionicons name="flame" size={20} color="#F97316" />
             </Animated.View>
-            <Text style={styles.statusText}>
+            <Text style={[styles.statusText, themedStyles.statusText]}>
               {' '}{streakDays}-day streak – Keep it up!
             </Text>
           </View>
@@ -141,7 +162,7 @@ const HomeScreen = () => {
 
             return (
               <>
-                <View style={styles.dotRow}>
+                <View style={[styles.dotRow, themedStyles.dotRow]}>
                   {Array.from({ length: 7 }).map((_, i) => (
                     <View
                       key={i}
@@ -152,7 +173,7 @@ const HomeScreen = () => {
                     />
                   ))}
                 </View>
-                <Text style={styles.milestoneCaption}>
+                <Text style={[styles.milestoneCaption, themedStyles.milestoneCaption]}>
                   {nextMilestone - streakDays} more to {nextMilestone}-day badge!
                 </Text>
               </>
@@ -168,20 +189,47 @@ const HomeScreen = () => {
               routine: lastSession,
             });
           }}
-          style={styles.resumeButton}
+          style={[styles.resumeButton, themedStyles.resumeButton]}
         >
           <Ionicons name="play" size={18} color="#fff" style={{ marginRight: 8 }} />
           <Text style={styles.resumeText}>Continue: {lastSession.title || 'Any Routine'}</Text>
         </Pressable>
+        {/* === BETA FEEDBACK SECTION === */}
+<View style={[styles.betaBox, themedStyles.betaBox]}>
+  <Text style={[styles.betaTitle, themedStyles.betaTitle]}>Thanks for being an early user💚</Text>
+  <Text style={[styles.betaSubtext, themedStyles.betaSubtext]}>
+    Your feedback helps shape the future of StretchFlow.
+  </Text>
+
+  <View style={[styles.betaButtons]}>
+    <Pressable
+      style={[styles.betaButton, themedStyles.betaButton]}
+      onPress={() => Linking.openURL('https://tally.so/r/w5Odzb')} // or link to a feedback screen/web
+    >
+      <Ionicons name="chatbubble-ellipses-outline" size={16} color="#10B981" style={{ marginRight: 6 }} />
+      <Text style={[styles.betaButtonText, themedStyles.betaButtonText]}>Give Feedback</Text>
+    </Pressable>
+
+    <Pressable
+      style={[styles.betaButton, themedStyles.betaButton]}
+      onPress={() => {
+         Linking.openURL('https://plastic-fenugreek-00e.notion.site/StretchFlow-You-Build-It-Too-1d13eae17ff780afb4a1ec5950b94325')
+      }}
+    >
+      <Ionicons name="rocket-outline" size={16} color="#10B981" style={{ marginRight: 6 }} />
+      <Text style={[styles.betaButtonText, themedStyles.betaButtonText]}>View Roadmap</Text>
+    </Pressable>
+  </View>
+</View>
 
         {/* === TODAY’S RECOMMENDATION === */}
-        <Text style={styles.sectionTitle}>Today’s Recommendation</Text>
+        <Text style={[styles.sectionTitle, themedStyles.sectionTitle]}>Today’s Recommendation</Text>
         <View style={{ marginHorizontal: 20, marginBottom: 20 }}>
           <RoutineCard item={routines[0]} large enablePressAnimation />
         </View>
 
         {/* === POPULAR ROUTINES === */}
-        <Text style={styles.sectionTitle}>Popular Routines</Text>
+        <Text style={[styles.sectionTitle, themedStyles.sectionTitle]}>Popular Routines</Text>
         <FlatList
           data={routines}
           renderItem={({ item }) => <RoutineCard item={item} enablePressAnimation />}
@@ -191,9 +239,6 @@ const HomeScreen = () => {
           contentContainerStyle={styles.list}
           style={{ marginBottom: 30 }}
         />
-
-       
-
       </View>
     </ScrollView>
     </SafeAreaView> 
@@ -202,9 +247,6 @@ const HomeScreen = () => {
 
 
 const styles = StyleSheet.create({
-  container: {
-    backgroundColor: '#F0F4F3',
-  },
   heroHeader: {
     height: 260,
     marginBottom: 0,
@@ -414,8 +456,126 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     color: '#FFFFFF',
   },
+  betaBox: {
+    backgroundColor: '#F0FDF4',
+    paddingVertical: 24,
+    paddingHorizontal: 20,
+    marginHorizontal: 20,
+    marginTop: 12,
+    marginBottom: 20,
+    borderRadius: 20,
+    shadowColor: '#000',
+    shadowOpacity: 0.04,
+    shadowOffset: { width: 0, height: 2 },
+    shadowRadius: 8,
+    elevation: 3,
+    alignItems: 'center',
+  },
+  betaTitle: {
+    fontSize: 17,
+    fontWeight: '700',
+    color: '#047857',
+    marginBottom: 6,
+    textAlign: 'center',
+  },
+  betaSubtext: {
+    fontSize: 14,
+    color: '#D1D5DB',
+    marginBottom: 18,
+    textAlign: 'center',
+    lineHeight: 20,
+  },
+  betaButtons: {
+    flexDirection: 'row',
+    marginLeft: 20,
+    justifyContent: 'center',
+    gap: 12,
+  },
+  betaButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#D1FAE5',
+    paddingVertical: 12,
+    paddingHorizontal: 12,
+    borderRadius: 24,
+    marginHorizontal: 0,
+    shadowColor: '#047857',
+    shadowOpacity: 0.08,
+    shadowOffset: { width: 0, height: 2 },
+    shadowRadius: 4,
+    elevation: 2,
+  },
+  betaButtonText: {
+    color: '#047857',
+    fontWeight: '600',
+    fontSize: 15,
+  },
+  
+  
   
 });
 
 export default HomeScreen;
 
+const getThemedStyles = (isDark) =>
+  StyleSheet.create({
+    container: {
+      backgroundColor: isDark ? '#111827' : '#F0F4F3',
+    },
+    bodySection: {
+      backgroundColor: isDark ? '#1F2937' : '#F0FDF4',
+    },
+    greetingText: {
+      color: isDark ? '#F9FAFB' : '#111827',
+    },
+    greetingSubtext: {
+      color: isDark ? '#9CA3AF' : '#6B7280',
+    },
+    statusBar: {
+      backgroundColor: isDark ? '#1E293B' : '#FFFFFF',
+      ...(isDark && {
+        borderColor: '#374151',
+        borderWidth: 1,
+      }
+      )
+    },
+    statusText: {
+      color: isDark ? '#9CA3AF' : '#374151',
+    },
+    brandTitle: {
+      color: isDark ? '#F9FAFB' : '#2A2E43',
+    },
+    brandSubtitle: {
+      color: isDark ? '#9CA3AF' : '#6B7280',
+    },
+    dot: {
+      backgroundColor: isDark ? '#374151' : '#D1D5DB',
+    },
+    sectionTitle: {
+      color: isDark ? '#F9FAFB' : '#394150',
+    },
+    milestoneCaption: {
+      color: isDark ? '#9CA3AF' : '#6B7280',
+    },
+    betaBox: {
+      backgroundColor: isDark ? 'rgba(16, 185, 129, 0.1)'  : '#F0FDF4',
+    },
+    betaTitle: {
+      color: '#10B981',
+    },
+    betaSubtext: {
+      color: isDark ? '#9CA3AF' : '#4B5563',
+    },
+    betaButtonText: {
+      color: isDark ? '#10B981' : '#047857',
+    },
+    betaButton: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      paddingVertical: 10,
+      borderRadius: 24,
+      borderWidth: 1,
+      borderColor: '#10B981',
+      backgroundColor: 'transparent',
+    },
+  });

@@ -11,11 +11,17 @@ import {
 import { getUserData, updateUserData, resetUserData } from '../utils/userStorage';
 import { Ionicons } from '@expo/vector-icons';
 import { SafeAreaView } from 'react-native-safe-area-context';
-
+import { Linking } from 'react-native';
+import { useContext } from 'react';
+import { ThemeContext } from '../context/ThemeContext';
 const ProfileScreen = () => {
   const [name, setName] = useState('');
   const [streak, setStreak] = useState(0);
   const [silentMode, setSilentMode] = useState(false);
+
+  const { themeName } = useContext(ThemeContext);
+  const isDark = themeName === 'dark';
+  const themed = getThemedStyles(isDark);
 
   useEffect(() => {
     const loadData = async () => {
@@ -59,65 +65,65 @@ const ProfileScreen = () => {
   };
 
   return (
-    <SafeAreaView style={{ flex: 1 }} edges={['top']}>
-    <View style={styles.container}>
-      <View style={styles.card}>
-        <Text style={styles.label}>Your Name</Text>
-        <TextInput
-          style={styles.input}
-          value={name}
-          onChangeText={setName}
-          placeholder="Enter your name"
-          placeholderTextColor="#9CA3AF"
-        />
-        <Pressable style={styles.saveButton} onPress={handleSave}>
-          <Ionicons name="checkmark-circle" size={18} color="white" />
-          <Text style={styles.saveText}>Save</Text>
-        </Pressable>
-      </View>
+    <SafeAreaView style={[{ flex: 1 }, themed.container]} edges={['top']}>
+      <View style={[styles.container, themed.container]}>
+        <View style={[styles.card, themed.card]}>
+          <Text style={[styles.label, themed.text]}>Your Name</Text>
+          <TextInput
+            style={[styles.input, themed.input]}
+            value={name}
+            onChangeText={setName}
+            placeholder="Enter your name"
+            placeholderTextColor={isDark ? '#9CA3AF' : '#6B7280'}
+          />
+          <Pressable style={styles.saveButton} onPress={handleSave}>
+            <Ionicons name="checkmark-circle" size={18} color="white" />
+            <Text style={styles.saveText}>Save</Text>
+          </Pressable>
+        </View>
   
-      <View style={styles.card}>
-        <View style={styles.row}>
-          <Ionicons name="flame" size={20} color="#F97316" />
-          <Text style={styles.infoText}>Current Streak</Text>
+        <View style={[styles.card, themed.card]}>
+          <View style={styles.row}>
+            <Ionicons name="flame" size={20} color="#F97316" />
+            <Text style={[styles.infoText, themed.text]}>Current Streak</Text>
+          </View>
+          <Text style={[styles.streakText, themed.text]}>{streak}-day streak</Text>
         </View>
-        <Text style={styles.streakText}>{streak}-day streak</Text>
-      </View>
   
-      <View style={styles.card}>
-        <View style={styles.row}>
-          <Ionicons name="volume-mute" size={20} color="#6B7280" />
-          <Text style={styles.infoText}>Silent Mode</Text>
+        <View style={[styles.card, themed.card]}>
+          <View style={styles.row}>
+            <Ionicons name="volume-mute" size={20} color="#6B7280" />
+            <Text style={[styles.infoText, themed.text]}>Silent Mode</Text>
+          </View>
+          <View style={styles.toggleRow}>
+            <Text style={[styles.toggleText, themed.text]}>Disable Voice Guidance</Text>
+            <Switch value={silentMode} onValueChange={toggleSilentMode} />
+          </View>
         </View>
-        <View style={styles.toggleRow}>
-          <Text style={styles.toggleText}>Disable Voice Guidance</Text>
-          <Switch value={silentMode} onValueChange={toggleSilentMode} />
-        </View>
-      </View>
   
-      <View style={styles.card}>
-        <View style={styles.row}>
-          <Ionicons name="refresh-circle" size={20} color="#991B1B" />
-          <Text style={styles.infoText}>Reset Data</Text>
+        <View style={[styles.card, themed.card]}>
+          <View style={styles.row}>
+            <Ionicons name="refresh-circle" size={20} color="#991B1B" />
+            <Text style={[styles.infoText, themed.text]}>Reset Data</Text>
+          </View>
+          <Pressable onPress={handleReset} style={styles.resetButton}>
+            <Text style={styles.resetText}>Reset App</Text>
+          </Pressable>
+          <Text style={[{ fontSize: 13, marginTop: 12 }, themed.subtleWarning]}>
+            Caution: This will delete your name, streak, and saved routines.
+          </Text>
         </View>
-
-        <Pressable onPress={handleReset} style={styles.resetButton}>
-          <Text style={styles.resetText}>Reset App</Text>
-        </Pressable>
-        <Text style={{ fontSize: 13, color: '#6B7280', marginTop: 12 }}>
-  Caution: This will delete your name, streak, and saved routines.
-</Text>
-
-      </View>
   
-      <View style={styles.card}>
-        <View style={styles.row}>
-          <Ionicons name="chatbubble-ellipses" size={20} color="#3B82F6" />
-          <Text style={styles.infoText}>Feedback</Text>
+        <View style={[styles.card, themed.card]}>
+          <View style={styles.row}>
+            <Ionicons name="chatbubble-ellipses" size={20} color="#3B82F6" />
+            <Text style={[styles.infoText, themed.text]}>Feedback</Text>
+          </View>
+          <Pressable onPress={() => Linking.openURL('mailto:stretchflow.app@gmail.com')}>
+            <Text style={[styles.linkText, themed.link]}>stretchflow.app@gmail.com</Text>
+          </Pressable>
         </View>
-        <Text style={styles.linkText}>stretchflow.app@gmail.com</Text>
       </View>
-    </View>
     </SafeAreaView>
   );
 }  
@@ -217,4 +223,37 @@ const styles = StyleSheet.create({
       marginTop: 4,
     },
 });
+const getThemedStyles = (isDark) =>
+  StyleSheet.create({
+    container: {
+      backgroundColor: isDark ? '#0F172A' : '#F0F4F3',
+    },
+    card: {
+      backgroundColor: isDark ? '#1E293B' : '#FFFFFF',
+      borderColor: isDark ? '#334155' : '#E5E7EB',
+      borderWidth: 1,
+      borderRadius: 16,
+      padding: 16,
+      marginBottom: 16,
+    },
+    text: {
+      color: isDark ? '#F3F4F6' : '#111827',
+    },
+    input: {
+      backgroundColor: isDark ? '#1E293B' : '#fff',
+      borderColor: isDark ? '#475569' : '#D1D5DB',
+      color: isDark ? '#F3F4F6' : '#111827',
+      borderWidth: 1,
+      borderRadius: 10,
+      padding: 10,
+      marginTop: 8,
+    },
+    link: {
+      color: isDark ? '#93C5FD' : '#3B82F6',
+    },
+    subtleWarning: {
+      color: isDark ? '#9CA3AF' : '#6B7280',
+    },
+  });
+
 export default ProfileScreen;

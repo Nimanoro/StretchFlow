@@ -1,10 +1,16 @@
-import * as InAppPurchases from 'expo-in-app-purchases';
+let InAppPurchases;
+if (!__DEV__) {
+  InAppPurchases = require('expo-in-app-purchases');
+}
+
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const SUBSCRIPTION_ID = 'premium_monthly'; // match App Store Connect exactly
 
 // Connect to IAP service
 export const connectIAP = async () => {
+  if (__DEV__ || !InAppPurchases) return;
+
   try {
     await InAppPurchases.connectAsync();
   } catch (error) {
@@ -14,6 +20,8 @@ export const connectIAP = async () => {
 
 // Fetch available products
 export const getAvailableProducts = async () => {
+  if (__DEV__ || !InAppPurchases) return;
+
   try {
     const { responseCode, results } = await InAppPurchases.getProductsAsync([SUBSCRIPTION_ID]);
     if (responseCode === InAppPurchases.IAPResponseCode.OK) {
@@ -30,6 +38,8 @@ export const getAvailableProducts = async () => {
 
 // Initiate purchase flow
 export const buyPremiumSubscription = async (productId) => {
+  if (__DEV__ || !InAppPurchases) return;
+
   try {
     if (!productId) throw new Error('No Product ID provided');
     await InAppPurchases.purchaseItemAsync(productId);
@@ -40,6 +50,8 @@ export const buyPremiumSubscription = async (productId) => {
 
 // Restore previous purchases
 export const restorePurchase = async () => {
+  if (__DEV__ || !InAppPurchases) return;
+
   try {
     const { results } = await InAppPurchases.getPurchaseHistoryAsync();
     const valid = results?.some((purchase) =>

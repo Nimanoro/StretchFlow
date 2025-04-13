@@ -11,55 +11,78 @@ import {
 import { useRoute, useNavigation } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
+import { useContext } from 'react';
+import { ThemeContext } from '../context/ThemeContext';
 
 const RoutineScreen = () => {
   const route = useRoute();
   const navigation = useNavigation();
   const { routine } = route.params;
+  const { themeName } = useContext(ThemeContext);
+  const isDark = themeName === 'dark';
   const steps = routine.steps;
+  const themed = getThemedStyles(isDark);
 
   const renderStep = ({ item, index }) => (
-    <View style={styles.stepCard}>
-      <View style={styles.stepNumberContainer}>
-        <Text style={styles.stepNumber}>{index + 1}</Text>
+    <View style={[ styles.stepCard, themed.stepCard]}>
+      <View style={[styles.stepNumberContainer, themed.stepNumberContainer,]}>
+        <Text style={[ styles.stepNumber, themed.stepNumber]}>{index + 1}</Text>
       </View>
-      <View style={styles.stepInfo}>
-        <Text style={styles.stepName}>{item.name}</Text>
-        <Text style={styles.stepDuration}>{item.duration} sec</Text>
+      <View style={[styles.stepInfo, themed.stepInfo]}>
+        <Text style={[styles.stepName, themed.stepName]}>{item.name}</Text>
+        <Text style={[styles.stepDuration, themed.stepDuration]}>{item.duration} sec</Text>
       </View>
     </View>
   );
-  const getTagColor = (tag) => {
+  const getTagColors = (tag, isDark) => {
     const lowerTag = tag.toLowerCase();
-    if (["morning", "wake up", "relax"].includes(lowerTag)) return "#DBEAFE";
-    if (["energize", "active break", "focus"].includes(lowerTag)) return "#FDE68A";
-    if (["stretch", "mobility", "core"].includes(lowerTag)) return "#FECACA";
-    if (["post-workout", "wind down"].includes(lowerTag)) return "#D1FAE5";
-    if (["flow", "movement"].includes(lowerTag)) return "#EDE9FE";
-    return "#ECFDF5"; // fallback mint
+  
+    if (["energize", "boost", "energy", "happy", "feel good", "morning", "wake up", "activation", "prep", "warm-up"].includes(lowerTag))
+      return isDark ? { bg: '#FBBF24', icon: '#1E293B' } // amber-400
+    : { bg: '#FEF9C3', icon: '#047857' };
+
+  
+    if (["mobility", "stretch", "flexibility", "flow", "yoga", "control", "balance"].includes(lowerTag))
+      return isDark ? { bg: 	"#FB7185", icon: '#1E293B' } : { bg: '#FECACA', icon: '#047857' };
+  
+    if (["refresh", "quick", "office", "desk", "posture", "circulation", "movement"].includes(lowerTag))
+      return isDark ? { bg: '#047857', icon: '#F0FDF4' } // emerald-800 (deeper, grounded tone)
+    : { bg: '#D1FAE5', icon: '#047857' };
+  
+    if (["calm", "relax", "recovery", "relief", "cooldown", "release", "sleep", "night", "stress", "anxiety", "mindful"].includes(lowerTag))
+      return isDark ? { bg: 	"#A78BFA", icon: '#1E293B' } : { bg: '#E9D5FF', icon: '#047857' };
+  
+    if (["seniors", "joint safe", "low impact", "back pain", "spine", "neck", "shoulders", "hips", "sitting"].includes(lowerTag))
+      return isDark ? { bg: '#F472B6', icon: '#1E293B' } : { bg: '#FCE7F3', icon: '#047857' };
+  
+    return isDark ? { bg: '#94A3B8', icon: '#1E293B' } : { bg: '#ECFDF5', icon: '#047857' };
   };
   
+  
+  
   const getTagIcon = (tag) => {
-    const lower = tag.toLowerCase();
-    if (lower.includes('mobility')) return 'walk-outline';
-    if (lower.includes('posture')) return 'body-outline';
-    if (lower.includes('energy') || lower.includes('energize')) return 'flash-outline';
-    if (lower.includes('relax') || lower.includes('calm') || lower.includes('stress')) return 'cloud-outline';
-    if (lower.includes('flexibility')) return 'accessibility-outline';
-    if (lower.includes('office') || lower.includes('desk')) return 'laptop-outline';
-    if (lower.includes('recovery')) return 'medkit-outline';
-    if (lower.includes('core')) return 'grid-outline';
-    if (lower.includes('yoga')) return 'fitness-outline';
-    if (lower.includes('morning')) return 'sunny-outline';
-    if (lower.includes('evening')) return 'moon-outline';
-    if (lower.includes('stretch')) return 'body-outline';
-    if (lower.includes('strength')) return 'barbell-outline';
-    if (lower.includes('cardio')) return 'heart-outline';
+    const lowerTag = tag.toLowerCase();
+    if (["calm", "relax", "recovery", "relief", "cooldown", "release", "sleep", "night", "stress", "anxiety", "mindful"].includes(lowerTag)){
+      return 'cloud-outline';
+    }
+    if (["energize", "boost", "energy", "happy", "feel good", "morning", "wake up", "activation", "prep", "warm-up"].includes(lowerTag))
+      return 'flash-outline';
+  
+    if (["mobility", "stretch", "flexibility", "flow", "yoga", "control", "balance"].includes(lowerTag))
+      return 'body-outline';
+    if (["refresh", "quick", "office", "desk", "posture", "circulation", "movement"].includes(lowerTag))
+      return 'laptop-outline';
+    if (["calm", "relax", "recovery", "relief", "cooldown", "release", "sleep", "night", "stress", "anxiety", "mindful"].includes(lowerTag))
+      return 'medkit-outline';
+    if (["seniors", "joint safe", "low impact", "back pain", "spine", "neck", "shoulders", "hips", "sitting"].includes(lowerTag))
+      return 'leaf-outline';
+    
     return 'pricetag-outline'; // Default
   };
+  
 
   return (
-    <ScrollView style={styles.container} contentContainerStyle={{ paddingBottom: 30 }}>
+    <ScrollView style={[styles.container, themed.container]} contentContainerStyle={{ paddingBottom: 30 }}>
       {/* ✅ Header Image with gradient overlay */}
       <ImageBackground
         source={require('../assets/hero.png')} // Replace with your hero image
@@ -81,36 +104,38 @@ const RoutineScreen = () => {
 >
   <Ionicons name="arrow-back" size={22} color="#fff" />
 </Pressable>
-        <LinearGradient
-          colors={['rgba(0,0,0,0.7)', 'rgba(0,0,0,0.3)', 'transparent']}
-          style={styles.gradientOverlay}
-        />
-        <View style={styles.headerContent}>
-          <Text style={styles.headerTitle} numberOfLines={2}>{routine.title}</Text>
-          <Text style={styles.headerSubtitle}>{routine.description}</Text>
+<LinearGradient
+  colors={isDark
+    ? ['rgba(15,23,42,0.95)', 'rgba(15,23,42,0.7)', 'transparent']
+    : ['rgba(255,255,255,0.85)', 'rgba(255,255,255,0.5)', 'transparent']}
+  style={styles.gradientOverlay}
+/>
+        <View style={[styles.headerContent, themed.headerContent]}>
+          <Text style={[styles.headerTitle, themed.headerTitle]} numberOfLines={2}>{routine.title}</Text>
+          <Text style={[styles.headerSubtitle, themed.headerSubtitle]}>{routine.description}</Text>
         </View>
       </ImageBackground>
 
       {/* Routine Info */}
-      <View style={styles.detailsSection}>
+      <View style={[styles.detailsSection, themed.detailsSection]}>
 
-      <View style={styles.sectionRow}>
-    <Ionicons name="time-outline" size={16} color="#047857" />
-    <Text style={styles.sectionLabel}>{routine.duration}</Text>
+      <View style={[styles.sectionRow, themed.sectionRow]}>
+    <Ionicons name="time-outline" size={16} color={themed.iconColor.color} />
+    <Text style={[styles.sectionLabel, themed.sectionLabel]}>{routine.duration}</Text>
   </View>
 
-  <View style={styles.sectionRow}>
-    <Ionicons name="barbell-outline" size={16} color="#047857" />
-    <Text style={styles.sectionLabel}>{routine.difficulty}</Text>
+  <View style={[styles.sectionRow, themed.sectionRow]}>
+    <Ionicons name="barbell-outline" size={16} color={themed.iconColor.color} />
+    <Text style={[styles.sectionLabel, themed.sectionLabel]}>{routine.difficulty}</Text>
   </View>
-  <View style={styles.sectionRow}>
-  <Ionicons name="layers-outline" size={16} color="#047857" />
-  <Text style={styles.sectionLabel}>{routine.category}</Text>
+  <View style={[styles.sectionRow, themed.sectionRow]}>
+  <Ionicons name="layers-outline" size={16} color={themed.iconColor.color} />
+  <Text style={[styles.sectionLabel, themed.sectionLabel]}>{routine.category}</Text>
 </View>
 
-<View style={styles.sectionRow}>
-  <Ionicons name="fitness-outline" size={16} color="#047857" />
-  <Text style={styles.sectionLabel}>
+<View style={[styles.sectionRow, themed.sectionRow]}>
+  <Ionicons name="fitness-outline" size={16} color={themed.iconColor.color} />
+  <Text style={[styles.sectionLabel, themed.sectionLabel]}>
     {routine.muscleGroups.map((muscle, idx) => (
       <Text key={idx}>
         {muscle.charAt(0).toUpperCase() + muscle.slice(1)}
@@ -119,14 +144,16 @@ const RoutineScreen = () => {
     ))}
   </Text>
 </View>
-        <View style={styles.tagsRow}>
-          {routine.tags.map((tag, idx) => (
-             <View key={idx}   style={[styles.tag, { backgroundColor: getTagColor(tag) }]}>
-            <Ionicons name={getTagIcon(tag)} size={12} color="#047857" />
-            <Text style={styles.tagText}>{tag.toUpperCase()}</Text>
-
-            </View>
-          ))}
+        <View style={[styles.tagsRow,themed.tagsRow]}>
+        {routine.tags.map((tag, idx) => {
+  const { bg, icon } = getTagColors(tag, isDark);
+  return (
+    <View key={idx} style={[styles.tag, { backgroundColor: bg }]}>
+      <Ionicons name={getTagIcon(tag)} size={12} color={icon} />
+      <Text style={[styles.tagText, themed.tagText]}>{tag.toUpperCase()}</Text>
+    </View>
+  );
+})}
         </View>
       </View>
 
@@ -134,15 +161,15 @@ const RoutineScreen = () => {
         data={steps}
         renderItem={renderStep}
         keyExtractor={(item, index) => index.toString()}
-        contentContainerStyle={styles.stepsList}
+        contentContainerStyle={[styles.stepsList, themed.stepsList]}
         scrollEnabled={false}
       />
 
       <Pressable
-        style={styles.startButton}
+        style={[styles.startButton, themed.startButton]}
         onPress={() => navigation.navigate('Timer', { routine, stretches: steps })}
       >
-        <Text style={styles.startButtonText}>Start Routine</Text>
+        <Text style={[styles.startButtonText, themed.startButtonText]}>Start Routine</Text>
       </Pressable>
     </ScrollView>
   );
@@ -312,20 +339,77 @@ const styles = StyleSheet.create({
   
 
   tag: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#D1FAE5',
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: 999,
-    gap: 6, // add this instead of marginLeft inside icon
-  },  
+  flexDirection: 'row',
+  alignItems: 'center',
+  backgroundColor: 'rgba(255,255,255,0.05)', // soft background
+  paddingHorizontal: 10,
+  paddingVertical: 4,
+  borderRadius: 999,
+  gap: 6,
+  borderWidth: 1,
+  borderColor: 'rgba(255,255,255,0.08)', // subtle border for glow
+},
+
+
+
 tagText: {
   fontSize: 13,
   color: '#047857',
   fontWeight: '600',
 },
 
+});
+const getThemedStyles = (isDark) => StyleSheet.create({
+  container: {
+    backgroundColor: isDark ? '#0F172A' : '#FFFFFF',
+  },
+  tagText: {
+    color: isDark ? '#FFF' : '#047857',
+    },
+  iconColor: {
+    color: isDark ? "#6EE7B7": "#047857",
+  },  
+  detailsSection: {
+    paddingHorizontal: 20,
+    paddingTop: 20,
+    paddingBottom: 10,
+    gap: 14,
+    backgroundColor: isDark ? '#1E293B' : 'transparent',
+  },
+  sectionLabel: {
+    fontSize: 14,
+    color: isDark ? '#E5E7EB' : '#374151',
+    fontWeight: '500',
+  },
+  stepCard: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: isDark ? '#1E293B' : '#F9FAFB',
+    padding: 15,
+    borderRadius: 15,
+    marginBottom: 12,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.04,
+    shadowRadius: 3,
+    elevation: 2,
+  },
+  stepNumberContainer: {
+    backgroundColor: isDark ? '#10B981' : '#6EE7B7', // emerald-600
+  },
+  stepNumber: {
+    color: '#fff',
+  },
+  stepName: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: isDark ? '#F3F4F6' : '#2A2E43',
+  },
+  stepDuration: {
+    fontSize: 14,
+    color: isDark ? '#9CA3AF' : '#6B7280',
+    marginTop: 4,
+  },
 });
 
 export default RoutineScreen;

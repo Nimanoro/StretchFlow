@@ -19,6 +19,8 @@ import { LayoutAnimation } from 'react-native';
 import { getSavedRoutines, saveARoutine } from '../utils/userStorage';
 import { useFavorites } from '../context/FavoritesContext';
 
+import { ThemeContext } from '../context/ThemeContext';
+// ...
 
 const RoutineCard = ({ item, large = false, enablePressAnimation = false, initiallyFavorite= false}) => {
   const navigation = useNavigation();
@@ -26,7 +28,11 @@ const RoutineCard = ({ item, large = false, enablePressAnimation = false, initia
   const heartScale = useRef(new Animated.Value(1)).current;
   const { isPremium } = useContext(UserContext);
 
+  const { themeName } = useContext(ThemeContext);
+  const isDark = themeName === 'dark';
+
   const [showUpgradeModal, setShowUpgradeModal] = useState(false);
+  const themed = getRoutineCardStyles(isDark);
   const MAX_VISIBLE_TAGS = 2;
   const { isFavorite, toggleFavorite } = useFavorites();
   const visibleTags = showAllTags ? item.tags : item.tags?.slice(0, 1) || [];
@@ -38,15 +44,31 @@ const hiddenTagCount = item.tags?.length > 1 && !showAllTags ? item.tags.length 
   };
   const [showAllTags, setShowAllTags] = useState(false);
   // Revised pastel background colors
-const getTagColor = (tag) => {
+  const getTagColors = (tag, isDark) => {
     const lowerTag = tag.toLowerCase();
-    if (["morning", "wake up", "relax"].includes(lowerTag)) return "#E0F2FE"; // blue-100
-    if (["energize", "active break", "focus"].includes(lowerTag)) return "#FEF9C3"; // yellow-100
-    if (["stretch", "mobility", "core"].includes(lowerTag)) return "#FEE2E2"; // red-100
-    if (["post-workout", "wind down"].includes(lowerTag)) return "#DCFCE7"; // green-100
-    if (["flow", "movement"].includes(lowerTag)) return "#EDE9FE"; // indigo-100
-    return "#ECFDF5";
+  
+    if (["energize", "boost", "energy", "happy", "feel good", "morning", "wake up", "activation", "prep", "warm-up"].includes(lowerTag))
+      return isDark ? { bg: '#FBBF24', icon: '#1E293B' } // amber-400
+    : { bg: '#FEF9C3', icon: '#047857' };
+
+  
+    if (["mobility", "stretch", "flexibility", "flow", "yoga", "control", "balance"].includes(lowerTag))
+      return isDark ? { bg: 	"#FB7185", icon: '#1E293B' } : { bg: '#FECACA', icon: '#047857' };
+  
+    if (["refresh", "quick", "office", "desk", "posture", "circulation", "movement"].includes(lowerTag))
+      return isDark ? { bg: '#047857', icon: '#F0FDF4' } // emerald-800 (deeper, grounded tone)
+    : { bg: '#D1FAE5', icon: '#047857' };
+  
+    if (["calm", "relax", "recovery", "relief", "cooldown", "release", "sleep", "night", "stress", "anxiety", "mindful"].includes(lowerTag))
+      return isDark ? { bg: 	"#A78BFA", icon: '#1E293B' } : { bg: '#E9D5FF', icon: '#047857' };
+  
+    if (["seniors", "joint safe", "low impact", "back pain", "spine", "neck", "shoulders", "hips", "sitting"].includes(lowerTag))
+      return isDark ? { bg: '#F472B6', icon: '#1E293B' } : { bg: '#FCE7F3', icon: '#047857' };
+  
+    return isDark ? { bg: '#94A3B8', icon: '#1E293B' } : { bg: '#ECFDF5', icon: '#047857' };
   };
+  
+  
   const categoryIcons = {
     "Prep & Warm-Up": "flame-outline",
     "Recovery & Relief": "leaf-outline",
@@ -70,21 +92,22 @@ const getTagColor = (tag) => {
   
   
   const getTagIcon = (tag) => {
-    const lower = tag.toLowerCase();
-    if (lower.includes('mobility')) return 'walk-outline';
-    if (lower.includes('posture')) return 'body-outline';
-    if (lower.includes('energy') || lower.includes('energize')) return 'flash-outline';
-    if (lower.includes('relax') || lower.includes('calm') || lower.includes('stress')) return 'cloud-outline';
-    if (lower.includes('flexibility')) return 'accessibility-outline';
-    if (lower.includes('office') || lower.includes('desk')) return 'laptop-outline';
-    if (lower.includes('recovery')) return 'medkit-outline';
-    if (lower.includes('core')) return 'grid-outline';
-    if (lower.includes('yoga')) return 'fitness-outline';
-    if (lower.includes('morning')) return 'sunny-outline';
-    if (lower.includes('evening')) return 'moon-outline';
-    if (lower.includes('stretch')) return 'body-outline';
-    if (lower.includes('strength')) return 'barbell-outline';
-    if (lower.includes('cardio')) return 'heart-outline';
+    const lowerTag = tag.toLowerCase();
+    if (["calm", "relax", "recovery", "relief", "cooldown", "release", "sleep", "night", "stress", "anxiety", "mindful"].includes(lowerTag)){
+      return 'cloud-outline';
+    }
+    if (["energize", "boost", "energy", "happy", "feel good", "morning", "wake up", "activation", "prep", "warm-up"].includes(lowerTag))
+      return 'flash-outline';
+  
+    if (["mobility", "stretch", "flexibility", "flow", "yoga", "control", "balance"].includes(lowerTag))
+      return 'body-outline';
+    if (["refresh", "quick", "office", "desk", "posture", "circulation", "movement"].includes(lowerTag))
+      return 'laptop-outline';
+    if (["calm", "relax", "recovery", "relief", "cooldown", "release", "sleep", "night", "stress", "anxiety", "mindful"].includes(lowerTag))
+      return 'medkit-outline';
+    if (["seniors", "joint safe", "low impact", "back pain", "spine", "neck", "shoulders", "hips", "sitting"].includes(lowerTag))
+      return 'leaf-outline';
+    
     return 'pricetag-outline'; // Default
   };
   
@@ -124,30 +147,47 @@ const getTagColor = (tag) => {
 
 
   return (
-    
     <TouchableWithoutFeedback
       onPressIn={onPressIn}
       onPressOut={onPressOut}
       onPress={() => navigation.navigate('Routine', { routine: item })}
     >
-      <Animated.View style={[styles.shadowWrap, enablePressAnimation && { transform: [{ scale }] }]}>
+      <Animated.View style={[styles.shadowWrap, (isDark && {
+  shadowColor: '#000',
+  shadowOpacity: 0.3,
+  shadowRadius: 8,
+  shadowOffset: { width: 0, height: 4 },
+  elevation: 8,
+}), enablePressAnimation && { transform: [{ scale }] }]}>
         <LinearGradient
-          colors={['#FFFFFF', '#FFFFFF']}
+colors={isDark 
+  ? ['rgba(255, 255, 255, 0.05)', 'rgba(255, 255, 255, 0.02)'] 
+  : ['#FFFFFF', '#FFFFFF']}
+  
+
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 1 }}
-          style={[styles.card, large && styles.cardLarge]}
+          style={[styles.card, large && styles.cardLarge, themed.cardBackground]}
         >
           <View style={styles.content}>
-
             <View style={styles.headerRow}>
-            <Text
-  style={[styles.cardTitle, large && styles.cardTitleLarge]}
-  numberOfLines={1}
-  ellipsizeMode="tail"
->
-  {item.title}
-</Text>
-
+              <Text
+                style={[
+                  styles.cardTitle,
+                  large && styles.cardTitleLarge,
+                  themed.cardTitle,
+                  isDark && {
+                    textShadowColor: 'rgba(255, 255, 255, 0.1)',
+textShadowOffset: { width: 0, height: 1 },
+textShadowRadius: 2,
+                  },
+                
+                ]}
+                numberOfLines={1}
+                ellipsizeMode="tail"
+              >
+                {item.title}
+              </Text>
               <Pressable onPress={handleHeartPress}>
                 <Animated.View style={{ transform: [{ scale: heartScale }] }}>
                   <Ionicons
@@ -157,123 +197,114 @@ const getTagColor = (tag) => {
                   />
                 </Animated.View>
               </Pressable>
-              </View>
-              <View style={styles.metaContainer}>
-                
+            </View>
+  
+            <View style={styles.metaContainer}>
               <View style={styles.tagsRow}>
-  {(showAllTags ? item.tags : visibleTags).map((tag, idx) => (
-    <View key={idx}   style={[styles.tag, { backgroundColor: getTagColor(tag) }]}
->
-      <Ionicons name={getTagIcon(tag)} size={12} color="#047857" />
-      <Text style={styles.tagText}>{tag.toUpperCase()}</Text>
+              {(showAllTags ? item.tags : visibleTags).map((tag, idx) => {
+  const { bg, icon } = getTagColors(tag, isDark);
+  return (
+    <View key={idx} style={[styles.tag, { backgroundColor: bg }]}>
+      <Ionicons name={getTagIcon(tag)} size={12} color={icon} />
+      <Text style={[styles.tagText, themed.tagText]}>{tag.toUpperCase()}</Text>
     </View>
-  ))}
+  );
+})}
 
-  {hiddenTagCount > 0 && (
-    <Pressable onPress={() => toggleTags()} style={styles.tag}>
-      <Text style={[styles.tagText, { color: '#047857', fontWeight: '700' }]}>
-        {showAllTags ? 'SHOW LESS' : ` +${hiddenTagCount}`}
-      </Text>
-      <Ionicons name={showAllTags ? "chevron-up-outline":"chevron-down-outline"} size={12} color="#047857" />
-
-    </Pressable>
-  )}
-</View>
-
-
-
-        
-        <View style={styles.metaDetails}>
-        <View style={styles.durationRow}>
-  <View style={styles.metaIconText}>
-    <Ionicons name="time-outline" size={16} color="#10B981" />
-    <Text style={styles.metaText}>{item.duration}</Text>
-  </View>
-  <View style={styles.metaIconText}>
-    <Ionicons name="barbell-outline" size={16} color="#10B981" />
-    <Text style={styles.metaText}>{item.difficulty}</Text>
-  </View>
-</View>
-
-            <View style={styles.metaIconText}>
-            <Ionicons name={categoryIcons[item.category]} size={16} color="#10B981" />
-            <Text style={styles.metaText}>{item.category}</Text>
+                {hiddenTagCount > 0 && (
+                  <Pressable onPress={toggleTags} style={styles.tag}>
+                    <Text style={[styles.tagText, { color: '#047857', fontWeight: '700' }]}>
+                      {showAllTags ? 'SHOW LESS' : ` +${hiddenTagCount}`}
+                    </Text>
+                    <Ionicons
+                      name={showAllTags ? 'chevron-up-outline' : 'chevron-down-outline'}
+                      size={12}
+                      color="#047857"
+                    />
+                  </Pressable>
+                )}
+              </View>
+  
+              <View style={styles.metaDetails}>
+                <View style={styles.durationRow}>
+                  <View style={styles.metaIconText}>
+                    <Ionicons name="time-outline" size={16} color={themed.iconColor.color} />
+                    <Text style={[styles.metaText, themed.metaText]}>{item.duration}</Text>
+                  </View>
+                  <View style={styles.metaIconText}>
+                    <Ionicons name="barbell-outline" size={16}color={themed.iconColor.color} />
+                    <Text style={[styles.metaText, themed.metaText]}>{item.difficulty}</Text>
+                  </View>
+                </View>
+                <View style={styles.metaIconText}>
+                  <Ionicons name={categoryIcons[item.category]} size={16} color={themed.iconColor.color} />
+                  <Text style={[styles.metaText, themed.metaText]}>{item.category}</Text>
+                </View>
+                <View style={styles.metaIconText}>
+                  <Ionicons name="body-outline" size={16} color={themed.iconColor.color} />
+                  <Text style={[styles.metaText, themed.metaText]}>
+                    {item.muscleGroups?.join(', ')}
+                  </Text>
+                </View>
+              </View>
             </View>
-            <View style={styles.metaIconText}>
-            <Ionicons name="body-outline" size={16} color="#10B981" />
-            <Text style={styles.metaText}>
-                {item.muscleGroups?.join(', ')}
-            </Text>
+          </View>
+  
+          <Modal
+            transparent
+            visible={showUpgradeModal}
+            animationType="fade"
+            onRequestClose={() => setShowUpgradeModal(false)}
+          >
+            <View style={styles.modalOverlay}>
+              <View style={[styles.modalCard, themed.modalCard]}>
+                <Ionicons name="lock-closed-outline" size={40} color="#10B981" style={{ marginBottom: 12 }} />
+                <Text style={[styles.modalTitle, themed.modalTitle]}>Unlock Your Flow</Text>
+                <Text style={[styles.modalText, themed.modalText]}>
+                  Get deeper stretches, calming themes, and distraction-free sessions —
+                  all for just <Text style={{ fontWeight: 'bold' }}>$2.99/month</Text>.
+                </Text>
+  
+                <View style={styles.perksList}>
+                  <View style={styles.perkItem}>
+                    <Ionicons name="infinite-outline" size={18} color="#10B981" style={{ marginRight: 8 }} />
+                    <Text style={[styles.perkText, themed.perkText]}>Unlimited routines & favorites</Text>
+                  </View>
+                  <View style={styles.perkItem}>
+                    <Ionicons name="musical-notes-outline" size={18} color="#10B981" style={{ marginRight: 8 }} />
+                    <Text style={[styles.perkText, themed.perkText]}>Voice guidance, music & themes</Text>
+                  </View>
+                  <View style={styles.perkItem}>
+                    <Ionicons name="sparkles-outline" size={18} color="#10B981" style={{ marginRight: 8 }} />
+                    <Text style={[styles.perkText, themed.perkText]}>Early access to new features</Text>
+                  </View>
+                  <View style={styles.perkItem}>
+                    <Ionicons name="close-circle-outline" size={18} color="#10B981" style={{ marginRight: 8 }} />
+                    <Text style={[styles.perkText, themed.perkText]}>No ads, ever</Text>
+                  </View>
+                </View>
+  
+                <Pressable
+                  style={styles.modalButton}
+                  onPress={() => {
+                    setShowUpgradeModal(false);
+                    navigation.navigate('Premium');
+                  }}
+                >
+                  <Text style={styles.modalButtonText}>Start My Flow</Text>
+                </Pressable>
+  
+                <Pressable onPress={() => setShowUpgradeModal(false)} style={{ marginTop: 10 }}>
+                  <Text style={[styles.modalCloseText, themed.modalCloseText]}>Not right now</Text>
+                </Pressable>
+              </View>
             </View>
-        </View>
-        </View>
-        </View>
-        <Modal
-  transparent
-  visible={showUpgradeModal}
-  animationType="fade"
-  onRequestClose={() => setShowUpgradeModal(false)}
->
-  <View style={styles.modalOverlay}>
-    <View style={styles.modalCard}>
-
-      {/* Animated lock bounce (optional but 🔥) */}
-      <Ionicons name="lock-closed-outline" size={40} color="#10B981" style={{ marginBottom: 12 }} />
-
-      {/* 💡 Emotion-First Title */}
-      <Text style={styles.modalTitle}>Unlock Your Flow</Text>
-
-      {/* 🧠 Benefit-Driven Subheading */}
-      <Text style={styles.modalText}>
-        Get deeper stretches, calming themes, and distraction-free sessions —
-        all for just <Text style={{ fontWeight: 'bold' }}>$2.99/month</Text>.
-      </Text>
-
-      {/* ✅ Features List — Reordered by Power */}
-      <View style={styles.perksList}>
-        <View style={styles.perkItem}>
-          <Ionicons name="infinite-outline" size={18} color="#10B981" style={{ marginRight: 8 }} />
-          <Text style={styles.perkText}>Unlimited routines & favorites</Text>
-        </View>
-        <View style={styles.perkItem}>
-          <Ionicons name="musical-notes-outline" size={18} color="#10B981" style={{ marginRight: 8 }} />
-          <Text style={styles.perkText}>Voice guidance, music & themes</Text>
-        </View>
-        <View style={styles.perkItem}>
-          <Ionicons name="sparkles-outline" size={18} color="#10B981" style={{ marginRight: 8 }} />
-          <Text style={styles.perkText}>Early access to new features</Text>
-        </View>
-        <View style={styles.perkItem}>
-          <Ionicons name="close-circle-outline" size={18} color="#10B981" style={{ marginRight: 8 }} />
-          <Text style={styles.perkText}>No ads, ever</Text>
-        </View>
-      </View>
-
-      {/* 🌱 Primary CTA */}
-      <Pressable style={styles.modalButton} onPress={() => {
-        setShowUpgradeModal(false);
-        navigation.navigate('Premium');
-      }}>
-        <Text style={styles.modalButtonText}>Start My Flow</Text>
-      </Pressable>
-
-      {/* 👋 Softer Dismiss CTA */}
-      <Pressable onPress={() => setShowUpgradeModal(false)} style={{ marginTop: 10 }}>
-        <Text style={styles.modalCloseText}>Not right now</Text>
-      </Pressable>
-
-    </View>
-  </View>
-</Modal>
-
-
+          </Modal>
         </LinearGradient>
       </Animated.View>
-
     </TouchableWithoutFeedback>
-    
   );
-};
+};  
 
 const styles = StyleSheet.create({
   shadowWrap: {
@@ -505,5 +536,42 @@ const styles = StyleSheet.create({
   
   
 });
+
+const getRoutineCardStyles = (isDark) =>
+  StyleSheet.create({
+    cardBackground: {
+      backgroundColor: isDark ? '#1E293B' : '#FFFFFF',
+    },
+    cardTitle: {
+      color: isDark ? '#F9FAFB' : '#1F2937',
+      
+    },
+    metaText: {
+      color: isDark ? '#CBD5E1' : '#475569',
+    },
+    tagText: {
+      color: isDark ? '#FFF' : '#334155',
+    },
+    modalCard: {
+      backgroundColor: isDark ? '#1E293B' : '#FFFFFF',
+    },
+    modalTitle: {
+      color: isDark ? '#F9FAFB' : '#1F2937',
+    },
+    modalText: {
+      color: isDark ? '#94A3B8' : '#6B7280',
+    },
+    modalCloseText: {
+      color: isDark ? '#64748B' : '#9CA3AF',
+    },
+    perkText: {
+      color: isDark ? '#E2E8F0' : '#374151',
+    },
+
+  iconColor: {
+    color: isDark ? "#6EE7B7": "#047857",
+  },  
+  });
+
 
 export default RoutineCard;

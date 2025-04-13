@@ -17,6 +17,8 @@ import exercisesData from '../assets/exercises.json';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useFocusEffect } from '@react-navigation/native';
 import { useCallback } from 'react';
+import { useContext } from 'react';
+import { ThemeContext } from '../context/ThemeContext';
 
 
 if (Platform.OS === 'android') {
@@ -52,6 +54,10 @@ const AllRoutinesScreen = () => {
   const [myRoutines, setMyRoutines] = useState([]);
   const [savedRoutines, setSavedRoutines] = useState([]);
   const navigation = useNavigation();
+
+  const { themeName } = useContext(ThemeContext);
+const isDark = themeName === 'dark';
+const themed = getThemedStyles(isDark);
 
 useFocusEffect(
   useCallback(() => {
@@ -109,22 +115,22 @@ useEffect(() => {
 
   const renderDropdown = (type, options) => (
     openDropdown === type && (
-      <View style={styles.dropdown}>
+      <View style={[styles.dropdown, themed.dropdown]}>
         {options.map((option, i) => (
           <Pressable
             key={`${option}-${i}`}
-            style={styles.option}
+            style={[styles.option, themed.option]}
             onPress={() => handleSelectOption(type, option)}
           >
             {type === 'category' && (
               <Ionicons
                 name={categoryIcons[option]}
                 size={16}
-                color="#047857"
+                color={themed.iconColor.color}
                 style={{ marginRight: 8 }}
               />
             )}
-            <Text style={styles.optionText}>
+            <Text style={[styles.optionText, themed.optionText]}>
               {type === 'category' ? categoryLabels[option] : option}
             </Text>
           </Pressable>
@@ -135,20 +141,31 @@ useEffect(() => {
 
   const renderTabButton = (label, key) => (
     <Pressable
-      style={[styles.tabBtn, activeTab === key && styles.activeTabBtn]}
+      style={[
+        styles.tabBtn,
+        themed.tabBtn,
+        activeTab === key && themed.activeTabBtn
+      ]}
       onPress={() => {
         LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
         setActiveTab(key);
       }}
     >
-      <Text style={[styles.tabText, activeTab === key && styles.activeTabText]}>{label}</Text>
+      <Text
+        style={[
+          styles.tabText,
+          activeTab === key ? themed.activeTabText : themed.tabText
+        ]}
+      >
+        {label}
+      </Text>
     </Pressable>
   );
-
+  
   return (
-    <SafeAreaView style={{ flex: 1 }} edges={['top']}>
-      <View style={styles.container}>
-        <View style={styles.tabContainer}>
+    <SafeAreaView style={[{ flex: 1 }, themed.container]} edges={['top']}>
+      <View style={[styles.container, themed.container]}>
+        <View style={[styles.tabContainer, themed.tabContainer]}>
           {renderTabButton('App Routines', 'app')}
           {renderTabButton('My Routines', 'user')}
           {renderTabButton('Saved Routines', 'saved')}
@@ -157,21 +174,21 @@ useEffect(() => {
         {activeTab === 'app' && (
           <>
             <View style={styles.filterBar}>
-              <Pressable style={styles.filterBtn} onPress={() => handleToggleDropdown('difficulty')}>
-                <Ionicons name="barbell" size={16} color="#047857" />
-                <Text style={styles.filterText}>{filters.difficulty || 'Difficulty'}</Text>
+              <Pressable style={[styles.filterBtn, themed.filterBtn]} onPress={() => handleToggleDropdown('difficulty')}>
+                <Ionicons name="barbell" size={16} color={themed.iconColor.color}/>
+                <Text style={[styles.filterText, themed.filterText]}>{filters.difficulty || 'Difficulty'}</Text>
                 <Ionicons name={openDropdown === 'difficulty' ? 'chevron-up' : 'chevron-down'} size={16} color="#6B7280" />
               </Pressable>
 
-              <Pressable style={styles.filterBtn} onPress={() => handleToggleDropdown('duration')}>
-                <Ionicons name="time" size={16} color="#047857" />
-                <Text style={styles.filterText}>{filters.duration || 'Duration'}</Text>
+              <Pressable style={[styles.filterBtn, themed.filterBtn]} onPress={() => handleToggleDropdown('duration')}>
+                <Ionicons name="time" size={16}color={themed.iconColor.color} />
+                <Text style={[styles.filterText, themed.filterText]}>{filters.duration || 'Duration'}</Text>
                 <Ionicons name={openDropdown === 'duration' ? 'chevron-up' : 'chevron-down'} size={16} color="#6B7280" />
               </Pressable>
 
-              <Pressable style={styles.filterBtn} onPress={() => handleToggleDropdown('category')}>
-                <Ionicons name="pricetags" size={16} color="#047857" />
-                <Text style={styles.filterText}>
+              <Pressable style={[styles.filterBtn, themed.filterBtn]} onPress={() => handleToggleDropdown('category')}>
+                <Ionicons name="pricetags" size={16} color={themed.iconColor.color} />
+                <Text style={[styles.filterText, themed.filterText]}>
                   {filters.category ? categoryLabels[filters.category] : 'Category'}
                 </Text>
                 <Ionicons name={openDropdown === 'category' ? 'chevron-up' : 'chevron-down'} size={16} color="#6B7280" />
@@ -328,10 +345,10 @@ const styles = StyleSheet.create({
     borderColor: '#A7F3D0',
   },
   filterText: {
-    fontSize: 14,
     fontWeight: '600',
-    color: '#047857',
+    fontSize: 14,
   },
+  
   dropdown: {
     flexDirection: 'row',
     flexWrap: 'wrap',
@@ -401,5 +418,71 @@ const styles = StyleSheet.create({
   },
   
 });
+
+const getThemedStyles = (isDark) =>
+  StyleSheet.create({
+    container: {
+      backgroundColor: isDark ? '#0F172A' : '#F0F4F3',
+    },
+    text: {
+      color: isDark ? '#F3F4F6' : '#111827',
+    },
+    tabBtn: {
+      backgroundColor: isDark ? '#334155' : '#D1D5DB',
+    },
+    activeTabBtn: {
+      backgroundColor: '#10B981',
+    },
+    activeTabText: {
+      color: '#fff',
+    },
+    filterBtn: {
+      backgroundColor: isDark ? "#022C22" : '#ECFDF5',
+      borderColor: isDark ? '#4ADE80' : '#A7F3D0',
+    },
+    option: {
+      backgroundColor: isDark ? "#022C22" : '#ECFDF5',
+      borderColor: isDark ? '#4ADE80' : '#A7F3D0',
+    },
+    optionText: {
+      color: isDark ? '#6EE7B7' : '#047857',
+    },
+    clearBtn: {
+      backgroundColor: isDark ? '#374151' : '#E5E7EB',
+    },
+    iconColor: {
+      color: isDark ? "#6EE7B7": "#047857",
+    },  
+    clearText: {
+      color: isDark ? '#CBD5E1' : '#6B7280',
+    },
+    secondaryBtn: {
+      backgroundColor: isDark ? '#064E3B' : '#D1FAE5',
+      borderColor: isDark ? '#10B981' : '#34D399',
+    },
+    secondaryText: {
+      color: '#10B981',
+    },
+    optionText: {
+      color: isDark ? '#A7F3D0' : '#047857', // was #6EE7B7, softened for readability
+    },
+    
+    option: {
+      backgroundColor: isDark ? '#134E4A' : '#ECFDF5', // darker bg for dark mode
+      borderColor: isDark ? '#10B981' : '#A7F3D0',
+    },
+    
+    tabText: {
+      color: isDark ? '#F1F5F9' : '#374151',
+    },
+    activeTabText: {
+      color: '#FFFFFF',
+    },
+    filterText: {
+      color: isDark ? '#A7F3D0' : '#047857',
+    },
+    
+  });
+
 
 export default AllRoutinesScreen;

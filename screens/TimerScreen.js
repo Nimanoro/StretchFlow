@@ -10,6 +10,8 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Share } from 'react-native';
+import { ThemeContext } from '../context/ThemeContext';
+
 import { useRoute, useNavigation } from '@react-navigation/native';
 import { LinearGradient } from 'expo-linear-gradient';
 import * as Speech from 'expo-speech';
@@ -41,6 +43,8 @@ const TimerScreen = () => {
   const [paused, setPaused] = useState(false);
   const [isResting, setIsResting] = useState(false);
   const [hasSwitchedSide, setHasSwitchedSide] = useState(false);
+  const { themeName } = useContext(ThemeContext);
+  const isDark = themeName === 'dark';
 
   const [showVoiceLimitModal, setShowVoiceLimitModal] = useState(false);
   const [silentMode, setSilentMode] = useState(false);
@@ -97,6 +101,7 @@ const handleShare = async () => {
     console.error('Error sharing card:', err);
   }
 };
+const themed = getThemedStyles(isDark);
 
   const handleRoutineComplete = async (routine) => {
     const today = moment().format('YYYY-MM-DD');
@@ -281,7 +286,7 @@ const handleShare = async () => {
   const currentStretch = stretches?.[currentStep];
   const nextStretch = stretches?.[currentStep + 1];
 
-  const backgroundStyle = isResting ? styles.restBackground : styles.container;
+  const backgroundStyle = isResting ? [styles.restBackground, themed.restBackground] : [styles.container, themed.container];
 
   return (
 
@@ -289,7 +294,7 @@ const handleShare = async () => {
 
     <SafeAreaView style={{ backgroundColor: '#F0F4F3' }}/>  
 
-      <View style={styles.topBar}>
+      <View style={[styles.topBar, themed.topBar]}>
         <Animated.View
           style={[
             styles.progressBar,
@@ -317,11 +322,11 @@ const handleShare = async () => {
   <Ionicons name="arrow-back" size={22} color="#fff" />
 </Pressable>
 
-      <Text style={styles.routineTitle}>{routine.title}</Text>
+      <Text style={[styles.routineTitle, themed.routineTitle]}>{routine.title}</Text>
 
       {isRunning ? (
         <>
-          <Text style={styles.stepProgress}>
+          <Text style={[styles.stepProgress, themed.stepProgress]}>
             {`Step ${currentStep + 1} of ${stretches.length}`}
           </Text>
 
@@ -331,12 +336,12 @@ const handleShare = async () => {
   colors={['#ECFDF5', '#DBF4FF']}
   style={[StyleSheet.absoluteFill, { zIndex: -1 }]}
 />
-<Animated.Text style={[styles.stretchName, { opacity: fadeAnim }]}>
+<Animated.Text style={[styles.stretchName, { opacity: fadeAnim }, themed.stretchName]}>
   Time to Rest
 </Animated.Text>
 <Text style={styles.restSubLabel}>10 seconds to reset & refocus</Text>
             
-              <Animated.View style={[styles.timerAura,  {transform: [{ scale: pulseAnim }]}, {marginBottom: 20 }]}>
+              <Animated.View style={[styles.timerAura,  {transform: [{ scale: pulseAnim }]}, {marginBottom: 20 }, themed.timerAura]}>
                 <AnimatedCircularProgress
                   size={180}
                   width={12}
@@ -346,19 +351,19 @@ const handleShare = async () => {
                   rotation={0}
                   lineCap="round"
                 >
-                  {() => <Text style={styles.timer}>{secondsLeft}s</Text>}
+                  {() => <Text style={[styles.timer, themed.timer]}>{secondsLeft}s</Text>}
                 </AnimatedCircularProgress>
               </Animated.View>
     {nextStretch && (
       <Animated.View style={{ opacity: nextFadeAnim }}>
-      <Text style={styles.nextUp}>Up Next: {nextStretch.name}</Text>
+      <Text style={[styles.nextUp, themed.nextUp]}>Up Next: {nextStretch.name}</Text>
     </Animated.View>
     )}
 
-    <View style={styles.controlWrapper}>
+    <View style={[styles.controlWrapper, themed.controlWrapper]}>
       {/* Back icon - always disabled during rest */}
-      <View style={[styles.skipCircle, styles.skipCircleDisabled]}>
-        <Ionicons name="play-skip-back" size={22} color="#D1D5DB" />
+      <View style={[styles.skipCircle,  themed.skipCircle, styles.skipCircleDisabled, themed.skipCircleDisabled]}>
+        <Ionicons name="play-skip-back" size={22} color={themed.disabledSkip.color} />
       </View>
 
       {/* Center icon - peaceful resting symbol */}
@@ -367,6 +372,7 @@ const handleShare = async () => {
   style={({ pressed }) => [
     styles.playPauseCircle,
     pressed && styles.playPauseCirclePressed,
+    themed.playPauseCircle,
   ]}
 >
   <Ionicons name={paused ? 'play' : 'pause'} size={28} color="#fff" />
@@ -381,9 +387,9 @@ const handleShare = async () => {
           setSecondsLeft(stretches[next].duration);
           animateFade();
         }}
-        style={styles.skipCircle}
+        style={[styles.skipCircle, themed.skipCircle]}
       >
-        <Ionicons name="play-skip-forward" size={22} color="#6B7280" />
+        <Ionicons name="play-skip-forward" size={22} color={themed.Skip.color} />
       </Pressable>
     </View>
 
@@ -393,11 +399,11 @@ const handleShare = async () => {
 
 ) : (
             <>
-              <Animated.Text style={[styles.stretchName, { opacity: fadeAnim }]}>
+              <Animated.Text style={[styles.stretchName, { opacity: fadeAnim }, themed.stretchName]}>
                 {currentStretch.name}
               </Animated.Text>
 
-              <Animated.View style={[styles.timerAura,  {transform: [{ scale: pulseAnim }]}, {marginBottom: 20 }]}>
+              <Animated.View style={[styles.timerAura,  {transform: [{ scale: pulseAnim }]}, {marginBottom: 20 }, themed.timerAura]}>
                 <AnimatedCircularProgress
                   size={180}
                   width={12}
@@ -415,26 +421,26 @@ const handleShare = async () => {
                   rotation={0}
                   lineCap="round"
                 >
-                  {() => <Text style={styles.timer}>{secondsLeft}</Text>}
+                  {() => <Text style={[styles.timer, themed.timer]}>{secondsLeft}</Text>}
                 </AnimatedCircularProgress>
               </Animated.View>
               {currentStretch.instruction && (
-                <Text style={styles.instructionText}>
+                <Text style={[styles.instructionText, themed.instructionText]}>
                   {currentStretch.instruction}
                 </Text>
               )}
 
           {nextStretch && !isResting && (
             <Animated.View style={{ opacity: nextFadeAnim }}>
-            <View style={styles.nextContainer}>
-            <Text style={styles.nextUp}>Get ready for: {nextStretch.name}</Text>
+            <View style={[styles.nextContainer, themed.nextContainer]}>
+            <Text style={[styles.nextUp, themed.nextUp]}>Get ready for: {nextStretch.name}</Text>
 
             </View>
           </Animated.View>
 
           
           )}
-          <View style={styles.controlWrapper}>
+          <View style={[styles.controlWrapper, themed.controlWrapper]}>
   <Pressable
     onPress={() => {
       if (currentStep > 0) {
@@ -444,16 +450,19 @@ const handleShare = async () => {
         animateFade();
       }
     }}
+
+    disabled={currentStep === 0}
     style={[
       styles.skipCircle,
+      themed.skipCircle,
       currentStep === 0 && styles.skipCircleDisabled,
+      currentStep === 0 && themed.skipCircleDisabled,
     ]}
-    disabled={currentStep === 0}
   >
     <Ionicons
       name="play-skip-back"
       size={22}
-      color={currentStep === 0 ? '#D1D5DB' : '#6B7280'}
+      color={currentStep === 0 ? themed.disabledSkip.color : themed.Skip.color}
     />
   </Pressable>
 
@@ -461,6 +470,8 @@ const handleShare = async () => {
     onPress={() => setPaused((prev) => !prev)}
     style={({ pressed }) => [
       styles.playPauseCircle,
+      themed.playPauseCircle,
+      pressed && styles.playPauseCirclePressed,
       pressed && styles.playPauseCirclePressed,
     ]}
   >
@@ -478,14 +489,17 @@ const handleShare = async () => {
     }}
     style={[
       styles.skipCircle,
+      themed.skipCircle,
       currentStep === stretches.length - 1 && styles.skipCircleDisabled,
+      currentStep === stretches.length - 1 && themed.skipCircleDisabled,
+
     ]}
     disabled={currentStep === stretches.length - 1}
   >
     <Ionicons
       name="play-skip-forward"
       size={22}
-      color={currentStep === stretches.length - 1 ? '#D1D5DB' : '#6B7280'}
+      color={currentStep === stretches.length - 1 ? themed.disabledSkip.color : themed.Skip.color}
     />
   </Pressable>
 </View>
@@ -500,8 +514,8 @@ const handleShare = async () => {
 
 
 
-<View style={styles.bottomToggleContainer}>
-  <Text style={styles.toggleLabel}>Voice Guidance</Text>
+<View style={[styles.bottomToggleContainer, themed.bottomToggleContainer]}>
+  <Text style={[styles.toggleLabel, themed.toggleLabel]}>Voice Guidance</Text>
   <Switch
     value={!silentMode}
     onValueChange={toggleSilentMode}
@@ -512,7 +526,7 @@ const handleShare = async () => {
       ) : (
         <>
   <Ionicons name="trophy-outline" size={48} color="#FBBF24" style={{ marginBottom: 12 }} />
-  <Text style={styles.completeHeader}> Routine Complete!</Text>
+  <Text style={[styles.completeHeader, themed.completeHeader]}> Routine Complete!</Text>
   <View ref={cardRef} collapsable={false}>
     <RoutineSummaryCard
     title={routine.title}
@@ -521,28 +535,29 @@ const handleShare = async () => {
     muscleGroups={routine.muscleGroups}
     difficulty={routine.difficulty}
     tags={routine.tags}
+    isDark={isDark}
     
   />
   </View>
-  <Text style={styles.quoteText}>
+  <Text style={[styles.quoteText, themed.quoteText]}>
     “Small steps every day lead to big change.” 🧘
   </Text>
 
-  <View style={styles.ctaRow}>
-    <Pressable style={styles.ctaButtonOutline} onPress={handleShare}>
+  <View style={[styles.ctaRow, themed.ctaRow]}>
+    <Pressable style={[styles.ctaButtonOutline, themed.ctaButtonOutline]} onPress={handleShare}>
       <Ionicons name="share-social-outline" size={16} color="#10B981" />
-      <Text style={styles.ctaButtonTextAlt}>Share</Text>
+      <Text style={[styles.ctaButtonTextAlt, themed.ctaButtonTextAlt]}>Share</Text>
     </Pressable>
 
-    <Pressable style={styles.ctaButton} onPress={() => {
+    <Pressable style={[styles.ctaButton, themed.ctaButton]} onPress={() => {
       restartRoutine();
     }}>
-      <Text style={styles.ctaButtonText}>Repeat</Text>
+      <Text style={[styles.ctaButtonText, themed.ctaButtonText]}>Repeat</Text>
     </Pressable>
   </View>
 
-  <Pressable style={styles.backButton} onPress={() => navigation.popToTop()}>
-    <Text style={styles.backToHome}>Back to Home</Text>
+  <Pressable style={[styles.backButton, themed.backButton]} onPress={() => navigation.popToTop()}>
+    <Text style={[styles.backToHome, themed.backToHome]}>Back to Home</Text>
   </Pressable>
 
 </>
@@ -553,18 +568,18 @@ const handleShare = async () => {
 
 
       <Modal visible={showVoiceLimitModal} transparent animationType="fade">
-  <View style={styles.modalBackdrop}>
-    <View style={styles.modalContent}>
+  <View style={[styles.modalBackdrop, themed.modalBackdrop]}>
+    <View style={[styles.modalContent, themed.modalContent]}>
       {/* Premium Header Banner */}
       <LinearGradient
         colors={['#10B981', '#059669']}
-        style={styles.modalHeader}
+        style={[styles.modalHeader, themed.modalHeader]}
       >
         <Ionicons name="sparkles-outline" size={32} color="#fff" />
-        <Text style={styles.modalHeaderText}>StretchFlow Premium</Text>
+        <Text style={[styles.modalHeaderText, themed.modalHeaderText]}>StretchFlow Premium</Text>
       </LinearGradient>
 
-      <Text style={styles.modalText}>
+      <Text style={[styles.modalText, themed.modalText]}>
         You’ve used all 3 free voice sessions this week.
 Stay focused and unlock unlimited guidance for just $2.99/month.
 
@@ -572,33 +587,33 @@ Stay focused and unlock unlimited guidance for just $2.99/month.
       </Text>
 
       {/* Feature bullets */}
-      <View style={styles.modalBulletList}>
-        <View style={styles.bulletItem}>
+      <View style={[styles.modalBulletList, themed.modalBulletList]}>
+        <View style={[styles.bulletItem, themed.bulletItem]}>
           <Ionicons name="volume-high-outline" size={18} color="#10B981" />
-          <Text style={styles.bulletText}>Unlimited Voice Guidance</Text>
+          <Text style={[styles.bulletText, themed.bulletText]}>Unlimited Voice Guidance</Text>
         </View>
         <View style={styles.bulletItem}>
           <Ionicons name="checkmark-done-outline" size={18} color="#10B981" />
-          <Text style={styles.bulletText}>Personalized Experience</Text>
+          <Text style={[styles.bulletText, themed.bulletText]}>Personalized Experience</Text>
         </View>
         <View style={styles.bulletItem}>
           <Ionicons name="heart-outline" size={18} color="#10B981" />
-          <Text style={styles.bulletText}>Support App Growth</Text>
+          <Text style={[styles.bulletText, themed.bulletText]}>Support App Growth</Text>
         </View>
       </View>
 
       <Pressable
-        style={styles.modalButton}
+        style={[styles.modalButton, themed.modalButton]}
         onPress={() => {
           setShowVoiceLimitModal(false);
           navigation.navigate('Premium');
         }}
       >
-        <Text style={styles.modalButtonText}>Upgrade to Premium</Text>
+        <Text style={[styles.modalButtonText, themed.modalButtonText]}>Upgrade to Premium</Text>
       </Pressable>
 
       <Pressable onPress={() => setShowVoiceLimitModal(false)}>
-        <Text style={styles.modalSkipText}>Maybe Later</Text>
+        <Text style={[styles.modalSkipText, themed.modalSkipText]}>Maybe Later</Text>
       </Pressable>
     </View>
   </View>
@@ -903,5 +918,91 @@ const styles = StyleSheet.create({
   },
   
 });
+const getThemedStyles = (isDark) =>
+  StyleSheet.create({
+    container: {
+      backgroundColor: isDark ? '#0F172A' : '#F0F4F3',
+    },
+    restBackground: {
+      backgroundColor: isDark ? '#1F2937' : '#D0F4EA',
+    },
+    topBar: {
+      backgroundColor: isDark ? '#334155' : '#E5E7EB',
+    },
+    progressBar: {
+      backgroundColor: '#10B981', // Keep consistent across themes
+    },
+    routineTitle: {
+      color: isDark ? '#F3F4F6' : '#1F2937',
+    },
+    stepProgress: {
+      color: isDark ? '#CBD5E1' : '#6B7280',
+    },
+    stretchName: {
+      color: isDark ? '#6EE7B7' : '#047857',
+    },
+    restText: {
+      color: isDark ? '#6EE7B7' : '#065F46',
+    },
+    timer: {
+      color: isDark ? '#F3F4F6' : '#1F2937',
+    },
+    nextUp: {
+      color: isDark ? '#94A3B8' : '#6B7280',
+    },
+    instructionText: {
+      color: isDark ? '#9CA3AF' : '#6B7280',
+    },
+    bottomToggleContainer: {
+      backgroundColor: isDark ? '#1E293B' : '#ffffff',
+      borderColor: isDark ? '#334155' : '#E5E7EB',
+    },
+    toggleLabel: {
+      color: isDark ? '#E5E7EB' : '#374151',
+    },
+    modalContent: {
+      backgroundColor: isDark ? '#0F172A' : '#fff',
+    },
+    
+    modalText: {
+      color: isDark ? '#E5E7EB' : '#4B5563',
+    },
+    bulletText: {
+      color: isDark ? '#E2E8F0' : '#374151',
+    },
+    modalSkipText: {
+      color: isDark ? '#9CA3AF' : '#6B7280',
+    },
+    completeHeader: {
+      color: isDark ? '#6EE7B7' : '#10B981',
+    },
+    quoteText: {
+      color: isDark ? '#9CA3AF' : '#6B7280',
+    },
+    backButton: {
+      backgroundColor: isDark ? '#1E293B' : '#E5E7EB',
+    },
+    backToHome: {
+      color: isDark ? '#CBD5E1' : '#6B7280',
+    },
+    timerAura: {
+      backgroundColor: isDark ? '#1E3A8A' : '#E0FDF4',
+    },
+    restSubLabel: {
+      color: isDark ? '#CBD5E1' : '#4B5563',
+    },
+    skipCircle: {
+      backgroundColor: isDark ? '#334155' : '#E5E7EB',
+    },
+    playPauseCircle: {
+      backgroundColor: '#10B981', // Same across both
+    },
+    Skip: {
+      color: isDark ? "#D1D5DB" : '#6B7280',
+    },
+    disabledSkip: {
+      color: isDark ? '#6B7280' : '#D1D5DB',
+    },
+  });
 
 export default TimerScreen;

@@ -24,6 +24,7 @@ import { UserContext } from '../context/UserContext';
 import { getMyRoutines } from '../utils/userStorage';
 import { TouchableWithoutFeedback, Keyboard } from 'react-native';
 
+import { ThemeContext } from '../context/ThemeContext';
 
 const BuildRoutineScreen = () => {
   const categories = ['All', 'Easy', 'Intermediate', 'Advanced'];
@@ -37,6 +38,9 @@ const BuildRoutineScreen = () => {
   const [showModal, setShowModal] = useState(false);
   const [diffFilters, setDiffFilters] = useState([]);
   const [isPreviewVisible, setPreviewVisible] = useState(false);
+  const { themeName } = useContext(ThemeContext);
+  const isDark = themeName === 'dark';
+
 
   const navigation = useNavigation();
   const getChipLabel = (type) => {
@@ -69,7 +73,7 @@ const BuildRoutineScreen = () => {
   const allTags = [
     "warm-up", "mobility", "flexibility", "relaxation", "recovery", "posture", "deep stretch"
   ]
-  
+  const themed= getThemedStyles(isDark);
   const allDifficulties = ['Easy', 'Intermediate', 'Advanced'];
 
   
@@ -155,67 +159,70 @@ const BuildRoutineScreen = () => {
 
   const renderStretch = ({ item }) => {
     const isSelected = !!selected.find((s) => s.id === item.id);
-
-    return (
-      
-      <Pressable
-        onPress={() => toggleStretch(item)}
-        style={({ pressed }) => [
-          styles.card,
-          isSelected && styles.cardSelected,
-          pressed && styles.cardPressed,
-        ]}
-      >
-        <View style={styles.cardHeader}>
-          <View style={styles.textGroup}>
-            <Text style={styles.stretchTitle}>{item.name}</Text>
-            <Text style={styles.metaText}>
-              {item.duration}s • {capitalize(item.position)} • {capitalize(item.difficulty)}
-            </Text>
-            <View style={styles.section}>
-        <View style={styles.sectionRow}>
-          <Ionicons name="body-outline" size={16} color="#6366F1" />
-          <Text style={styles.tagText}>
-            {item.muscleGroups.map(g => g.charAt(0).toUpperCase() + g.slice(1)).join(', ')}
-          </Text>
-        </View>
-        <View style={styles.sectionRow}>
-          <Ionicons name="pricetag-outline" size={16} color="#F59E0B" />
-          <Text style={styles.tagText}>
-            {item.tags.map(t => t.charAt(0).toUpperCase() + t.slice(1)).join(', ')}
-          </Text>
-        </View>
-        <View style={styles.sectionRow}>
-          <Ionicons name="star-outline" size={16} color="#10B981" />
-          <Text style={styles.tagText}>
-            {item.benefits.map(b => b.charAt(0).toUpperCase() + b.slice(1)).join(', ')}
-          </Text>
-        </View>
-      </View>
-
+      return (
+        <Pressable
+          onPress={() => toggleStretch(item)}
+          style={({ pressed }) => [
+            styles.card,
+            themed.card,
+            isSelected && [styles.cardSelected, themed.cardSelected],
+            pressed && styles.cardPressed,
+          ]}
+        >
+          <View style={styles.cardHeader}>
+            <View style={styles.textGroup}>
+              <Text style={[styles.stretchTitle, themed.cardText]}>{item.name}</Text>
+              <Text style={[styles.metaText, themed.metaText]}>
+                {item.duration}s • {capitalize(item.position)} • {capitalize(item.difficulty)}
+              </Text>
+    
+              <View style={styles.section}>
+                <View style={styles.sectionRow}>
+                  <Ionicons name="body-outline" size={16} color={isDark ? '#A5B4FC' : '#6366F1'} />
+                  <Text style={[styles.tagText, themed.metaText]}>
+                    {item.muscleGroups.map(g => capitalize(g)).join(', ')}
+                  </Text>
+                </View>
+    
+                <View style={styles.sectionRow}>
+                  <Ionicons name="pricetag-outline" size={16} color={isDark ? '#FCD34D' : '#F59E0B'} />
+                  <Text style={[styles.tagText, themed.metaText]}>
+                    {item.tags.map(t => capitalize(t)).join(', ')}
+                  </Text>
+                </View>
+    
+                <View style={styles.sectionRow}>
+                  <Ionicons name="star-outline" size={16} color={isDark ? '#6EE7B7' : '#10B981'} />
+                  <Text style={[styles.tagText, themed.metaText]}>
+                    {item.benefits.map(b => capitalize(b)).join(', ')}
+                  </Text>
+                </View>
+              </View>
+            </View>
+    
+            <View style={[styles.addButton, themed.addButton]}>
+              <Text style={styles.addButtonText}>{isSelected ? '✓' : '+'}</Text>
+            </View>
           </View>
-          <View style={styles.addButton}>
-            <Text style={styles.addButtonText}>{isSelected ? '✓' : '+'}</Text>
-          </View>
-        </View>
-      </Pressable>
-    );
-  };
+        </Pressable>
+      );
+    };
+    
 
   return (
-    <SafeAreaView style={{ flex: 1 }} edges={['top']}>
-    <View style={styles.container}>
+    <SafeAreaView style={[{ flex: 1 }, themed.container]} edges={['top']}>
+    <View style={[styles.container, themed.container]}>
 
       <Modal visible={isNamingModalVisible} animationType="slide" transparent>
-        <View style={styles.modalOverlay}>
-          <View style={styles.modalContent}>
-            <Text style={styles.modalTitle}>Name Your Routine</Text>
+        <View style={[styles.modalOverlay, themed.modalOverlay]}>
+          <View style={[styles.modalContent, themed.modalContent]}>
+            <Text style={[styles.modalTitle, themed.modalTitle]}>Name Your Routine</Text>
             <RNTextInput
               placeholder="e.g., Morning Mobility"
               placeholderTextColor="#9CA3AF"
               value={routineName}
               onChangeText={setRoutineName}
-              style={styles.modalInput}
+              style={[styles.modalInput, themed.modalInput]}
             />
             <Pressable
               onPress={() => {
@@ -226,17 +233,17 @@ const BuildRoutineScreen = () => {
                   Alert.alert('Please enter a routine name.');
                 }
               }}
-              style={styles.modalSaveButton}
+              style={[styles.modalSaveButton, themed.modalSaveButton]}
             >
-              <Text style={styles.modalSaveButtonText}>Save</Text>
+              <Text style={[styles.modalSaveButtonText, themed.modalSaveButtonText]}>Save</Text>
             </Pressable>
           </View>
         </View>
       </Modal>
 
-      <Text style={styles.title}>Build Your Routine</Text>
+      <Text style={[styles.title, themed.title]}>Build Your Routine</Text>
 
-      <View style={styles.filterContainer}>
+      <View style={[styles.filterContainer, themed.filterContainer]}>
 
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
     <KeyboardAvoidingView
@@ -247,7 +254,7 @@ const BuildRoutineScreen = () => {
           placeholderTextColor="#9CA3AF"
           value={searchTerm}
           onChangeText={setSearchTerm}
-          style={styles.searchInput}
+          style={[styles.searchInput, themed.searchInput]}
         />
       </KeyboardAvoidingView>
     </TouchableWithoutFeedback>
@@ -298,9 +305,9 @@ const BuildRoutineScreen = () => {
         setTagFilters([]);
         setDiffFilters([]);
       }}
-      style={styles.clearAllButton}
+      style={[styles.clearAllButton, themed.clearAllButton]}
     >
-      <Text style={styles.clearAllText}>Clear All</Text>
+      <Text style={[styles.clearAllText, themed.clearAllText]}>Clear All</Text>
     </Pressable>
     
     )}
@@ -813,5 +820,115 @@ const styles = StyleSheet.create({
   
   
 });
+
+const getThemedStyles = (isDark) =>
+  StyleSheet.create({
+    container: {
+      backgroundColor: isDark ? '#0F172A' : '#F0F4F3',
+    },
+    card: {
+      backgroundColor: isDark ? '#1E293B' : '#FFFFFF',
+      borderColor: isDark ? '#334155' : '#E5E7EB',
+      borderRadius: 20,
+      padding: 16,
+      marginBottom: 14,
+      shadowColor: '#000',
+      shadowOpacity: isDark ? 0.15 : 0.05,
+      shadowOffset: { width: 0, height: 2 },
+      shadowRadius: 6,
+      elevation: 3,
+    },
+    cardSelected: {
+      backgroundColor: isDark ? '#134E4A' : '#ECFDF5',
+      borderColor: '#10B981',
+      borderWidth: 2,
+    },
+    cardText: {
+      color: isDark ? '#F9FAFB' : '#111827',
+    },
+    metaText: {
+      color: isDark ? '#CBD5E1' : '#6B7280',
+    },
+    tagText: {
+      color: isDark ? '#6EE7B7' : '#047857',
+    },
+    sectionBackground: {
+      backgroundColor: isDark ? '#1E293B' : '#fff',
+    },
+    searchInput: {
+      backgroundColor: isDark ? '#1E293B' : '#FFFFFF',
+      borderColor: isDark ? '#475569' : '#D1D5DB',
+      color: isDark ? '#F3F4F6' : '#111827',
+      borderRadius: 12,
+      padding: 12,
+      borderWidth: 1,
+      marginBottom: 8,
+    },
+    addButton: {
+      backgroundColor: '#10B981',
+      width: 36,
+      height: 36,
+      borderRadius: 18,
+      alignItems: 'center',
+      justifyContent: 'center',
+      alignSelf: 'flex-start',
+    },
+    modalInput: {
+      backgroundColor: isDark ? '#334155' : '#fff',
+      color: isDark ? '#F3F4F6' : '#111827',
+      borderColor: isDark ? '#475569' : '#D1D5DB',
+      borderWidth: 1,
+      borderRadius: 10,
+      padding: 12,
+    },
+    modalOverlay: {
+      backgroundColor: 'rgba(0,0,0,0.2)',
+    },
+    modalContent: {
+      backgroundColor: isDark ? '#1E293B' : '#fff',
+      borderRadius: 20,
+      padding: 20,
+    },
+    modalTitle: {
+      color: isDark ? '#F3F4F6' : '#111827',
+      fontSize: 18,
+      fontWeight: '600',
+    },
+    modalSaveButton: {
+      backgroundColor: '#10B981',
+      borderRadius: 12,
+      paddingVertical: 14,
+      alignItems: 'center',
+    },
+    modalSaveButtonText: {
+      color: '#fff',
+      fontSize: 16,
+      fontWeight: '700',
+    },
+    saveText: {
+      color: '#fff',
+    },
+    clearAllButton: {
+      backgroundColor: '#F87171',
+      borderRadius: 20,
+      paddingVertical: 6,
+      paddingHorizontal: 12,
+      marginRight: 8,
+    },
+    clearAllText: {
+      color: '#fff',
+      fontSize: 13,
+      fontWeight: '500',
+    },
+    title: {
+      fontSize: 26,
+      fontWeight: '700',
+      marginBottom: 12,
+      color: isDark ? '#F3F4F6' : '#111827',
+    },
+    filterContainer: {
+      marginBottom: 12,
+    },
+  });
 
 export default BuildRoutineScreen;

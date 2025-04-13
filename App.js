@@ -8,6 +8,7 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import HomeScreen from './screens/HomeScreen';
 import RoutineScreen from './screens/RoutineScreen';
+import { ThemeProvider } from './context/ThemeContext';
 import TimerScreen from './screens/TimerScreen';
 import PremiumScreen from './screens/PremiumScreen';
 import { UserProvider } from './context/UserContext';
@@ -56,13 +57,27 @@ export default function App() {
     }
     updateApp();
   }, []);
+  useEffect(() => {
+    const markFirstLaunch = async () => {
+      try {
+        const launched = await AsyncStorage.getItem('hasLaunchedOnce');
+        if (!launched) {
+          await AsyncStorage.setItem('hasLaunchedOnce', 'true');
+        }
+      } catch (error) {
+        console.error("Error marking first launch:", error);
+      }
+    };
+    markFirstLaunch();
+  }, []);
   if (!initialRoute) return null;
+
 
   return (
 
     <UserProvider>
+      <ThemeProvider>
       <FavoritesProvider>
-
       <NavigationContainer>
       <Stack.Navigator initialRouteName={initialRoute} screenOptions={{ headerShown: false }}>
 
@@ -74,6 +89,7 @@ export default function App() {
         </Stack.Navigator>
       </NavigationContainer>
       </FavoritesProvider>
+      </ThemeProvider>
     </UserProvider>
   );
 }

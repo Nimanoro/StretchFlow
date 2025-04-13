@@ -8,6 +8,9 @@ import HomeScreen from './HomeScreen';
 import ProfileScreen from './ProfileScreen';
 import AllRoutinesScreen from './AllRoutine';
 import BuildRoutineScreen from './BuildRoutine';
+import { useContext } from 'react';
+import { ThemeContext } from '../context/ThemeContext';
+
 
 const Tab = createBottomTabNavigator();
 
@@ -24,6 +27,11 @@ const CustomBuildButton = ({ children, onPress }) => (
 );
 
 export default function BottomTabNavigator() {
+  const { themeName } = useContext(ThemeContext);
+  const isDark = themeName === 'dark';
+  const activeColor = '#10B981';
+  const inactiveColor = isDark ? '#FFF2F0' : '#9CA3AF';
+  
   return (
     <Tab.Navigator
       screenOptions={{
@@ -31,17 +39,19 @@ export default function BottomTabNavigator() {
         tabBarShowLabel: false,
         tabBarStyle: {
           height: 80,
-          paddingBottom: 8 ,
-          backgroundColor: '#fff',
-          borderTopLeftRadius: 20,
-          borderTopRightRadius: 20,
-          shadowColor: '#000',
+          paddingBottom: 8,
+          backgroundColor: isDark ? '#1E293B' : '#fff',
+          ...(!isDark && {
+            borderTopLeftRadius: 20,
+            borderTopRightRadius: 20,
+          }),
+          shadowColor: isDark ? '#000' : '#000',
           shadowOffset: { width: 0, height: -2 },
-          shadowOpacity: 0.06,
+          shadowOpacity: isDark ? 0.3 : 0.06,
           shadowRadius: 10,
           elevation: 10,
         },
-      }}i
+      }}
     >
       <Tab.Screen
         name="Home"
@@ -49,7 +59,7 @@ export default function BottomTabNavigator() {
         options={{
           tabBarIcon: ({ color, focused }) => (
             <View style={styles.iconWrapper}>
-              <Ionicons name="home-outline" size={28} color={focused ? '#10B981' : '#9CA3AF'} />
+              <Ionicons name="home-outline" size={28} color={focused ? activeColor: inactiveColor} />
 
             </View>
           ),
@@ -62,7 +72,7 @@ export default function BottomTabNavigator() {
         options={{
           tabBarIcon: ({ color, focused }) => (
             <View style={styles.iconWrapper}>
-              <Feather name="compass" size={28} color={focused ? '#10B981' : '#9CA3AF'} />
+              <Feather name="compass" size={28} color={focused ? activeColor: inactiveColor} />
             </View>
           ),
         }}
@@ -76,7 +86,7 @@ export default function BottomTabNavigator() {
             <MaterialCommunityIcons
               name="plus-circle"
               size={30}
-              color={focused ? '#10B981' : '#9CA3AF'}
+              color={focused ? activeColor: inactiveColor}
               style={styles.iconWrapper}
             />
           ),
@@ -89,7 +99,7 @@ export default function BottomTabNavigator() {
         options={{
           tabBarIcon: ({ color, focused }) => (
             <View style={styles.iconWrapper}>
-              <Ionicons name="person-circle-outline" size={28} color={focused ? '#10B981' : '#9CA3AF'} />
+              <Ionicons name="person-circle-outline" size={28} color={focused ? activeColor: inactiveColor} />
             </View>
           ),
         }}
@@ -104,3 +114,4 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
 });
+
