@@ -110,7 +110,7 @@ const HomeScreen = () => {
   return (
 
 
-    <SafeAreaView style={[{flex: 1 }, themedStyles.container]} edges={['top']}>
+    <SafeAreaView style={[{flex: 1 }, {backgroundColor: isDark ? '#1F2937' : '#F0F0F0'}]} edges={['top']}>
     <ScrollView style={[styles.container, themedStyles.container]}>
       {/* === HERO HEADER === */}
       <ImageBackground
@@ -132,7 +132,7 @@ const HomeScreen = () => {
       <Pressable onPress={toggleTheme} style={{ position: 'absolute', top: 10, right: 16 }}>
   <Ionicons
     name={themeName === 'dark' ? 'sunny-outline' : 'moon-outline'}
-    size={24}
+    size={32}
     color={themeName === 'dark' ? '#FFF' : '#111827'}
   />
 </Pressable>

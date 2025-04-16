@@ -1,32 +1,45 @@
 // context/ThemeContext.js
-import React, { createContext, useEffect, useState } from 'react';
-import { Appearance } from 'react-native';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import React, { createContext, useState, useEffect } from 'react';
+import { Appearance, AppState } from 'react-native';
 
 export const ThemeContext = createContext();
 
 export const ThemeProvider = ({ children }) => {
-  const [themeName, setThemeName] = useState('default'); // 'default', 'light', or 'dark'
+  const getSystemTheme = () => Appearance.getColorScheme() || 'light';
 
+  const [themeName, setThemeName] = useState(getSystemTheme());
+  const [followSystem, setFollowSystem] = useState(true);
+
+  // Update theme on system change if following system
   useEffect(() => {
-    const loadTheme = async () => {
-      const saved = await AsyncStorage.getItem('theme');
-      setThemeName(saved || 'light');
-    };
-    loadTheme();
-  }, []);
+    const appearanceSub = Appearance.addChangeListener(({ colorScheme }) => {
+      if (followSystem) {
+        setThemeName(colorScheme || 'light');
+      }
+    });
 
-  const toggleTheme = async () => {
-    const newTheme =
-      themeName === 'light' ? 'dark' : 'light';
-    setThemeName(newTheme);
-    await AsyncStorage.setItem('theme', newTheme);
-    console.log(`Theme changed to ${newTheme}`);
+    return () => appearanceSub.remove();
+  }, [followSystem]);
+
+  // Reset theme to system when app comes back to foreground
+  useEffect(() => {
+    const appStateSub = AppState.addEventListener('change', (state) => {
+      if (state === 'active' && followSystem) {
+        const systemTheme = getSystemTheme();
+        setThemeName(systemTheme);
+      }
+    });
+
+    return () => appStateSub.remove();
+  }, [followSystem]);
+
+  const toggleTheme = () => {
+    setFollowSystem(false); // stop following system
+    setThemeName((prev) => (prev === 'light' ? 'dark' : 'light'));
   };
 
-  const systemTheme = Appearance.getColorScheme();
   return (
-    <ThemeContext.Provider value={{toggleTheme, themeName }}>
+    <ThemeContext.Provider value={{ themeName, toggleTheme }}>
       {children}
     </ThemeContext.Provider>
   );

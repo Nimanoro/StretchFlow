@@ -13,13 +13,15 @@ import { Ionicons } from '@expo/vector-icons';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Linking } from 'react-native';
 import { useContext } from 'react';
+import { ScrollView } from 'react-native';
+
 import { ThemeContext } from '../context/ThemeContext';
 const ProfileScreen = () => {
   const [name, setName] = useState('');
   const [streak, setStreak] = useState(0);
   const [silentMode, setSilentMode] = useState(false);
 
-  const { themeName } = useContext(ThemeContext);
+  const { themeName, toggleTheme} = useContext(ThemeContext);
   const isDark = themeName === 'dark';
   const themed = getThemedStyles(isDark);
 
@@ -66,7 +68,7 @@ const ProfileScreen = () => {
 
   return (
     <SafeAreaView style={[{ flex: 1 }, themed.container]} edges={['top']}>
-      <View style={[styles.container, themed.container]}>
+      <ScrollView style={[styles.container, themed.container]}>
         <View style={[styles.card, themed.card]}>
           <Text style={[styles.label, themed.text]}>Your Name</Text>
           <TextInput
@@ -100,19 +102,35 @@ const ProfileScreen = () => {
             <Switch value={silentMode} onValueChange={toggleSilentMode} />
           </View>
         </View>
-  
         <View style={[styles.card, themed.card]}>
-          <View style={styles.row}>
-            <Ionicons name="refresh-circle" size={20} color="#991B1B" />
-            <Text style={[styles.infoText, themed.text]}>Reset Data</Text>
-          </View>
-          <Pressable onPress={handleReset} style={styles.resetButton}>
-            <Text style={styles.resetText}>Reset App</Text>
-          </Pressable>
-          <Text style={[{ fontSize: 13, marginTop: 12 }, themed.subtleWarning]}>
-            Caution: This will delete your name, streak, and saved routines.
-          </Text>
-        </View>
+  <View style={styles.row}>
+    <Ionicons name="contrast" size={20} color="#6366F1" />
+    <Text style={[styles.infoText, themed.text]}>Theme</Text>
+  </View>
+  <View style={styles.toggleRow}>
+    <Text style={[styles.toggleText, themed.text]}>
+      {`Using ${themeName} mode`}
+    </Text>
+    <Pressable
+      onPress={toggleTheme}
+      style={{
+        backgroundColor: isDark ? '#334155' : '#E0E7FF',
+        paddingVertical: 8,
+        paddingHorizontal: 16,
+        borderRadius: 20,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.25,
+        shadowRadius: 3.84,
+        elevation: 5,
+      }}
+    >
+      <Text style={{ color: isDark ? '#F3F4F6' : '#1E3A8A', fontWeight: '600' }}>
+        Toggle Theme
+      </Text>
+    </Pressable>
+  </View>
+</View>
   
         <View style={[styles.card, themed.card]}>
           <View style={styles.row}>
@@ -123,7 +141,7 @@ const ProfileScreen = () => {
             <Text style={[styles.linkText, themed.link]}>stretchflow.app@gmail.com</Text>
           </Pressable>
         </View>
-      </View>
+      </ScrollView>
     </SafeAreaView>
   );
 }  
@@ -174,6 +192,11 @@ const styles = StyleSheet.create({
       alignSelf: 'flex-start',
       alignItems: 'center',
       gap: 6,
+      shadowColor: '#000',
+  shadowOffset: { width: 0, height: 2 },
+  shadowOpacity: 0.25,
+  shadowRadius: 3.84,
+  elevation: 5,
     },
     saveText: {
       color: '#FFFFFF',
