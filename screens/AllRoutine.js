@@ -9,6 +9,7 @@ import {
   Platform,
   UIManager,
 } from 'react-native';
+import { track } from '../utils/analytics';
 import { useNavigation } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
 import RoutineCard from '../components/RoutineCard';
@@ -91,6 +92,7 @@ useEffect(() => {
   };
 
   const handleSelectOption = (type, value) => {
+    track(`Routine Filter: ${type} - ${value}`);
     LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
     setFilters(prev => ({ ...prev, [type]: value }));
     setOpenDropdown(null);
@@ -148,6 +150,7 @@ useEffect(() => {
       ]}
       onPress={() => {
         LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
+        track(`Routine Tab: ${label}`);
         setActiveTab(key);
       }}
     >

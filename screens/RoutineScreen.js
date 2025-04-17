@@ -13,7 +13,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useContext } from 'react';
 import { ThemeContext } from '../context/ThemeContext';
-
+import { track } from '../utils/analytics';
 const RoutineScreen = () => {
   const route = useRoute();
   const navigation = useNavigation();
@@ -167,7 +167,9 @@ const RoutineScreen = () => {
 
       <Pressable
         style={[styles.startButton, themed.startButton]}
-        onPress={() => navigation.navigate('Timer', { routine, stretches: steps })}
+        onPress={() => {track('Routine Started', { routine: routine.title });
+            navigation.navigate('Timer', { routine, stretches: steps })}
+}
       >
         <Text style={[styles.startButtonText, themed.startButtonText]}>Start Routine</Text>
       </Pressable>

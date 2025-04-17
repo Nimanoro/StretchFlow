@@ -17,6 +17,28 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useEffect } from 'react';
 import ProfileScreen from './screens/ProfileScreen';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { initAnalytics } from './utils/analytics';
+import * as Notifications from 'expo-notifications';
+import * as Device from 'expo-device';
+import { Platform } from 'react-native';
+
+export async function registerForPushNotificationsAsync() {
+  if (Device.isDevice) {
+    const { status: existingStatus } = await Notifications.getPermissionsAsync();
+    let finalStatus = existingStatus;
+
+    if (existingStatus !== 'granted') {
+      const { status } = await Notifications.requestPermissionsAsync();
+      finalStatus = status;
+    }
+
+    return finalStatus === 'granted';
+  } else {
+    alert('Must use physical device for notifications');
+    return false;
+  }
+}
+
 import { useState } from 'react';
 import BottomTabNavigator from './screens/bottomNav';
 import { getUserData } from './utils/userStorage';
@@ -36,6 +58,11 @@ try {
 const Stack = createNativeStackNavigator();
 export default function App() {
   const [initialRoute, setInitialRoute] = useState(null);
+  
+
+  useEffect(() => {
+    initAnalytics();
+  }, []);
   useEffect(() => {
     const checkUser = async () => {
       const userData = await getUserData();
@@ -58,6 +85,11 @@ export default function App() {
     updateApp();
   }, []);
   useEffect(() => {
+    registerForPushNotificationsAsync();
+  }, []);
+  
+  
+  useEffect(() => {
     const markFirstLaunch = async () => {
       try {
         const launched = await AsyncStorage.getItem('hasLaunchedOnce');
@@ -71,7 +103,7 @@ export default function App() {
     markFirstLaunch();
   }, []);
   if (!initialRoute) return null;
-
+  
 
   return (
 

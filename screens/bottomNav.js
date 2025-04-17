@@ -11,7 +11,7 @@ import BuildRoutineScreen from './BuildRoutine';
 import { useContext } from 'react';
 import { ThemeContext } from '../context/ThemeContext';
 
-
+import { track } from '../utils/analytics';
 const Tab = createBottomTabNavigator();
 
 const CustomBuildButton = ({ children, onPress }) => (
@@ -64,6 +64,11 @@ export default function BottomTabNavigator() {
             </View>
           ),
         }}
+        listeners={{
+          tabPress: () => {
+            track('Screen_viewed', { tab: 'Home' });
+          },
+        }}
       />
 
       <Tab.Screen
@@ -75,6 +80,11 @@ export default function BottomTabNavigator() {
               <Feather name="compass" size={28} color={focused ? activeColor: inactiveColor} />
             </View>
           ),
+        }}
+        listeners={{
+          tabPress: () => {
+            track('Screen_viewed', { tab: 'AllRoutines' });
+          },
         }}
       />
 
@@ -91,6 +101,11 @@ export default function BottomTabNavigator() {
             />
           ),
         }}
+        listeners={{
+          tabPress: () => {
+            track('Screen_viewed', { tab: 'Build' });
+          },
+        }}
       />
 
       <Tab.Screen
@@ -103,6 +118,12 @@ export default function BottomTabNavigator() {
             </View>
           ),
         }}
+        listeners={{
+          tabPress: () => {
+            track('Screen_viewed', { tab: 'Profile' });
+          },
+        }}
+        
       />
     </Tab.Navigator>
   );

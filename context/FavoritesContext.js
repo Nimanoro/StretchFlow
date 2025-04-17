@@ -1,6 +1,7 @@
 // contexts/FavoritesContext.js
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { getSavedRoutines, saveARoutine } from '../utils/userStorage';
+import { track } from '../utils/analytics';
 
 const FavoritesContext = createContext();
 
@@ -21,6 +22,10 @@ export const FavoritesProvider = ({ children }) => {
 
   const toggleFavorite = async (item) => {
     let updated;
+    track('toggle_favorite', {
+      itemName: item.name,
+      itemFavorite: !isFavorite(item.id),
+    });
     const already = isFavorite(item.id);
 
     if (already) {

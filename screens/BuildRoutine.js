@@ -1,4 +1,4 @@
-import React, { useState, useContext } from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 import {
   View,
   Text,
@@ -25,6 +25,7 @@ import { getMyRoutines } from '../utils/userStorage';
 import { TouchableWithoutFeedback, Keyboard } from 'react-native';
 
 import { ThemeContext } from '../context/ThemeContext';
+import { track } from '@amplitude/analytics-react-native';
 
 const BuildRoutineScreen = () => {
   const categories = ['All', 'Easy', 'Intermediate', 'Advanced'];
@@ -50,6 +51,7 @@ const BuildRoutineScreen = () => {
     return type.charAt(0).toUpperCase() + type.slice(1); // fallback
   };
   const {isPremium} = useContext(UserContext);
+  
 
   const chipColor = {
      difficulty: '#10B981',
@@ -151,6 +153,7 @@ const BuildRoutineScreen = () => {
       Alert.alert('Success', 'Your routine has been saved!');
       setRoutineName('');
       setNamingModalVisible(false);
+      track('Routine Created', {routine_length: selected.length});
       navigation.navigate('Explore');
     } catch (error) {
       Alert.alert('Error', 'Something went wrong while saving your routine.');

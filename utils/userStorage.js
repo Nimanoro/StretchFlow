@@ -1,13 +1,27 @@
-import AsyncStorage from '@react-native-async-storage/async-storage';
+// utils/userStorage.js
+
+import * as SecureStore from 'expo-secure-store';
+
 const USER_KEY = 'stretchflow_user';
+const MY_ROUTINES_KEY = 'myRoutines';
+const SAVED_ROUTINES_KEY = 'savedRoutines';
 
 export const getUserData = async () => {
-  const json = await AsyncStorage.getItem(USER_KEY);
-  return json ? JSON.parse(json) : null;
+  try {
+    const json = await SecureStore.getItemAsync(USER_KEY);
+    return json ? JSON.parse(json) : null;
+  } catch (e) {
+    console.error('Error loading user data:', e);
+    return null;
+  }
 };
 
 export const saveUserData = async (data) => {
-  await AsyncStorage.setItem(USER_KEY, JSON.stringify(data));
+  try {
+    await SecureStore.setItemAsync(USER_KEY, JSON.stringify(data));
+  } catch (e) {
+    console.error('Error saving user data:', e);
+  }
 };
 
 export const updateUserData = async (updates) => {
@@ -18,46 +32,38 @@ export const updateUserData = async (updates) => {
 };
 
 export const resetUserData = async () => {
-  await AsyncStorage.removeItem(USER_KEY);
-  await AsyncStorage.removeItem("myRoutines");
-  await AsyncStorage.removeItem("savedRoutines");
-  await AsyncStorage.removeItem("favorites");
-
+  await SecureStore.deleteItemAsync(USER_KEY);
+  await SecureStore.deleteItemAsync(MY_ROUTINES_KEY);
+  await SecureStore.deleteItemAsync(SAVED_ROUTINES_KEY);
 };
 
 export const getMyRoutines = async () => {
-  const myRoutines = await AsyncStorage.getItem("myRoutines");
-  return myRoutines ? JSON.parse(myRoutines) : [];
+  const json = await SecureStore.getItemAsync(MY_ROUTINES_KEY);
+  return json ? JSON.parse(json) : [];
 };
 
-export const saveMyRoutines = async (routines) => {
-  let myRoutines = await AsyncStorage.getItem("myRoutines");
-  myRoutines = myRoutines ? JSON.parse(myRoutines) : [];
-  myRoutines.push(routines);
-  await AsyncStorage.setItem("myRoutines", JSON.stringify(myRoutines));
-  return myRoutines;
+export const saveMyRoutines = async (newRoutine) => {
+  const current = await getMyRoutines();
+  const updated = [...current, newRoutine];
+  await SecureStore.setItemAsync(MY_ROUTINES_KEY, JSON.stringify(updated));
+  return updated;
 };
-
 
 export const getSavedRoutines = async () => {
-  const savedRoutines = await AsyncStorage.getItem("savedRoutines");
-  return savedRoutines ? JSON.parse(savedRoutines) : [];
+  const json = await SecureStore.getItemAsync(SAVED_ROUTINES_KEY);
+  return json ? JSON.parse(json) : [];
 };
 
-export const saveARoutine = async (routines) => {
-  let savedRoutines = await AsyncStorage.getItem("savedRoutines");
-  savedRoutines = savedRoutines ? JSON.parse(savedRoutines) : [];
-  // Check if the routine already exists
-  const exists = savedRoutines.some((routine) => routine.id === routines.id);
+export const saveARoutine = async (routine) => {
+  let savedRoutines = await getSavedRoutines();
+
+  const exists = savedRoutines.some((r) => r.id === routine.id);
   if (exists) {
-    // If it exists, remove it from the array
-    savedRoutines = savedRoutines.filter((routine) => routine.id !== routines.id);
+    savedRoutines = savedRoutines.filter((r) => r.id !== routine.id);
+  } else {
+    savedRoutines.push(routine);
   }
-  else {
-    // If it doesn't exist, add it to the array
-    savedRoutines.push(routines);
-  }
-  await AsyncStorage.setItem("savedRoutines", JSON.stringify(savedRoutines));
+
+  await SecureStore.setItemAsync(SAVED_ROUTINES_KEY, JSON.stringify(savedRoutines));
   return savedRoutines;
 };
-

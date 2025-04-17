@@ -9,6 +9,7 @@ import {
   Modal,
   Alert,
 } from 'react-native';
+import { track } from '../utils/analytics';
 import { Ionicons } from '@expo/vector-icons';
 import { UserContext } from '../context/UserContext';
 import { useNavigation } from '@react-navigation/native';
@@ -150,7 +151,8 @@ const hiddenTagCount = item.tags?.length > 1 && !showAllTags ? item.tags.length 
     <TouchableWithoutFeedback
       onPressIn={onPressIn}
       onPressOut={onPressOut}
-      onPress={() => navigation.navigate('Routine', { routine: item })}
+      onPress={() => {track("routine_clicked_on", {routine_name: item.title})
+                            navigation.navigate('Routine', { routine: item })}}
     >
       <Animated.View style={[styles.shadowWrap, (isDark && {
   shadowColor: '#000',

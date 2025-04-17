@@ -20,7 +20,7 @@ import { isSilentMode, setSilentMode as persistSilentMode } from '../utils/voice
 import { AnimatedCircularProgress } from 'react-native-circular-progress';
 import ConfettiCannon from 'react-native-confetti-cannon';
 import { updateUserData, getUserData } from '../utils/userStorage';
-import moment from 'moment'; // or native Date strings
+import moment, { duration } from 'moment'; // or native Date strings
 import { Ionicons } from '@expo/vector-icons';
 import RoutineSummaryCard from '../components/RoutineSummary';
 import { UserContext } from '../context/UserContext';
@@ -30,6 +30,7 @@ import * as FileSystem from 'expo-file-system';
 
 
 import { Vibration } from 'react-native';
+import { track } from '@amplitude/analytics-react-native';
 
 
 const TimerScreen = () => {
@@ -53,11 +54,13 @@ const TimerScreen = () => {
   const [handleSkip, setHandleSkip] = useState(false);
   const [voiceChecked, setVoiceChecked] = useState(false);
   const [totalTime, setTotalTime] = useState(0);
-  const { isPremium } = useContext(UserContext);
+  //const { isPremium } = useContext(UserContext);
+  const isPremium = true; // For testing purposes, set to true
   const cardRef = useRef(); // 📸 Reference to the card
 
   const nextFadeAnim = useRef(new Animated.Value(0)).current;
 const restartRoutine = () => {
+  track('Restarted Routine');
   setCurrentStep(0);
   setSecondsLeft(stretches[0].duration);
   setIsRunning(true);
@@ -85,6 +88,7 @@ const animateNext = () => {
   }).start();
 };
 const handleShare = async () => {
+  track("share button clicked")
   try {
     const uri = await captureRef(cardRef, {
       format: 'png',
@@ -113,6 +117,8 @@ const themed = getThemedStyles(isDark);
       if (moment().diff(last, 'days') === 1) newStreak = (user.streak || 0) + 1;
       else if (moment().diff(last, 'days') === 0) newStreak = user.streak || 1;
     }
+    track('Routine_Completed', {routine: routine.title, duration: totalTime, streak: newStreak});
+
   
     const updated = await updateUserData({
       streak: newStreak,
@@ -160,6 +166,8 @@ const themed = getThemedStyles(isDark);
   }, []);
 
   const toggleSilentMode = async () => {
+
+    track('Toggled Voice Guidance', { silentMode: !silentMode });
 
     if (voiceCreditsUsed && !isPremium) {
       setShowVoiceLimitModal(true);
@@ -385,6 +393,7 @@ const themed = getThemedStyles(isDark);
           setIsResting(false);
           setCurrentStep(next);
           setSecondsLeft(stretches[next].duration);
+          track('Skipped Rest');
           animateFade();
         }}
         style={[styles.skipCircle, themed.skipCircle]}
@@ -482,6 +491,7 @@ const themed = getThemedStyles(isDark);
     onPress={() => {
       if (currentStep < stretches.length - 1) {
         const next = currentStep + 1;
+        track('Skipped Stretch');
         setCurrentStep(next);
         setSecondsLeft(stretches[next].duration);
         animateFade();

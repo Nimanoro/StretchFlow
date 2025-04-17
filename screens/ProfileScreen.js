@@ -10,6 +10,7 @@ import {
 } from 'react-native';
 import { getUserData, updateUserData, resetUserData } from '../utils/userStorage';
 import { Ionicons } from '@expo/vector-icons';
+import NotificationSettings from '../components/NotificationSetting';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Linking } from 'react-native';
 import { useContext } from 'react';
@@ -17,6 +18,7 @@ import { ScrollView } from 'react-native';
 
 import { ThemeContext } from '../context/ThemeContext';
 const ProfileScreen = () => {
+  
   const [name, setName] = useState('');
   const [streak, setStreak] = useState(0);
   const [silentMode, setSilentMode] = useState(false);
@@ -131,6 +133,7 @@ const ProfileScreen = () => {
     </Pressable>
   </View>
 </View>
+<NotificationSettings />
   
         <View style={[styles.card, themed.card]}>
           <View style={styles.row}>

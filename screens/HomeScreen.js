@@ -14,6 +14,7 @@ import {
 } from 'react-native';
 import { useContext } from 'react';
 import { ThemeContext } from '../context/ThemeContext';
+import { track } from '../utils/analytics';
 
 import { LinearGradient } from 'expo-linear-gradient';
 import { useNavigation } from '@react-navigation/native';
@@ -185,6 +186,10 @@ const HomeScreen = () => {
         <Pressable
           onPress={() => {
             const lastRoutine = routines.find(r => r.title === lastSession.title) || routines[0].title;
+            track('continue_routine_clicked', {
+              routine_title: lastSession.title || 'Unknown',
+              streak_days: streakDays,
+            });
             navigation.navigate('Routine', {
               routine: lastSession,
             });
@@ -204,7 +209,8 @@ const HomeScreen = () => {
   <View style={[styles.betaButtons]}>
     <Pressable
       style={[styles.betaButton, themedStyles.betaButton]}
-      onPress={() => Linking.openURL('https://tally.so/r/w5Odzb')} // or link to a feedback screen/web
+      onPress={() => { track("Give_feedback_clicked");
+        Linking.openURL('https://tally.so/r/w5Odzb')}} // or link to a feedback screen/web
     >
       <Ionicons name="chatbubble-ellipses-outline" size={16} color="#10B981" style={{ marginRight: 6 }} />
       <Text style={[styles.betaButtonText, themedStyles.betaButtonText]}>Give Feedback</Text>
@@ -212,9 +218,10 @@ const HomeScreen = () => {
 
     <Pressable
       style={[styles.betaButton, themedStyles.betaButton]}
-      onPress={() => {
-         Linking.openURL('https://plastic-fenugreek-00e.notion.site/StretchFlow-You-Build-It-Too-1d13eae17ff780afb4a1ec5950b94325')
-      }}
+      onPress={() => { {
+        track('view_roadmap_clicked');
+         Linking.openURL('https://plastic-fenugreek-00e.notion.site/StretchFlow-You-Build-It-Too-1d13eae17ff780afb4a1ec5950b94325');
+      }}}
     >
       <Ionicons name="rocket-outline" size={16} color="#10B981" style={{ marginRight: 6 }} />
       <Text style={[styles.betaButtonText, themedStyles.betaButtonText]}>View Roadmap</Text>
