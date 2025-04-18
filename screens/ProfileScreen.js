@@ -93,7 +93,8 @@ const ProfileScreen = () => {
           </View>
           <Text style={[styles.streakText, themed.text]}>{streak}-day streak</Text>
         </View>
-  
+
+<NotificationSettings />
         <View style={[styles.card, themed.card]}>
           <View style={styles.row}>
             <Ionicons name="volume-mute" size={20} color="#6B7280" />
@@ -133,7 +134,6 @@ const ProfileScreen = () => {
     </Pressable>
   </View>
 </View>
-<NotificationSettings />
   
         <View style={[styles.card, themed.card]}>
           <View style={styles.row}>

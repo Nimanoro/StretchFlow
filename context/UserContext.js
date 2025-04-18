@@ -1,37 +1,52 @@
 import React, { createContext, useEffect, useState } from 'react';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import * as SecureStore from 'expo-secure-store';
 import { restorePurchase } from '../utils/iap';
 
 export const UserContext = createContext();
 
 export const UserProvider = ({ children }) => {
-  const [isPremium, setIsPremium] = useState(__DEV__ ? true : false); // <- Optional: dev = premium
+  const [isPremium, setIsPremium] = useState(false);
   const [iapInitialized, setIapInitialized] = useState(false);
-  const [madeRoutine, setMadeRoutine] = useState(false);
-  const testFlight = true; // <- Optional: testFlight = premium
+
+  const isDev = __DEV__;
+  const testFlight = true; // 🔁 set this to true for beta testing
+
   let InAppPurchases;
-  if (!__DEV__ || !testFlight) {
+  if (!isDev && !testFlight) {
     InAppPurchases = require('expo-in-app-purchases');
   }
 
-  // ✅ Load from storage on app startup
+  // 🔄 Load premium flag from SecureStore
   useEffect(() => {
-    const checkStoredPremium = async () => {
+    const loadPremiumFlag = async () => {
       try {
-        const stored = await AsyncStorage.getItem('hasPremium');
+        const stored = await SecureStore.getItemAsync('hasPremium');
         if (stored === 'true') {
           setIsPremium(true);
         }
       } catch (err) {
-        console.warn('Failed to load premium flag:', err);
+        console.warn('❌ Failed to load premium flag:', err);
+      }
+
+      // ⛑ Dev override
+      if (isDev || testFlight) {
+        setIsPremium(true);
       }
     };
-    checkStoredPremium();
+
+    loadPremiumFlag();
   }, []);
 
-  // ✅ Setup purchase listener (only if not in dev mode)
+  // 🔄 Auto-init IAP & restore
   useEffect(() => {
-    if (__DEV__ || !InAppPurchases || testFlight) return;
+    if (!isDev && !testFlight) {
+      initIAP();
+    }
+  }, []);
+
+  // 🧠 Purchase Listener
+  useEffect(() => {
+    if (isDev || testFlight || !InAppPurchases) return;
 
     const purchaseListener = InAppPurchases.setPurchaseListener(
       async ({ responseCode, results }) => {
@@ -40,10 +55,10 @@ export const UserProvider = ({ children }) => {
             if (!purchase.acknowledged) {
               try {
                 await InAppPurchases.finishTransactionAsync(purchase, true);
-                await AsyncStorage.setItem('hasPremium', 'true');
+                await SecureStore.setItemAsync('hasPremium', 'true');
                 setIsPremium(true);
               } catch (err) {
-                console.warn('Failed to finish transaction:', err);
+                console.warn('❌ Failed to finish transaction:', err);
               }
             }
           }
@@ -56,19 +71,20 @@ export const UserProvider = ({ children }) => {
     };
   }, []);
 
-  // ✅ Manual restore/init function (only runs in prod)
+  // 🧪 Manual Restore or Initializer
   const initIAP = async () => {
-    if (__DEV__ || iapInitialized || !InAppPurchases || testFlight) return;
+    if (iapInitialized || isDev || testFlight || !InAppPurchases) return;
+
     try {
       await InAppPurchases.connectAsync();
       const restored = await restorePurchase();
       if (restored) {
-        await AsyncStorage.setItem('hasPremium', 'true');
+        await SecureStore.setItemAsync('hasPremium', 'true');
         setIsPremium(true);
       }
     } catch (err) {
       if (!err.message.includes('Already connected')) {
-        console.error('IAP init error:', err);
+        console.error('❌ IAP init error:', err);
       }
     } finally {
       setIapInitialized(true);

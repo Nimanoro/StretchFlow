@@ -34,7 +34,6 @@ export async function registerForPushNotificationsAsync() {
 
     return finalStatus === 'granted';
   } else {
-    alert('Must use physical device for notifications');
     return false;
   }
 }
@@ -54,12 +53,18 @@ try {
 
 
 
-
+Notifications.setNotificationHandler({
+  handleNotification: async () => ({
+    shouldShowAlert: true,
+    shouldPlaySound: true,
+    shouldSetBadge: false,
+  }),
+});
 const Stack = createNativeStackNavigator();
 export default function App() {
   const [initialRoute, setInitialRoute] = useState(null);
   
-
+  
   useEffect(() => {
     initAnalytics();
   }, []);
@@ -87,6 +92,16 @@ export default function App() {
   useEffect(() => {
     registerForPushNotificationsAsync();
   }, []);
+
+  useEffect(() => {
+  const sub = Notifications.addNotificationResponseReceivedListener(response => {
+    console.log('🔔 User tapped notification:', response);
+    // Navigate or log analytics here
+  });
+
+  return () => sub.remove();
+}, []);
+
   
   
   useEffect(() => {

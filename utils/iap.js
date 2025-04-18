@@ -49,22 +49,21 @@ export const buyPremiumSubscription = async (productId) => {
 };
 
 // Restore previous purchases
-export const restorePurchase = async () => {
-  if (__DEV__ || !InAppPurchases) return;
+// utils/iap.js
 
+export const restorePurchase = async () => {
   try {
-    const { results } = await InAppPurchases.getPurchaseHistoryAsync();
-    const valid = results?.some((purchase) =>
-      purchase.productId === SUBSCRIPTION_ID &&
-      (!purchase.expirationDate || new Date(purchase.expirationDate) > new Date())
-    );
-    await AsyncStorage.setItem('hasPremium', valid ? 'true' : 'false');
-    return valid;
-  } catch (error) {
-    console.error('❌ Restore error:', error);
+    const { responseCode, results } = await InAppPurchases.getPurchaseHistoryAsync();
+    if (responseCode === InAppPurchases.IAPResponseCode.OK && results.length > 0) {
+      return results.some(p => p.productId === 'premium_monthly'); // 🔁 your SKU
+    }
+    return false;
+  } catch (e) {
+    console.warn('❌ Restore failed:', e);
     return false;
   }
 };
+
 
 // Quick local check
 export const isPremiumLocally = async () => {
