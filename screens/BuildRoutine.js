@@ -25,7 +25,7 @@ import { getMyRoutines } from '../utils/userStorage';
 import { TouchableWithoutFeedback, Keyboard } from 'react-native';
 
 import { ThemeContext } from '../context/ThemeContext';
-import { track } from '@amplitude/analytics-react-native';
+import { track } from '../utils/analytics';
 
 const BuildRoutineScreen = () => {
   const categories = ['All', 'Easy', 'Intermediate', 'Advanced'];

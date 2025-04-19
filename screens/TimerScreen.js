@@ -11,7 +11,6 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Share } from 'react-native';
 import { ThemeContext } from '../context/ThemeContext';
-
 import { useRoute, useNavigation } from '@react-navigation/native';
 import { LinearGradient } from 'expo-linear-gradient';
 import * as Speech from 'expo-speech';
@@ -30,7 +29,7 @@ import * as FileSystem from 'expo-file-system';
 
 
 import { Vibration } from 'react-native';
-import { track } from '@amplitude/analytics-react-native';
+import { track } from '../utils/analytics'; // Adjust the import path as necessary
 
 
 const TimerScreen = () => {
@@ -59,7 +58,7 @@ const TimerScreen = () => {
   const cardRef = useRef(); // 📸 Reference to the card
 
   const nextFadeAnim = useRef(new Animated.Value(0)).current;
-const restartRoutine = () => {
+const restartRoutine = async () => {
   track('Restarted Routine');
   setCurrentStep(0);
   setSecondsLeft(stretches[0].duration);
