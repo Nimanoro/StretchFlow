@@ -35,11 +35,16 @@ async function ensureChannel() {
 
 // 🔝  put this near the top of the file
 const QUOTES = [
-  '“Movement is medicine.”',
-  '“A five‑minute stretch beats a five‑hour slump.”',
-  '“Reset your body, refresh your mind.”',
-  '“Tension is who you think you should be; relaxation is who you are.”',
-  '“Tiny habits compound.”',
+  'Movement is medicine.',
+  'A five‑minute stretch beats a five‑hour slump.',
+  'Reset your body, refresh your mind.',
+  'Tension is who you think you should be; relaxation is who you are.',
+  'Tiny habits compound.',
+  "Your body called — it’s asking for five minutes of movement.",
+  "Stiff today, stuck tomorrow. Stretch now.",
+  "Breathe in. Stretch out. Start fresh.",
+  "Stillness builds stress. Motion melts it.",
+  "Consistency isn’t loud. It’s five mindful minutes.",
 ];
 const getRandomQuote = () => {
   const randomIndex = Math.floor(Math.random() * QUOTES.length);
@@ -48,11 +53,8 @@ const getRandomQuote = () => {
 };
 
 function nextOccurrence(hour, minute) {
-  const now = new Date();
-  const next = new Date();
-  next.setHours(hour, minute, 0, 0);
-  if (next <= now) next.setDate(next.getDate() + 1);
-  return next;
+  const diff = {hour: hour, minute: minute, type: 'daily'};
+  return diff;
 }
 
 async function scheduleOnce(hour, minute) {
@@ -61,14 +63,15 @@ async function scheduleOnce(hour, minute) {
   const randomQuote = getRandomQuote();
   await Notifications.scheduleNotificationAsync({
     content: {
-      title: '⏰ Time to Reset!',
+      title: '🧘‍♂️ Time to Stretch!',
       body: randomQuote,
       sound: 'default',
     },
     trigger: fireDate, // one‑shot
+
     channelId: Platform.OS === 'android' ? 'daily-stretch' : undefined,
   });
-  console.log(`Scheduled next reminder → ${fireDate.toLocaleString()}`);
+  console.log(`Scheduled next reminder → ${fireDate.hour}:${fireDate.minute}`);
 }
 
 /* ------------------------------------------------------------------ */
@@ -96,12 +99,6 @@ export default function NotificationSettings() {
     (async () => {
       await loadSettings();
     })();
-
-    const sub = Notifications.addNotificationReceivedListener(async () => {
-      const saved = await getScheduleNotification();
-      if (saved?.hour !== undefined)
-        await scheduleOnce(saved.hour, saved.minute);
-    });
     return () => sub.remove();
   }, []);
 
@@ -182,7 +179,6 @@ export default function NotificationSettings() {
   }
 
   function cancelPick() {
-    // If user was enabling for the first time, revert switch
     if (!enabled) setEnabled(false);
     setPickerVisible(false);
   }
