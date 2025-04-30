@@ -56,6 +56,23 @@ const TimerScreen = () => {
   //const { isPremium } = useContext(UserContext);
   const isPremium = true; // For testing purposes, set to true
   const cardRef = useRef(); // 📸 Reference to the card
+  const [voiceId, setVoiceId] = useState(null);
+
+  useEffect(() => {
+    (async () => {
+      const voices = await Speech.getAvailableVoicesAsync();
+      const iosVoice = voices.find(
+        (v) =>
+          v.identifier?.includes('Samantha') || 
+          v.identifier?.includes('Karen') || 
+          v.identifier?.includes('com.apple.ttsbundle')
+      );
+      if (iosVoice) {
+        setVoiceId(iosVoice.identifier);
+      }
+    })();
+  }, []);
+  
 
   const nextFadeAnim = useRef(new Animated.Value(0)).current;
 const restartRoutine = async () => {
@@ -182,9 +199,15 @@ const themed = getThemedStyles(isDark);
     const allowed = await checkVoiceAccess(isPremium);
     if (!silent && allowed) {
       Speech.stop();
-      Speech.speak(text, { language: 'en-US', pitch: 1.0, rate: 0.9 });
+      Speech.speak(text, {
+        language: 'en-US',
+        pitch: 0.9,
+        rate: 1.0,
+        voice: voiceId || undefined,
+      });
     }
   };
+  
 
   const animateFade = () => {
     fadeAnim.setValue(0);
