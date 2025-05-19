@@ -201,7 +201,7 @@ const themed = getThemedStyles(isDark);
       Speech.stop();
       Speech.speak(text, {
         language: 'en-US',
-        pitch: 0.9,
+        pitch: 0.9 ,
         rate: 1.0,
         voice: voiceId || undefined,
       });

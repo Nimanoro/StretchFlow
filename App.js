@@ -70,7 +70,7 @@ export default function App() {
   }, []);
   useEffect(() => {
     const checkUser = async () => {
-      const userData = await getUserData();
+      const userData = null //await getUserData();
       if (userData) {
         setInitialRoute('Tabs');
       } else {

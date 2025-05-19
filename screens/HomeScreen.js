@@ -24,7 +24,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import exercisesData from '../assets/exercises.json';
 import BottomTabNavigator from './bottomNav';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import FeedbackModal from '../components/feedbackmodal';
+
 
 import { getUserData } from '../utils/userStorage';
 
@@ -145,7 +145,6 @@ const HomeScreen = () => {
           <Text style={[styles.greetingText, themedStyles.greetingText]}>{greeting}</Text>
           <Text style={[styles.greetingSubtext, themedStyles.greetingSubtext]}>{motivation}</Text>
         </View>
-        <FeedbackModal />
         {/* === STREAK BAR === */}
         <View style={[styles.statusBar, themedStyles.statusBar]}>
           <View style={[styles.streakRow, themedStyles.streakRow]}>
