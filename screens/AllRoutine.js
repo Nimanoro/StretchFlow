@@ -9,6 +9,7 @@ import {
   Platform,
   UIManager,
 } from 'react-native';
+import { useRoute } from '@react-navigation/native';
 import { track } from '../utils/analytics';
 import { useNavigation } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
@@ -49,14 +50,22 @@ const categoryIcons = {
 };
 
 const AllRoutinesScreen = () => {
-  const [activeTab, setActiveTab] = useState('app');
-  const [filters, setFilters] = useState({ difficulty: null, duration: null, category: null });
+
+const route = useRoute();
+const initialFrom = route.params?.filters?.from;
+const [activeTab, setActiveTab] = useState(
+  initialFrom === 'user' ? 'user' : initialFrom === 'saved' ? 'saved' : 'app'
+);
+
+
+  const [filters, setFilters] = useState(route.params?.filters || {});
   const [openDropdown, setOpenDropdown] = useState(null);
   const [myRoutines, setMyRoutines] = useState([]);
   const [savedRoutines, setSavedRoutines] = useState([]);
   const navigation = useNavigation();
 
-  const { themeName } = useContext(ThemeContext);
+
+const { themeName } = useContext(ThemeContext);
 const isDark = themeName === 'dark';
 const themed = getThemedStyles(isDark);
 
@@ -106,114 +115,48 @@ useEffect(() => {
 
   const filteredRoutines = routines.filter(routine => {
     const matchesDifficulty = !filters.difficulty || routine.difficulty === filters.difficulty;
-    const matchesDuration = !filters.duration || (
+    const matchedTags =
+    !filters.tags ||
+    (Array.isArray(routine.tags) &&
+      routine.tags.some(tag =>
+        filters.tags.map(t => t.toLowerCase()).includes(tag.toLowerCase())
+      ));
+      const matchesDuration = !filters.duration || (
       (filters.duration === '<5 min' && parseInt(routine.duration) < 5) ||
       (filters.duration === '5–10 min' && parseInt(routine.duration) >= 5 && parseInt(routine.duration) <= 10) ||
       (filters.duration === '>10 min' && parseInt(routine.duration) > 10)
     );
     const matchesCategory = !filters.category || routine.category === filters.category;
-    return matchesDifficulty && matchesDuration && matchesCategory;
+    return matchesDifficulty && matchesDuration && matchesCategory && matchedTags;
   });
 
-  const renderDropdown = (type, options) => (
-    openDropdown === type && (
-      <View style={[styles.dropdown, themed.dropdown]}>
-        {options.map((option, i) => (
-          <Pressable
-            key={`${option}-${i}`}
-            style={[styles.option, themed.option]}
-            onPress={() => handleSelectOption(type, option)}
-          >
-            {type === 'category' && (
-              <Ionicons
-                name={categoryIcons[option]}
-                size={16}
-                color={themed.iconColor.color}
-                style={{ marginRight: 8 }}
-              />
-            )}
-            <Text style={[styles.optionText, themed.optionText]}>
-              {type === 'category' ? categoryLabels[option] : option}
-            </Text>
-          </Pressable>
-        ))}
-      </View>
-    )
-  );
 
-  const renderTabButton = (label, key) => (
-    <Pressable
-      style={[
-        styles.tabBtn,
-        themed.tabBtn,
-        activeTab === key && themed.activeTabBtn
-      ]}
-      onPress={() => {
-        LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
-        track(`Routine Tab: ${label}`);
-        setActiveTab(key);
-      }}
-    >
-      <Text
-        style={[
-          styles.tabText,
-          activeTab === key ? themed.activeTabText : themed.tabText
-        ]}
-      >
-        {label}
-      </Text>
-    </Pressable>
-  );
   
   return (
     <SafeAreaView style={[{ flex: 1 }, themed.container]} edges={['top']}>
-      <View style={[styles.container, themed.container]}>
-        <View style={[styles.tabContainer, themed.tabContainer]}>
-          {renderTabButton('App Routines', 'app')}
-          {renderTabButton('My Routines', 'user')}
-          {renderTabButton('Saved Routines', 'saved')}
-        </View>
+      <View style={[styles.headerRow, {backgroundColor: isDark ? '#0F172A' : '#F9FAFB'}]}>
+  <Pressable onPress={() => navigation.goBack()} style={styles.backButton}>
+    <Ionicons name="chevron-back" size={24} color={isDark ? '#F3F4F6' : '#111827'} />
+  </Pressable>
+  <View style= {{alignItems:"center", justifyContent:"center", alignContent:"center" , flex:1, backgroundColor: isDark ? '#0F172A' : '#F9FAFB', flexDirection:"row", alignItems:"center", justifyContent:"center"
+  }}>
+  <Text style={[styles.pageTitle, themed.pageTitle, {alignSelf:"center"}]}>{route.params.label || "Routines"}</Text>
+  </View>
+</View>
 
+
+
+
+  
+
+      <View style={[styles.container, themed.container]}>
         {activeTab === 'app' && (
           <>
-            <View style={styles.filterBar}>
-              <Pressable style={[styles.filterBtn, themed.filterBtn]} onPress={() => handleToggleDropdown('difficulty')}>
-                <Ionicons name="barbell" size={16} color={themed.iconColor.color}/>
-                <Text style={[styles.filterText, themed.filterText]}>{filters.difficulty || 'Difficulty'}</Text>
-                <Ionicons name={openDropdown === 'difficulty' ? 'chevron-up' : 'chevron-down'} size={16} color="#6B7280" />
-              </Pressable>
-
-              <Pressable style={[styles.filterBtn, themed.filterBtn]} onPress={() => handleToggleDropdown('duration')}>
-                <Ionicons name="time" size={16}color={themed.iconColor.color} />
-                <Text style={[styles.filterText, themed.filterText]}>{filters.duration || 'Duration'}</Text>
-                <Ionicons name={openDropdown === 'duration' ? 'chevron-up' : 'chevron-down'} size={16} color="#6B7280" />
-              </Pressable>
-
-              <Pressable style={[styles.filterBtn, themed.filterBtn]} onPress={() => handleToggleDropdown('category')}>
-                <Ionicons name="pricetags" size={16} color={themed.iconColor.color} />
-                <Text style={[styles.filterText, themed.filterText]}>
-                  {filters.category ? categoryLabels[filters.category] : 'Category'}
-                </Text>
-                <Ionicons name={openDropdown === 'category' ? 'chevron-up' : 'chevron-down'} size={16} color="#6B7280" />
-              </Pressable>
-            </View>
-
-            {renderDropdown('difficulty', difficultyOptions)}
-            {renderDropdown('duration', durationOptions)}
-            {renderDropdown('category', Object.keys(categoryLabels))}
-
-            {(filters.difficulty || filters.duration || filters.category) && (
-              <Pressable style={styles.clearBtn} onPress={clearFilters}>
-                <Ionicons name="close-circle-outline" size={16} color="#6B7280" />
-                <Text style={styles.clearText}>Clear Filters</Text>
-              </Pressable>
-            )}
-
             <FlatList
               data={filteredRoutines}
               keyExtractor={(item) => item.id}
               renderItem={({ item }) => (
-                <View style={{ marginBottom: 16 }}>
+                <View style={styles.cardWrapper}>
                   <RoutineCard
                     large={true}
                     item={item}
@@ -222,7 +165,7 @@ useEffect(() => {
                   />
                 </View>
               )}
-              contentContainerStyle={{ paddingVertical: 16, paddingHorizontal: 20 }}
+              contentContainerStyle={{ padding: 20 }}
               ListEmptyComponent={<View style={{ alignItems: 'center', marginTop: 40 }}>
               <Ionicons name="sad-outline" size={32} color="#9CA3AF" />
               <Text style={{ color: '#6B7280', marginTop: 8, fontSize: 15, textAlign: 'center' }}>
@@ -264,7 +207,9 @@ useEffect(() => {
             </Text>
         
             <Pressable
-              onPress={() => navigation.navigate("Build")}
+              onPress={() => navigation.navigate('Tabs', {
+                screen: 'Build',
+              })}              
               style={styles.secondaryBtn}
             >
               <Ionicons name="add-circle-outline" size={16} color="#10B981" />
@@ -378,7 +323,30 @@ const styles = StyleSheet.create({
     color: '#047857',
     fontWeight: '500',
   },
+  headerRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingTop: 16,
+    paddingBottom: 12,
+    paddingHorizontal: 20,
+    backgroundColor: '#F9FAFB', // match your background or use 'transparent'
+  },
   
+  backIcon: {
+    paddingRight: 10,
+  },
+  
+  pageTitle: {
+    fontSize: 20,
+    fontWeight: '600',
+    color: '#111827',
+  },
+  cardWrapper: {
+    width: '100%',
+    maxWidth: 420,
+    alignSelf: 'center',
+    marginBottom: 16,
+  },  
   clearBtn: {
     alignSelf: 'center',
     marginTop: 8,
@@ -427,6 +395,7 @@ const getThemedStyles = (isDark) =>
     container: {
       backgroundColor: isDark ? '#0F172A' : '#F0F4F3',
     },
+    
     text: {
       color: isDark ? '#F3F4F6' : '#111827',
     },
@@ -469,6 +438,28 @@ const getThemedStyles = (isDark) =>
     optionText: {
       color: isDark ? '#A7F3D0' : '#047857', // was #6EE7B7, softened for readability
     },
+    backButtonContainer: {
+      paddingHorizontal: 16,
+      paddingTop: 16,
+      flexDirection: 'row',
+      alignItems: 'center',
+    },
+    headerRow: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      paddingTop: 16,
+      paddingBottom: 12,
+      paddingHorizontal: 20,
+      backgroundColor: '#F9FAFB', // match your background or use 'transparent'
+    },
+    
+    backIcon: {
+      paddingRight: 10,
+    },
+    
+    pageTitle: {
+      color: isDark ? '#F3F4F6' : '#111827',
+    },    
     
     option: {
       backgroundColor: isDark ? '#134E4A' : '#ECFDF5', // darker bg for dark mode

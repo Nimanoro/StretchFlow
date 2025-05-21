@@ -245,8 +245,9 @@ textShadowRadius: 2,
                 <View style={styles.metaIconText}>
                   <Ionicons name="body-outline" size={16} color={themed.iconColor.color} />
                   <Text style={[styles.metaText, themed.metaText]}>
-                    {item.muscleGroups?.join(', ')}
-                  </Text>
+      {Array.isArray(item.muscleGroups) ? item.muscleGroups.join(', ') : '—'}
+    </Text>
+
                 </View>
               </View>
             </View>
@@ -311,7 +312,6 @@ textShadowRadius: 2,
 const styles = StyleSheet.create({
   shadowWrap: {
     borderRadius: 20,
-    marginRight: 16,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 6 },
     shadowOpacity: 0.1,
@@ -332,8 +332,9 @@ const styles = StyleSheet.create({
   
   cardLarge: {
     width: '100%',
+    maxWidth: 420,
     padding: 24,
-  },
+  },  
   content: {
     flex: 1,
     marginRight: 1,

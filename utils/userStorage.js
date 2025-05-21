@@ -1,8 +1,50 @@
 import * as SecureStore from 'expo-secure-store';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const USER_KEY = 'stretchflow_user';
 const MY_ROUTINES_KEY = 'myRoutines';
 const SAVED_ROUTINES_KEY = 'savedRoutines';
+
+const historyKey = 'stretch_history';
+
+
+export const saveStretchToHistory = async (routine) => {
+  const dateKey = new Date().toLocaleDateString('en-CA'); // "YYYY-MM-DD"
+
+
+
+  const raw = await AsyncStorage.getItem(historyKey);
+  const history = raw ? JSON.parse(raw) : [];
+
+  const newEntry = {
+    title: routine.title,
+    duration: routine.duration,    
+    time: new Date().toISOString(), // keep ISO time for exact log
+    date: dateKey,
+  };
+
+  const updated = [...history, newEntry];
+  await AsyncStorage.setItem(historyKey, JSON.stringify(updated));
+
+  // Add date to dates list
+  const rawDates = await AsyncStorage.getItem('stretch_dates');
+  const allDates = rawDates ? JSON.parse(rawDates) : [];
+
+  if (!allDates.includes(dateKey)) {
+    allDates.push(dateKey);
+    await AsyncStorage.setItem('stretch_dates', JSON.stringify(allDates));
+  }
+};
+
+export const getLastStretchSessions = async () => {
+  const raw = await AsyncStorage.getItem('stretch_history');
+  const history = raw ? JSON.parse(raw) : [];
+  return history.slice(-20).reverse(); // newest first
+};
+export const getStretchDates = async () => {
+  const raw = await AsyncStorage.getItem('stretch_dates');
+  return raw ? JSON.parse(raw) : [];
+};
 
 // === USER DATA ===
 export const getUserData = async () => {

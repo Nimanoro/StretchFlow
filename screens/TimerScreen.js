@@ -8,6 +8,8 @@ import {
   Switch,
   Animated,
 } from 'react-native';
+import { saveStretchToHistory } from '../utils/userStorage';
+
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Share } from 'react-native';
 import { ThemeContext } from '../context/ThemeContext';
@@ -21,6 +23,8 @@ import ConfettiCannon from 'react-native-confetti-cannon';
 import { updateUserData, getUserData } from '../utils/userStorage';
 import moment, { duration } from 'moment'; // or native Date strings
 import { Ionicons } from '@expo/vector-icons';
+import { useKeepAwake } from 'expo-keep-awake';
+
 import RoutineSummaryCard from '../components/RoutineSummary';
 import { UserContext } from '../context/UserContext';
 import { captureRef } from 'react-native-view-shot';
@@ -33,6 +37,7 @@ import { track } from '../utils/analytics'; // Adjust the import path as necessa
 
 
 const TimerScreen = () => {
+  useKeepAwake();
   const navigation = useNavigation();
   const route = useRoute();
   const { routine, stretches } = route.params;
@@ -122,21 +127,31 @@ const handleShare = async () => {
   }
 };
 const themed = getThemedStyles(isDark);
+const handleRoutineComplete = async (routine) => {
+  const date = new Date();
+  const today = date.toLocaleDateString('en-CA'); // returns 'YYYY-MM-DD'
 
-  const handleRoutineComplete = async (routine) => {
-    const today = moment().format('YYYY-MM-DD');
-    const user = await getUserData();
-  
-    let newStreak = 1;
-    if (user?.lastCompleted) {
-      const last = moment(user.lastCompleted);
-      if (moment().diff(last, 'days') === 1) newStreak = (user.streak || 0) + 1;
-      else if (moment().diff(last, 'days') === 0) newStreak = user.streak || 1;
-    }
-    track('Routine_Completed', {routine: routine.title, duration: totalTime, streak: newStreak});
 
-  
-    const updated = await updateUserData({
+  const user = await getUserData();
+
+  let newStreak = user?.streak  + 1|| 1;
+  if (user?.lastCompleted) {
+    const last = moment(user.lastCompleted);
+
+    if (moment().diff(last, 'days') === 1) newStreak = (user.streak || 0) + 1;
+    else if (moment().diff(last, 'days') === 0) newStreak = user.streak || 1;
+    else newStreak = 1;
+  }
+
+
+  track('Routine_Completed', {
+    routine: routine.title,
+    duration: totalTime,
+    streak: newStreak,
+  });
+
+  await Promise.all([
+    updateUserData({
       streak: newStreak,
       lastCompleted: today,
       lastRoutine: routine,
@@ -144,8 +159,10 @@ const themed = getThemedStyles(isDark);
         ...(user?.history || {}),
         [today]: routine.title,
       },
-    });
-  };
+    }),
+    saveStretchToHistory(routine) // 🧠 SAVE TO STRETCH HISTORY
+  ]);
+};
 
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const pulseAnim = useRef(new Animated.Value(1)).current;
@@ -546,7 +563,7 @@ const themed = getThemedStyles(isDark);
 
 
 
-<View style={[styles.bottomToggleContainer, themed.bottomToggleContainer]}>
+<View style={{flexDirection: "row", gap:40, paddingBottom: 20}}>
   <Text style={[styles.toggleLabel, themed.toggleLabel]}>Voice Guidance</Text>
   <Switch
     value={!silentMode}
@@ -763,16 +780,9 @@ const styles = StyleSheet.create({
   bottomToggleContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingHorizontal: 20,
-    paddingVertical: 16,
-    borderTopWidth: 1,
-    borderColor: '#E5E7EB',
-    backgroundColor: '#ffffff',
-    width: '100%',
-    gap: 12,
   },
   toggleLabel: {
+    marginTop: 7,
     fontSize: 15,
     color: '#374151',
     fontWeight: '500',

@@ -10,6 +10,8 @@ import AllRoutinesScreen from './AllRoutine';
 import BuildRoutineScreen from './BuildRoutine';
 import { useContext } from 'react';
 import { ThemeContext } from '../context/ThemeContext';
+import HistoryScreen from './History';
+import ExploreRoutinesScreen from './ExploreRoutine';
 
 import { track } from '../utils/analytics';
 const Tab = createBottomTabNavigator();
@@ -73,7 +75,7 @@ export default function BottomTabNavigator() {
 
       <Tab.Screen
         name="Explore"
-        component={AllRoutinesScreen}
+        component={ExploreRoutinesScreen}
         options={{
           tabBarIcon: ({ color, focused }) => (
             <View style={styles.iconWrapper}>
@@ -107,7 +109,22 @@ export default function BottomTabNavigator() {
           },
         }}
       />
-
+      <Tab.Screen
+        name="History"
+        component={HistoryScreen}
+        options={{
+          tabBarIcon: ({ color, focused }) => (
+            <View style={styles.iconWrapper}>
+              <Ionicons name="time-outline" size={28} color={focused ? activeColor: inactiveColor} />
+            </View>
+          ),
+        }}
+        listeners={{
+          tabPress: () => {
+            track('Screen_viewed', { tab: 'History' });
+          },
+        }}
+        />
       <Tab.Screen
         name="Profile"
         component={ProfileScreen}

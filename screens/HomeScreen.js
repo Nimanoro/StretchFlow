@@ -38,6 +38,7 @@ const motivationalLines = [
 ];
 
 const streakMilestones = [3, 7, 14, 30, 60];
+
 const getNextMilestone = (streak) => {
   return streakMilestones.find(m => m > streak) || null;
 };
@@ -152,7 +153,7 @@ const HomeScreen = () => {
               <Ionicons name="flame" size={20} color="#F97316" />
             </Animated.View>
             <Text style={[styles.statusText, themedStyles.statusText]}>
-              {' '}{streakDays}-day streak – Keep it up!
+              {' '}{streakDays} day streak – Keep it up!
             </Text>
           </View>
 
@@ -184,11 +185,6 @@ const HomeScreen = () => {
         {/* === CONTINUE BUTTON === */}
         <Pressable
           onPress={() => {
-            const lastRoutine = routines.find(r => r.title === lastSession.title) || routines[0].title;
-            track('continue_routine_clicked', {
-              routine_title: lastSession.title || 'Unknown',
-              streak_days: streakDays,
-            });
             navigation.navigate('Routine', {
               routine: lastSession,
             });
@@ -196,7 +192,7 @@ const HomeScreen = () => {
           style={[styles.resumeButton, themedStyles.resumeButton]}
         >
           <Ionicons name="play" size={18} color="#fff" style={{ marginRight: 8 }} />
-          <Text style={styles.resumeText}>Continue: {lastSession.title || 'Any Routine'}</Text>
+          <Text style={styles.resumeText}>Continue: {lastSession?.title || 'Any Routine'}</Text>
         </Pressable>
         {/* === BETA FEEDBACK SECTION === */}
 <View style={[styles.betaBox, themedStyles.betaBox]}>
@@ -231,20 +227,28 @@ const HomeScreen = () => {
         {/* === TODAY’S RECOMMENDATION === */}
         <Text style={[styles.sectionTitle, themedStyles.sectionTitle]}>Today’s Recommendation</Text>
         <View style={{ marginHorizontal: 20, marginBottom: 20 }}>
-          <RoutineCard item={routines[0]} large enablePressAnimation />
+        <RoutineCard
+  item={routines[Math.floor(Math.random() * routines.length)]}
+  large
+  enablePressAnimation
+/>
         </View>
 
         {/* === POPULAR ROUTINES === */}
         <Text style={[styles.sectionTitle, themedStyles.sectionTitle]}>Popular Routines</Text>
         <FlatList
-          data={routines}
-          renderItem={({ item }) => <RoutineCard item={item} enablePressAnimation />}
-          keyExtractor={(item) => item.id}
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          contentContainerStyle={styles.list}
-          style={{ marginBottom: 30 }}
-        />
+              data={routines}
+              keyExtractor={(item) => item.id}
+              horizontal
+              renderItem={({ item }) => (
+                <View style={styles.cardWrapper}>
+                  <RoutineCard
+                    item={item}
+                    enablePressAnimation
+                  />
+                </View>
+              )}
+            />
       </View>
     </ScrollView>
     </SafeAreaView> 
@@ -365,6 +369,11 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
 
+  cardWrapper: {
+    marginLeft: 12,
+    marginRight: 12,
+    marginBottom: 20,
+  },
   resumeButton: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -575,6 +584,7 @@ const getThemedStyles = (isDark) =>
     betaButtonText: {
       color: isDark ? '#10B981' : '#047857',
     },
+
     betaButton: {
       flexDirection: 'row',
       alignItems: 'center',
