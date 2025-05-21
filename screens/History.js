@@ -5,7 +5,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { getStretchDates, getLastStretchSessions } from '../utils/userStorage';
 import { ThemeContext } from '../context/ThemeContext';
-
+import { getUserData } from '../utils/userStorage';
 export default function HistoryScreen() {
   const [markedDates, setMarkedDates] = useState({});
   const [selectedDate, setSelectedDate] = useState('');
@@ -52,31 +52,17 @@ export default function HistoryScreen() {
         : sessions;
 
       setHistory(filtered.sort((a, b) => new Date(b.time) - new Date(a.time)));
+      const userData = await getUserData();
 
       setSummary({
         total: sessions.length,
         activeDays: dateStrings.length,
-        streak: calculateStreak(dateStrings),
+        streak: userData?.streak
       });
     };
 
     loadHistory();
   }, [selectedDate, isDark]);
-
-  const calculateStreak = (dateStrings) => {
-    const today = new Date();
-    const format = (d) => d.toISOString().split('T')[0];
-    const datesSet = new Set(dateStrings);
-    let streak = 0;
-    let current = new Date(today);
-
-    while (datesSet.has(format(current))) {
-      streak++;
-      current.setDate(current.getDate() - 1);
-    }
-
-    return streak;
-  };
 
   return (
     <SafeAreaView style={[styles.safe, { backgroundColor: isDark ? '#111827' : '#F9FAFB' }]}>
