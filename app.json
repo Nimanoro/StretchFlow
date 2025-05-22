@@ -17,7 +17,11 @@
       "supportsTablet": true,
       "config": {
         "usesNonExemptEncryption": false
-      }
+      },
+      "infoPlist": {
+    "NSHealthShareUsageDescription": "StretchFlow uses Health data to log mindfulness minutes and help you stay consistent.",
+    "NSHealthUpdateUsageDescription": "StretchFlow writes mindfulness data to your Health app to help track your progress."
+    }
     },
     "android": {
       "adaptiveIcon": {
