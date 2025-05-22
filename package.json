@@ -34,6 +34,7 @@
     "react-native-calendars": "^1.1312.0",
     "react-native-circular-progress": "^1.4.1",
     "react-native-confetti-cannon": "^1.5.2",
+    "react-native-health": "^1.19.0",
     "react-native-reanimated-carousel": "^4.0.2",
     "react-native-safe-area-context": "5.4.0",
     "react-native-screens": "~4.10.0",
