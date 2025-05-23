@@ -12,6 +12,7 @@ import { useRoute, useNavigation } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useContext } from 'react';
+import hero from '../assets/hero.png';
 import { ThemeContext } from '../context/ThemeContext';
 import { track } from '../utils/analytics';
 const RoutineScreen = () => {
@@ -85,7 +86,7 @@ const RoutineScreen = () => {
     <ScrollView style={[styles.container, themed.container]} contentContainerStyle={{ paddingBottom: 30 }}>
       {/* ✅ Header Image with gradient overlay */}
       <ImageBackground
-        source={require('../assets/hero.png')} // Replace with your hero image
+        source={hero} // Replace with your hero image
         style={styles.headerImage}
         imageStyle={{ resizeMode: 'cover', opacity: 0.55 }}
 

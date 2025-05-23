@@ -71,7 +71,6 @@ async function scheduleOnce(hour, minute) {
 
     channelId: Platform.OS === 'android' ? 'daily-stretch' : undefined,
   });
-  console.log(`Scheduled next reminder → ${fireDate.hour}:${fireDate.minute}`);
 }
 
 /* ------------------------------------------------------------------ */

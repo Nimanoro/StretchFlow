@@ -15,19 +15,14 @@ import {
 import { useContext } from 'react';
 import { ThemeContext } from '../context/ThemeContext';
 import { track } from '../utils/analytics';
-
 import { LinearGradient } from 'expo-linear-gradient';
 import { useNavigation } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
 import RoutineCard from '../components/RoutineCard';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import exercisesData from '../assets/exercises.json';
-import BottomTabNavigator from './bottomNav';
 import { SafeAreaView } from 'react-native-safe-area-context';
-
-
 import { getUserData } from '../utils/userStorage';
-
+import hero from '../assets/hero.png';
 const routines = exercisesData.routines || exercisesData;
 const motivationalLines = [
   "Let’s unlock that energy today — just 5 minutes.",
@@ -52,6 +47,7 @@ const HomeScreen = () => {
   const [motivation, setMotivation] = useState('');
   const [name, setName] = useState('');
   const [streakDays, setStreakDays] = useState(0);
+  const [Recommendation, setRecommendation] = useState(routines[1]);
   const [lastSession, setLastSession] = useState(() => {
     const list = exercisesData?.routines || [];
     return list.length > 0 ? list[0] : null;
@@ -76,6 +72,13 @@ const HomeScreen = () => {
     };
     loadUser();
   }, []);
+
+  useEffect(() => {
+    const random = exercisesData.routines[Math.floor(Math.random() * exercisesData.routines.length)];
+
+    setRecommendation(random);
+  }, []);
+  
 
   useEffect(() => {
     if (!name) return;
@@ -119,7 +122,7 @@ const HomeScreen = () => {
     <ScrollView style={[styles.container, themedStyles.container]}>
       {/* === HERO HEADER === */}
       <ImageBackground
-        source={require('../assets/hero.png')}
+        source={hero}
         style={styles.heroHeader}
         imageStyle={{ resizeMode: 'cover' }}
       >
@@ -128,7 +131,7 @@ const HomeScreen = () => {
           style={[styles.gradientOverlay, themedStyles.gradientOverlay]}
         >
           <View style={styles.headerContent}>
-            <Image source={require('../assets/hero.png')} style={styles.logo} />
+            <Image source={hero} style={styles.logo} />
             <Text style={[styles.brandTitle, themedStyles.brandTitle]}>StretchFlow</Text>
             <Text style={[styles.brandSubtitle, themedStyles.brandSubtitle]}>Find your flow, one stretch at a time</Text>
           </View>
@@ -188,6 +191,11 @@ const HomeScreen = () => {
         {/* === CONTINUE BUTTON === */}
         <Pressable
           onPress={() => {
+            const lastRoutine = routines.find(r => r.title === lastSession.title) || routines[0].title;
+            track('continue_routine_clicked', {
+              routine_title: lastSession.title || 'Unknown',
+              streak_days: streakDays,
+            });
             navigation.navigate('Routine', {
               routine: lastSession,
             });
@@ -231,7 +239,7 @@ const HomeScreen = () => {
         <Text style={[styles.sectionTitle, themedStyles.sectionTitle]}>Today’s Recommendation</Text>
         <View style={{ marginHorizontal: 20, marginBottom: 20 }}>
         <RoutineCard
-  item={routines[Math.floor(Math.random() * routines.length)]}
+  item={Recommendation}
   large
   enablePressAnimation
 />

@@ -14,7 +14,6 @@ import { View, Text } from 'react-native';
 import { UserProvider } from './context/UserContext';
 import OnboardingScreen from './screens/onboarding';
 import { useEffect } from 'react';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { initAnalytics } from './utils/analytics';
 import * as Notifications from 'expo-notifications';
 import * as Device from 'expo-device';
@@ -23,7 +22,6 @@ import { useState } from 'react';
 import BottomTabNavigator from './screens/bottomNav';
 import { getUserData } from './utils/userStorage';
 import { FavoritesProvider } from './context/FavoritesContext';
-import BuildRoutineScreen from './screens/BuildRoutine';
 
 export async function registerForPushNotificationsAsync() {
   if (Device.isDevice) {
@@ -42,7 +40,7 @@ export async function registerForPushNotificationsAsync() {
 }
 let Updates;
 try {
-  Updates = require('expo-updates');
+  Updates = ('expo-updates');
 } catch (e) {
   Updates = null;
 }
@@ -68,12 +66,10 @@ export default function App() {
   }, []);
   useEffect(() => {
     const checkUser = async () => {
-      try {
-        const userData = await getUserData();
-        setInitialRoute(userData ? 'Tabs' : 'Onboarding');
-      } catch (e) {
-        console.error('Error loading user data:', e);
-        setInitialRoute('Onboarding');
+      const userData = await getUserData();
+      if (initialRoute === null) {
+        if (userData) setInitialRoute('Tabs');
+        else setInitialRoute('Onboarding');
       }
     };
     checkUser();
@@ -89,42 +85,36 @@ export default function App() {
     }
     updateApp();
   }, []);
+
   useEffect(() => {
-    registerForPushNotificationsAsync().catch(err =>
-      console.error('Push registration failed:', err)
-    );
+    registerForPushNotificationsAsync();
   }, []);
-  
-
-if (!initialRoute) {
-  return (
-    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-      <Text>Loading...</Text>
-    </View>
-  );
-}
 
   
 
   return (
-
     <UserProvider>
       <ThemeProvider>
-      <FavoritesProvider>
-      <NavigationContainer>
-      <Stack.Navigator initialRouteName={initialRoute} screenOptions={{ headerShown: false }}>
-
-          <Stack.Screen name="Tabs" component={BottomTabNavigator} />
-          <Stack.Screen name="Onboarding" component={OnboardingScreen} />
-          <Stack.Screen name= "Routine" component={RoutineScreen} />
-          <Stack.Screen name="Timer" component={TimerScreen} />
-          <Stack.Screen name="Build" component={BuildRoutineScreen} />
-          <Stack.Screen name="Premium" component={PremiumScreen} />
-          <Stack.Screen name="AllRoutines" component={AllRoutinesScreen} />
-        </Stack.Navigator>
-      </NavigationContainer>
-      </FavoritesProvider>
+        <FavoritesProvider>
+          <NavigationContainer>
+            {initialRoute ? (
+              <Stack.Navigator initialRouteName={initialRoute} screenOptions={{ headerShown: false }}>
+                <Stack.Screen name="Tabs" component={BottomTabNavigator} />
+                <Stack.Screen name="Onboarding" component={OnboardingScreen} />
+                <Stack.Screen name="Routine" component={RoutineScreen} />
+                <Stack.Screen name="Timer" component={TimerScreen} />
+                <Stack.Screen name="Premium" component={PremiumScreen} />
+                <Stack.Screen name="AllRoutines" component={AllRoutinesScreen} />
+              </Stack.Navigator>
+            ) : (
+              // Optional: Show loading screen while determining route
+              <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+                <Text>Loading...</Text>
+              </View>
+            )}
+          </NavigationContainer>
+        </FavoritesProvider>
       </ThemeProvider>
     </UserProvider>
   );
-}
+};

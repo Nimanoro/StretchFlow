@@ -13,6 +13,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { UserContext } from '../context/UserContext';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import {premiumpng} from '../assets/premium.png';
 import {
   connectIAP,
   buyPremiumSubscription,
@@ -95,7 +96,7 @@ const PremiumScreen = () => {
     <SafeAreaView style={[{ flex: 1 }, {backgroundColor: '#FFFF'}]} edges={['top']}>
     <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
       <ImageBackground
-        source={require('../assets/premium.png')}
+        source={premiumpng}
         style={styles.header}
         resizeMode="cover"
       >

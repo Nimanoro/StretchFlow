@@ -33,7 +33,7 @@ export default function BottomTabNavigator() {
   const isDark = themeName === 'dark';
   const activeColor = '#10B981';
   const inactiveColor = isDark ? '#FFF2F0' : '#9CA3AF';
-  
+
   return (
     <Tab.Navigator
       screenOptions={{
