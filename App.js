@@ -10,6 +10,7 @@ import RoutineScreen from './screens/RoutineScreen';
 import { ThemeProvider } from './context/ThemeContext';
 import TimerScreen from './screens/TimerScreen';
 import PremiumScreen from './screens/PremiumScreen';
+import { View, Text } from 'react-native';
 import { UserProvider } from './context/UserContext';
 import OnboardingScreen from './screens/onboarding';
 import { useEffect } from 'react';
@@ -18,6 +19,11 @@ import { initAnalytics } from './utils/analytics';
 import * as Notifications from 'expo-notifications';
 import * as Device from 'expo-device';
 import AllRoutinesScreen from './screens/AllRoutine';
+import { useState } from 'react';
+import BottomTabNavigator from './screens/bottomNav';
+import { getUserData } from './utils/userStorage';
+import { FavoritesProvider } from './context/FavoritesContext';
+import BuildRoutineScreen from './screens/BuildRoutine';
 
 export async function registerForPushNotificationsAsync() {
   if (Device.isDevice) {
@@ -34,12 +40,6 @@ export async function registerForPushNotificationsAsync() {
     return false;
   }
 }
-
-import { useState } from 'react';
-import BottomTabNavigator from './screens/bottomNav';
-import { getUserData } from './utils/userStorage';
-import { FavoritesProvider } from './context/FavoritesContext';
-import BuildRoutineScreen from './screens/BuildRoutine';
 let Updates;
 try {
   Updates = require('expo-updates');
@@ -68,15 +68,17 @@ export default function App() {
   }, []);
   useEffect(() => {
     const checkUser = async () => {
-      const userData = await getUserData();
-      if (userData) {
-        setInitialRoute('Tabs');
-      } else {
+      try {
+        const userData = await getUserData();
+        setInitialRoute(userData ? 'Tabs' : 'Onboarding');
+      } catch (e) {
+        console.error('Error loading user data:', e);
         setInitialRoute('Onboarding');
       }
     };
     checkUser();
   }, []);
+  
   useEffect(() => {
     async function updateApp() {
       const update = await Updates.checkForUpdateAsync();
@@ -88,34 +90,20 @@ export default function App() {
     updateApp();
   }, []);
   useEffect(() => {
-    registerForPushNotificationsAsync();
+    registerForPushNotificationsAsync().catch(err =>
+      console.error('Push registration failed:', err)
+    );
   }, []);
-
-  useEffect(() => {
-  const sub = Notifications.addNotificationResponseReceivedListener(response => {
-    console.log('🔔 User tapped notification:', response);
-    // Navigate or log analytics here
-  });
-
-  return () => sub.remove();
-}, []);
-
   
-  
-  useEffect(() => {
-    const markFirstLaunch = async () => {
-      try {
-        const launched = await AsyncStorage.getItem('hasLaunchedOnce');
-        if (!launched) {
-          await AsyncStorage.setItem('hasLaunchedOnce', 'true');
-        }
-      } catch (error) {
-        console.error("Error marking first launch:", error);
-      }
-    };
-    markFirstLaunch();
-  }, []);
-  if (!initialRoute) return null;
+
+if (!initialRoute) {
+  return (
+    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+      <Text>Loading...</Text>
+    </View>
+  );
+}
+
   
 
   return (

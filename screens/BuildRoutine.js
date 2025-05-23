@@ -146,7 +146,6 @@ const BuildRoutineScreen = () => {
     };
 
     try {
-      console.log('routine', routine);
       saveMyRoutines(routine);
       
       setSelected([]);

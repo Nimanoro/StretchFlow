@@ -52,8 +52,11 @@ const HomeScreen = () => {
   const [motivation, setMotivation] = useState('');
   const [name, setName] = useState('');
   const [streakDays, setStreakDays] = useState(0);
-  const [lastSession, setLastSession] = useState(routines[0]);
-  const { theme, toggleTheme, themeName } = useContext(ThemeContext);
+  const [lastSession, setLastSession] = useState(() => {
+    const list = exercisesData?.routines || [];
+    return list.length > 0 ? list[0] : null;
+  });
+    const { theme, toggleTheme, themeName } = useContext(ThemeContext);
   const isDark = themeName === 'dark';
   const themedStyles = getThemedStyles(isDark);
 
