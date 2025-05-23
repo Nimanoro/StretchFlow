@@ -6,23 +6,18 @@
 import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import HomeScreen from './screens/HomeScreen';
 import RoutineScreen from './screens/RoutineScreen';
-import BuildRoutineScreen from './screens/BuildRoutine';
 import { ThemeProvider } from './context/ThemeContext';
 import TimerScreen from './screens/TimerScreen';
 import PremiumScreen from './screens/PremiumScreen';
 import { UserProvider } from './context/UserContext';
 import OnboardingScreen from './screens/onboarding';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import { useEffect } from 'react';
-import ProfileScreen from './screens/ProfileScreen';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { initAnalytics } from './utils/analytics';
 import * as Notifications from 'expo-notifications';
 import * as Device from 'expo-device';
 import AllRoutinesScreen from './screens/AllRoutine';
-import { Platform } from 'react-native';
 
 export async function registerForPushNotificationsAsync() {
   if (Device.isDevice) {
@@ -44,6 +39,7 @@ import { useState } from 'react';
 import BottomTabNavigator from './screens/bottomNav';
 import { getUserData } from './utils/userStorage';
 import { FavoritesProvider } from './context/FavoritesContext';
+import BuildRoutineScreen from './screens/BuildRoutine';
 let Updates;
 try {
   Updates = require('expo-updates');
@@ -134,7 +130,7 @@ export default function App() {
           <Stack.Screen name="Onboarding" component={OnboardingScreen} />
           <Stack.Screen name= "Routine" component={RoutineScreen} />
           <Stack.Screen name="Timer" component={TimerScreen} />
-          <Stack.Screen name="Build" component={RoutineScreen} />
+          <Stack.Screen name="Build" component={BuildRoutineScreen} />
           <Stack.Screen name="Premium" component={PremiumScreen} />
           <Stack.Screen name="AllRoutines" component={AllRoutinesScreen} />
         </Stack.Navigator>
