@@ -1,8 +1,7 @@
 // Run this to create your project:
 // npx create-expo-app StretchFlow && cd StretchFlow
 // npx expo install react-native-screens react-native-safe-area-context @react-navigation/native @react-navigation/native-stack expo-ads-admob expo-in-app-purchases
-
-// App.js
+import 'react-native-reanimated';
 import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
