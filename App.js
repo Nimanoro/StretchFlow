@@ -37,14 +37,7 @@ export async function registerForPushNotificationsAsync() {
     return false;
   }
 }
-let Updates;
-try {
-  Updates = ('expo-updates');
-} catch (e) {
-  Updates = null;
-}
-
-
+import * as Updates from 'expo-updates';
 
 
 
@@ -74,16 +67,22 @@ export default function App() {
     checkUser();
   }, []);
   
-  useEffect(() => {
-    async function updateApp() {
+  
+useEffect(() => {
+  const checkForUpdates = async () => {
+    try {
       const update = await Updates.checkForUpdateAsync();
       if (update.isAvailable) {
         await Updates.fetchUpdateAsync();
-        await Updates.reloadAsync(); // reloads app with new update
+        await Updates.reloadAsync();
       }
+    } catch (e) {
+      console.warn("Expo Update failed — using fallback", e);
     }
-    updateApp();
-  }, []);
+  };
+
+  checkForUpdates();
+}, []);
 
   useEffect(() => {
     registerForPushNotificationsAsync();
