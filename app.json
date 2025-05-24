@@ -35,14 +35,8 @@
       }
     },
     "runtimeVersion": "1.0.1",
-    "updates": {
-      "url": "https://u.expo.dev/7594575a-742f-4157-8eb5-61dc3a0ed57b",
-      "checkAutomatically": "ON_LOAD",
-      "fallbackToCacheTimeout": 3000
-    },
     "plugins": [
-      "expo-secure-store",
-      "expo-updates"
+      "expo-secure-store"
 
 
     ]
